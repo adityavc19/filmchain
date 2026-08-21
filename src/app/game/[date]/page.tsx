@@ -30,27 +30,32 @@ interface CurrentMediaDetails {
   vote_average?: number | null;
 }
 
-interface SelectedPersonData {
+interface CurrentPersonDetails {
   id: number;
   name: string;
-  movies: TmdbFilm[];
-  tvShows: TmdbFilm[];
+  profile_path: string | null;
+  biography?: string | null;
+  known_for?: string | null;
+  birthday?: string | null;
+  place_of_birth?: string | null;
 }
 
 interface GameState {
   phase: 'loading' | 'playing' | 'won';
+  currentView: 'film' | 'person';
   puzzleDate: string;
   startFilm: FilmInfo | null;
   targetFilm: FilmInfo | null;
   endFilmId: number;
   path: PathStep[];
-  currentFilmId: number;
+  currentId: number;
   clickCount: number;
   startTime: number | null;
   endTime: number | null;
 }
 
 type FilmFilterTab = 'all' | 'cast' | 'crew';
+type PersonFilterTab = 'all' | 'movies' | 'tv';
 
 export default function GamePage({ params }: { params: Promise<{ date: string }> }) {
   const { date } = use(params);
@@ -58,26 +63,31 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
 
   const [state, setState] = useState<GameState>({
     phase: 'loading',
+    currentView: 'film',
     puzzleDate: date,
     startFilm: null,
     targetFilm: null,
     endFilmId: 0,
     path: [],
-    currentFilmId: 0,
+    currentId: 0,
     clickCount: 0,
     startTime: null,
     endTime: null,
   });
 
+  const [loadingStep, setLoadingStep] = useState(false);
   const [filmCredits, setFilmCredits] = useState<TmdbFilmCredit[]>([]);
   const [currentMedia, setCurrentMedia] = useState<CurrentMediaDetails | null>(null);
-  const [selectedPerson, setSelectedPerson] = useState<SelectedPersonData | null>(null);
-  const [loadingPersonFilms, setLoadingPersonFilms] = useState(false);
+  const [currentPerson, setCurrentPerson] = useState<CurrentPersonDetails | null>(null);
+  const [personMovies, setPersonMovies] = useState<TmdbFilm[]>([]);
+  const [personTvShows, setPersonTvShows] = useState<TmdbFilm[]>([]);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntryRow[]>([]);
   const [filmTab, setFilmTab] = useState<FilmFilterTab>('all');
+  const [personTab, setPersonTab] = useState<PersonFilterTab>('all');
   const [copied, setCopied] = useState(false);
 
   const fetchFilmCredits = async (id: number): Promise<TmdbFilmCredit[]> => {
+    setLoadingStep(true);
     try {
       let res = await fetch(`/api/film/${id}`);
       let data = await res.json();
@@ -100,12 +110,46 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
         genres: data.genres,
         vote_average: data.vote_average,
       });
-      setSelectedPerson(null);
+      setState(s => ({ ...s, currentView: 'film', currentId: id }));
       setFilmTab('all');
       return data.cast_crew || [];
     } catch (err) {
       console.error('Error fetching film credits:', err);
       return [];
+    } finally {
+      setLoadingStep(false);
+    }
+  };
+
+  const fetchPersonCredits = async (id: number) => {
+    setLoadingStep(true);
+    try {
+      let res = await fetch(`/api/person/${id}`);
+      let data = await res.json();
+
+      if (!res.ok || !data.filmography) {
+        await new Promise(r => setTimeout(r, 400));
+        res = await fetch(`/api/person/${id}`);
+        data = await res.json();
+      }
+
+      setPersonMovies(data.filmography || []);
+      setPersonTvShows(data.tv_credits || []);
+      setCurrentPerson({
+        id: data.tmdb_id,
+        name: data.name,
+        profile_path: data.profile_path,
+        biography: data.biography,
+        known_for: data.known_for,
+        birthday: data.birthday,
+        place_of_birth: data.place_of_birth,
+      });
+      setState(s => ({ ...s, currentView: 'person', currentId: id }));
+      setPersonTab('all');
+    } catch (err) {
+      console.error('Error fetching person credits:', err);
+    } finally {
+      setLoadingStep(false);
     }
   };
 
@@ -132,7 +176,8 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
           startFilm: data.startFilm,
           targetFilm: data.endFilm,
           endFilmId: data.endFilmId,
-          currentFilmId: data.startFilm.tmdb_id,
+          currentId: data.startFilm.tmdb_id,
+          currentView: 'film',
           clickCount: 0,
           path: startPath,
         }));
@@ -144,44 +189,9 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
   }, [date]);
 
   const onSelectPerson = async (personId: number, name: string) => {
-    if (selectedPerson && selectedPerson.id === personId) {
-      // Toggle off if clicked again
-      onCancelPerson();
-      return;
-    }
-
-    setLoadingPersonFilms(true);
     const newPath: PathStep[] = [...state.path, { type: 'person', id: personId, name }];
     setState(s => ({ ...s, path: newPath, clickCount: s.clickCount + 1 }));
-
-    try {
-      let res = await fetch(`/api/person/${personId}`);
-      let data = await res.json();
-
-      if (!res.ok || !data.filmography) {
-        await new Promise(r => setTimeout(r, 400));
-        res = await fetch(`/api/person/${personId}`);
-        data = await res.json();
-      }
-
-      setSelectedPerson({
-        id: personId,
-        name: data.name || name,
-        movies: data.filmography || [],
-        tvShows: data.tv_credits || [],
-      });
-    } catch (err) {
-      console.error('Error fetching person credits:', err);
-    } finally {
-      setLoadingPersonFilms(false);
-    }
-  };
-
-  const onCancelPerson = () => {
-    if (state.path.length > 0 && state.path[state.path.length - 1].type === 'person') {
-      setState(s => ({ ...s, path: s.path.slice(0, -1) }));
-    }
-    setSelectedPerson(null);
+    await fetchPersonCredits(personId);
   };
 
   const onSelectFilm = async (filmId: number, title: string) => {
@@ -197,7 +207,7 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
       setState(s => ({
         ...s,
         path: newPath,
-        currentFilmId: filmId,
+        currentId: filmId,
         clickCount: newClickCount,
         phase: 'won',
         endTime,
@@ -221,18 +231,21 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
         console.error('Failed to submit score:', err);
       }
     } else {
-      setState(s => ({ ...s, path: newPath, currentFilmId: filmId, clickCount: newClickCount }));
-      fetchFilmCredits(filmId);
+      setState(s => ({ ...s, path: newPath, currentId: filmId, clickCount: newClickCount }));
+      await fetchFilmCredits(filmId);
     }
   };
 
-  const onRewindTo = (index: number) => {
+  const onRewindTo = async (index: number) => {
     const truncatedPath = state.path.slice(0, index + 1);
     const targetNode = truncatedPath[truncatedPath.length - 1];
-    if (targetNode && targetNode.type === 'film') {
-      setState(s => ({ ...s, path: truncatedPath, currentFilmId: targetNode.id }));
-      setSelectedPerson(null);
-      fetchFilmCredits(targetNode.id);
+    if (targetNode) {
+      setState(s => ({ ...s, path: truncatedPath, currentId: targetNode.id }));
+      if (targetNode.type === 'film') {
+        await fetchFilmCredits(targetNode.id);
+      } else {
+        await fetchPersonCredits(targetNode.id);
+      }
     }
   };
 
@@ -242,7 +255,7 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
     const secs = elapsedSec % 60;
     const timeStr = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
     const emojiPath = state.path.map(p => (p.type === 'film' ? '🎬' : '👤')).join(' > ');
-    const shareText = `FILMCHAIN\n${timeStr} * ${state.clickCount} clicks\n${emojiPath}\nhttps://filmchain.app`;
+    const shareText = `FILMTRACE\n${timeStr} * ${state.clickCount} clicks\n${emojiPath}\nhttps://filmtrace.app`;
 
     navigator.clipboard.writeText(shareText).then(() => {
       setCopied(true);
@@ -277,12 +290,6 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
   const castList = Array.from(castMap.values());
   const crewList = Array.from(crewMap.values());
 
-  // Filter available films for selected person (exclude already visited films in the current path)
-  const visitedFilmIds = state.path.filter(p => p.type === 'film').map(p => p.id);
-  const personAvailableFilms = selectedPerson
-    ? [...selectedPerson.movies, ...selectedPerson.tvShows].filter(f => !visitedFilmIds.includes(f.id))
-    : [];
-
   if (state.phase === 'loading') {
     return (
       <div className="flex-1 flex flex-col items-center justify-center min-h-[50vh] gap-3">
@@ -297,19 +304,19 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
       {/* Sticky Game Status HUD */}
       <div className="flex flex-col gap-3.5 bg-bg-card p-4 sm:p-5 rounded-[4px] border border-border sticky top-16 z-30 shadow-2xl backdrop-blur-md">
         <div className="flex items-center justify-between gap-4 flex-wrap sm:flex-nowrap">
-          {/* Target Film Goal */}
+          {/* Target Film Goal (Thumbnail increased by 100%, label matched to CLICKS & TIME) */}
           {state.targetFilm && (
-            <div className="flex items-center gap-3.5">
+            <div className="flex items-center gap-4">
               <div
                 className="relative rounded-[4px] overflow-hidden flex-shrink-0 bg-bg-secondary border border-border shadow-md"
-                style={{ width: '56px', height: '84px' }}
+                style={{ width: '84px', height: '126px' }}
               >
                 {state.targetFilm.poster_path ? (
                   <Image
                     src={posterUrl(state.targetFilm.poster_path, 'w185')}
                     alt={state.targetFilm.title}
                     fill
-                    sizes="56px"
+                    sizes="84px"
                     className="object-cover"
                   />
                 ) : (
@@ -317,12 +324,10 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
                 )}
               </div>
               <div className="flex flex-col text-left gap-1">
-                <div className="flex items-center">
-                  <span className="text-[10px] font-semibold text-text-secondary bg-bg-secondary px-2 py-0.5 rounded border border-border">
-                    Goal
-                  </span>
-                </div>
-                <span className="font-bold text-white text-sm sm:text-base leading-tight">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary block">
+                  GOAL
+                </span>
+                <span className="font-bold text-white text-base sm:text-lg leading-tight max-w-[200px] truncate">
                   {state.targetFilm.title}
                 </span>
                 {state.targetFilm.year && (
@@ -332,8 +337,8 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
             </div>
           )}
 
-          {/* Right Metrics: Clicks & Timer */}
-          <div className="flex items-center gap-6 sm:gap-8">
+          {/* Right Metrics: Clicks & Timer (Distance increased by 100% to gap-14 sm:gap-20) */}
+          <div className="flex items-center gap-14 sm:gap-20">
             {/* Clicks Counter */}
             <div className="text-right">
               <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary block">CLICKS</span>
@@ -342,7 +347,7 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
               </span>
             </div>
 
-            {/* Running Clock */}
+            {/* Running Clock (White countdown digits) */}
             <div className="text-right">
               <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary block">TIME</span>
               <Timer startTime={state.startTime} endTime={state.endTime} />
@@ -358,127 +363,178 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
 
       {state.phase === 'playing' ? (
         <div className="flex flex-col gap-6">
-          {/* Current Movie Showcase Banner */}
-          {currentMedia && (
-            <div className="bg-bg-card border border-border rounded-[4px] p-4 sm:p-5 flex flex-col sm:flex-row gap-4 sm:gap-6 text-left shadow-lg">
-              {/* Poster */}
-              <div className="relative w-28 h-40 sm:w-32 sm:h-48 rounded-[4px] overflow-hidden bg-bg-secondary border border-white/10 flex-shrink-0 self-center sm:self-start">
-                {currentMedia.poster_path ? (
-                  <Image
-                    src={posterUrl(currentMedia.poster_path, 'w342')}
-                    alt={currentMedia.title}
-                    fill
-                    sizes="128px"
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-3xl">🎬</div>
-                )}
-              </div>
-
-              {/* Metadata & Plot Overview */}
-              <div className="flex flex-col gap-2 min-w-0 justify-center">
-                <div className="flex items-center gap-2 flex-wrap">
-                  {currentMedia.year && (
-                    <span className="text-xs font-semibold text-text-secondary">
-                      {currentMedia.year}
-                    </span>
-                  )}
-                  {currentMedia.runtime && (
-                    <span className="text-xs text-text-muted">
-                      · {currentMedia.runtime} min
-                    </span>
+          {/* VIEW: FILM DETAILS */}
+          {state.currentView === 'film' && currentMedia && (
+            <>
+              {/* Current Movie Showcase Banner (Thumbnail reduced by 40% to w-20 h-[116px] sm:w-[84px] sm:h-[126px]) */}
+              <div className="bg-bg-card border border-border rounded-[4px] p-4 sm:p-5 flex flex-col sm:flex-row gap-4 sm:gap-6 text-left shadow-lg">
+                {/* 40% Smaller Poster */}
+                <div className="relative w-20 h-[116px] sm:w-[84px] sm:h-[126px] rounded-[4px] overflow-hidden bg-bg-secondary border border-white/10 flex-shrink-0 self-center sm:self-start">
+                  {currentMedia.poster_path ? (
+                    <Image
+                      src={posterUrl(currentMedia.poster_path, 'w342')}
+                      alt={currentMedia.title}
+                      fill
+                      sizes="84px"
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-2xl">🎬</div>
                   )}
                 </div>
 
-                <h1 className="text-xl sm:text-2xl font-black text-white leading-tight">
-                  {currentMedia.title}
-                </h1>
-
-                {currentMedia.tagline && (
-                  <p className="text-xs sm:text-sm italic text-text-secondary font-medium">
-                    &ldquo;{currentMedia.tagline}&rdquo;
-                  </p>
-                )}
-
-                {/* Genre Tags */}
-                {currentMedia.genres && currentMedia.genres.length > 0 && (
-                  <div className="flex items-center gap-1.5 flex-wrap my-0.5">
-                    {currentMedia.genres.map(g => (
-                      <span key={g.id} className="text-[10px] uppercase font-medium bg-bg-secondary text-text-secondary px-2 py-0.5 rounded border border-border">
-                        {g.name}
+                {/* Metadata & Plot Overview */}
+                <div className="flex flex-col gap-1.5 min-w-0 justify-center">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {currentMedia.year && (
+                      <span className="text-xs font-semibold text-text-secondary">
+                        {currentMedia.year}
                       </span>
-                    ))}
+                    )}
+                    {currentMedia.runtime && (
+                      <span className="text-xs text-text-muted">
+                        · {currentMedia.runtime} min
+                      </span>
+                    )}
                   </div>
-                )}
 
-                {/* Plot Description */}
-                {currentMedia.overview && (
-                  <p className="text-xs sm:text-sm text-text-primary/90 leading-relaxed line-clamp-3 sm:line-clamp-4 mt-1">
-                    {currentMedia.overview}
-                  </p>
-                )}
-              </div>
-            </div>
-          )}
+                  <h1 className="text-xl sm:text-2xl font-black text-white leading-tight">
+                    {currentMedia.title}
+                  </h1>
 
-          {/* Sub-Tabs: Filter Navigation Bar */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-3 px-1">
-            <span className="text-base sm:text-lg font-extrabold text-white tracking-tight">
-              Choose next person
-            </span>
+                  {currentMedia.tagline && (
+                    <p className="text-xs sm:text-sm italic text-text-secondary font-medium">
+                      &ldquo;{currentMedia.tagline}&rdquo;
+                    </p>
+                  )}
 
-            {/* Sub-Tabs: Cast vs Crew */}
-            <div className="flex items-center gap-1 bg-bg-secondary p-1 rounded-[4px] border border-border self-start sm:self-auto">
-              <button
-                onClick={() => setFilmTab('all')}
-                className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${
-                  filmTab === 'all'
-                    ? 'bg-accent text-bg-primary font-bold'
-                    : 'text-text-secondary hover:text-text-primary'
-                }`}
-              >
-                All ({filmCredits.length})
-              </button>
-              <button
-                onClick={() => setFilmTab('cast')}
-                className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${
-                  filmTab === 'cast'
-                    ? 'bg-accent text-bg-primary font-bold'
-                    : 'text-text-secondary hover:text-text-primary'
-                }`}
-              >
-                Cast ({castList.length})
-              </button>
-              <button
-                onClick={() => setFilmTab('crew')}
-                className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${
-                  filmTab === 'crew'
-                    ? 'bg-accent text-bg-primary font-bold'
-                    : 'text-text-secondary hover:text-text-primary'
-                }`}
-              >
-                Crew ({crewList.length})
-              </button>
-            </div>
-          </div>
-
-          {/* Cast and Crew Portrait Grids */}
-          <div className="flex flex-col gap-6">
-            {filmTab === 'all' && (
-              <>
-                {castList.length > 0 && (
-                  <div className="flex flex-col gap-3">
-                    <div className="flex items-center gap-2 border-b border-border/60 pb-1.5">
-                      <span className="text-xs font-bold uppercase tracking-wider text-text-primary">
-                        Cast / Actors
-                      </span>
-                      <span className="text-[11px] text-text-muted">({castList.length})</span>
+                  {/* Genre Tags */}
+                  {currentMedia.genres && currentMedia.genres.length > 0 && (
+                    <div className="flex items-center gap-1.5 flex-wrap my-0.5">
+                      {currentMedia.genres.map(g => (
+                        <span key={g.id} className="text-[10px] uppercase font-medium bg-bg-secondary text-text-secondary px-2 py-0.5 rounded border border-border">
+                          {g.name}
+                        </span>
+                      ))}
                     </div>
+                  )}
+
+                  {/* Plot Description */}
+                  {currentMedia.overview && (
+                    <p className="text-xs sm:text-sm text-text-primary/90 leading-relaxed line-clamp-3 sm:line-clamp-4 mt-1">
+                      {currentMedia.overview}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Sub-Tabs: Filter Navigation Bar */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-3 px-1">
+                <span className="text-base sm:text-lg font-extrabold text-white tracking-tight">
+                  Choose next person
+                </span>
+
+                {/* Sub-Tabs: Cast vs Crew */}
+                <div className="flex items-center gap-1 bg-bg-secondary p-1 rounded-[4px] border border-border self-start sm:self-auto">
+                  <button
+                    onClick={() => setFilmTab('all')}
+                    className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${
+                      filmTab === 'all'
+                        ? 'bg-accent text-bg-primary font-bold'
+                        : 'text-text-secondary hover:text-text-primary'
+                    }`}
+                  >
+                    All ({filmCredits.length})
+                  </button>
+                  <button
+                    onClick={() => setFilmTab('cast')}
+                    className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${
+                      filmTab === 'cast'
+                        ? 'bg-accent text-bg-primary font-bold'
+                        : 'text-text-secondary hover:text-text-primary'
+                    }`}
+                  >
+                    Cast ({castList.length})
+                  </button>
+                  <button
+                    onClick={() => setFilmTab('crew')}
+                    className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${
+                      filmTab === 'crew'
+                        ? 'bg-accent text-bg-primary font-bold'
+                        : 'text-text-secondary hover:text-text-primary'
+                    }`}
+                  >
+                    Crew ({crewList.length})
+                  </button>
+                </div>
+              </div>
+
+              {/* Cast and Crew Portrait Grids */}
+              {loadingStep ? (
+                <div className="flex items-center justify-center py-16 gap-3">
+                  <div className="w-6 h-6 border-2 border-accent border-t-transparent rounded-full animate-spin" />
+                  <span className="text-xs text-text-secondary uppercase tracking-widest">Loading...</span>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-6">
+                  {filmTab === 'all' && (
+                    <>
+                      {castList.length > 0 && (
+                        <div className="flex flex-col gap-3">
+                          <div className="flex items-center gap-2 border-b border-border/60 pb-1.5">
+                            <span className="text-xs font-bold uppercase tracking-wider text-text-primary">
+                              Cast / Actors
+                            </span>
+                            <span className="text-[11px] text-text-muted">({castList.length})</span>
+                          </div>
+                          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
+                            {castList.map((credit) => (
+                              <PersonCard
+                                key={`cast-${credit.id}`}
+                                tmdbId={credit.id}
+                                name={credit.name}
+                                profilePath={credit.profile_path}
+                                role={credit.character}
+                                job={credit.job}
+                                onClick={() => onSelectPerson(credit.id, credit.name)}
+                                size="sm"
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {crewList.length > 0 && (
+                        <div className="flex flex-col gap-3 mt-2">
+                          <div className="flex items-center gap-2 border-b border-border/60 pb-1.5">
+                            <span className="text-xs font-bold uppercase tracking-wider text-text-primary">
+                              Crew (Director, Producer, Writer)
+                            </span>
+                            <span className="text-[11px] text-text-muted">({crewList.length})</span>
+                          </div>
+                          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
+                            {crewList.map((credit) => (
+                              <PersonCard
+                                key={`crew-${credit.id}`}
+                                tmdbId={credit.id}
+                                name={credit.name}
+                                profilePath={credit.profile_path}
+                                job={credit.job}
+                                onClick={() => onSelectPerson(credit.id, credit.name)}
+                                size="sm"
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
+
+                  {filmTab === 'cast' && (
                     <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
                       {castList.map((credit) => (
                         <PersonCard
-                          key={`cast-${credit.id}`}
+                          key={`cast-tab-${credit.id}`}
                           tmdbId={credit.id}
                           name={credit.name}
                           profilePath={credit.profile_path}
@@ -489,21 +545,13 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
                         />
                       ))}
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {crewList.length > 0 && (
-                  <div className="flex flex-col gap-3 mt-2">
-                    <div className="flex items-center gap-2 border-b border-border/60 pb-1.5">
-                      <span className="text-xs font-bold uppercase tracking-wider text-text-primary">
-                        Crew (Director, Producer, Writer)
-                      </span>
-                      <span className="text-[11px] text-text-muted">({crewList.length})</span>
-                    </div>
+                  {filmTab === 'crew' && (
                     <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
                       {crewList.map((credit) => (
                         <PersonCard
-                          key={`crew-${credit.id}`}
+                          key={`crew-tab-${credit.id}`}
                           tmdbId={credit.id}
                           name={credit.name}
                           profilePath={credit.profile_path}
@@ -513,74 +561,107 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
                         />
                       ))}
                     </div>
-                  </div>
-                )}
-              </>
-            )}
-
-            {filmTab === 'cast' && (
-              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
-                {castList.map((credit) => (
-                  <PersonCard
-                    key={`cast-tab-${credit.id}`}
-                    tmdbId={credit.id}
-                    name={credit.name}
-                    profilePath={credit.profile_path}
-                    role={credit.character}
-                    job={credit.job}
-                    onClick={() => onSelectPerson(credit.id, credit.name)}
-                    size="sm"
-                  />
-                ))}
-              </div>
-            )}
-
-            {filmTab === 'crew' && (
-              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
-                {crewList.map((credit) => (
-                  <PersonCard
-                    key={`crew-tab-${credit.id}`}
-                    tmdbId={credit.id}
-                    name={credit.name}
-                    profilePath={credit.profile_path}
-                    job={credit.job}
-                    onClick={() => onSelectPerson(credit.id, credit.name)}
-                    size="sm"
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Interactive Selected Person Film Picker Panel (from FilmChain.dc.html) */}
-          {selectedPerson && (
-            <div className="flex flex-col gap-3 bg-bg-secondary border border-border rounded-[4px] p-4 sm:p-5 mt-2 shadow-xl animate-in fade-in duration-300">
-              <div className="flex items-center justify-between border-b border-border/80 pb-2">
-                <span className="text-xs sm:text-sm font-bold text-white">
-                  Choose next film &mdash; <span className="text-accent">{selectedPerson.name}</span>
-                </span>
-                <button
-                  onClick={onCancelPerson}
-                  className="text-xs font-semibold text-text-secondary hover:text-white cursor-pointer transition-colors"
-                >
-                  Cancel &times;
-                </button>
-              </div>
-
-              {loadingPersonFilms ? (
-                <div className="flex items-center gap-2 py-6 justify-center">
-                  <div className="w-4 h-4 border-2 border-accent border-t-transparent rounded-full animate-spin" />
-                  <span className="text-xs text-text-secondary">Loading filmography...</span>
+                  )}
                 </div>
-              ) : personAvailableFilms.length === 0 ? (
-                <p className="text-xs text-text-muted py-2">
-                  No new films found for this person &mdash; try someone else.
-                </p>
+              )}
+            </>
+          )}
+
+          {/* VIEW: PERSON DETAILS (Opened on click of actor/crew member) */}
+          {state.currentView === 'person' && currentPerson && (
+            <>
+              {/* Person Bio Showcase Banner */}
+              <div className="bg-bg-card border border-border rounded-[4px] p-4 sm:p-5 flex flex-col sm:flex-row gap-4 sm:gap-6 text-left shadow-lg">
+                <div className="relative w-20 h-[116px] sm:w-[84px] sm:h-[126px] rounded-[4px] overflow-hidden bg-bg-secondary border border-white/10 flex-shrink-0 self-center sm:self-start">
+                  {currentPerson.profile_path ? (
+                    <Image
+                      src={profileUrl(currentPerson.profile_path, 'w185')}
+                      alt={currentPerson.name}
+                      fill
+                      sizes="84px"
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-2xl">👤</div>
+                  )}
+                </div>
+
+                <div className="flex flex-col gap-1.5 min-w-0 justify-center">
+                  <div className="flex items-center gap-2 flex-wrap text-xs text-text-secondary">
+                    {currentPerson.known_for && <span>{currentPerson.known_for}</span>}
+                    {currentPerson.place_of_birth && <span>· {currentPerson.place_of_birth}</span>}
+                  </div>
+
+                  <h1 className="text-xl sm:text-2xl font-black text-white leading-tight">
+                    {currentPerson.name}
+                  </h1>
+
+                  {currentPerson.biography && (
+                    <p className="text-xs sm:text-sm text-text-primary/90 leading-relaxed line-clamp-3 sm:line-clamp-4 mt-1">
+                      {currentPerson.biography}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Sub-Header & Filmography Tabs */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-3 px-1">
+                <span className="text-base sm:text-lg font-extrabold text-white tracking-tight">
+                  Choose next title
+                </span>
+
+                <div className="flex items-center gap-1 bg-bg-secondary p-1 rounded-[4px] border border-border self-start sm:self-auto">
+                  <button
+                    onClick={() => setPersonTab('all')}
+                    className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${
+                      personTab === 'all'
+                        ? 'bg-accent text-bg-primary font-bold'
+                        : 'text-text-secondary hover:text-text-primary'
+                    }`}
+                  >
+                    All ({personMovies.length + personTvShows.length})
+                  </button>
+                  <button
+                    onClick={() => setPersonTab('movies')}
+                    className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${
+                      personTab === 'movies'
+                        ? 'bg-accent text-bg-primary font-bold'
+                        : 'text-text-secondary hover:text-text-primary'
+                    }`}
+                  >
+                    Movies ({personMovies.length})
+                  </button>
+                  {personTvShows.length > 0 && (
+                    <button
+                      onClick={() => setPersonTab('tv')}
+                      className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${
+                        personTab === 'tv'
+                          ? 'bg-accent text-bg-primary font-bold'
+                          : 'text-text-secondary hover:text-text-primary'
+                      }`}
+                    >
+                      TV Shows ({personTvShows.length})
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Filmography Grid */}
+              {loadingStep ? (
+                <div className="flex items-center justify-center py-16 gap-3">
+                  <div className="w-6 h-6 border-2 border-accent border-t-transparent rounded-full animate-spin" />
+                  <span className="text-xs text-text-secondary uppercase tracking-widest">Loading...</span>
+                </div>
               ) : (
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4 pt-1">
-                  {personAvailableFilms.map((film) => (
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
+                  {(personTab === 'all'
+                    ? [...personMovies, ...personTvShows]
+                    : personTab === 'movies'
+                    ? personMovies
+                    : personTvShows
+                  ).map((film) => (
                     <FilmCard
-                      key={`person-film-${film.id}`}
+                      key={`film-${film.id}`}
                       tmdbId={film.id}
                       title={film.title}
                       year={film.release_date ? parseInt(film.release_date.split('-')[0]) : null}
@@ -593,11 +674,11 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
                   ))}
                 </div>
               )}
-            </div>
+            </>
           )}
         </div>
       ) : (
-        /* Results / Won Screen (matching FilmChain.dc.html) */
+        /* Results / Won Screen */
         <div className="flex flex-col items-center gap-7 py-6 w-full animate-in fade-in duration-500">
           <div className="flex flex-col items-center gap-3 text-center">
             <span className="text-xs font-bold uppercase tracking-widest text-accent">

@@ -33,12 +33,12 @@ export default function Timer({ startTime, endTime }: TimerProps) {
   const ms = Math.floor((elapsed % 1000) / 10);
 
   return (
-    <div className="font-mono text-2xl sm:text-3xl font-bold text-accent tracking-wider tabular-nums select-none drop-shadow-[0_0_8px_rgba(0,224,84,0.3)]">
+    <div className="font-mono text-2xl sm:text-3xl font-bold text-white tracking-wider tabular-nums select-none">
       {startTime ? (
         <>
           {minutes.toString().padStart(2, '0')}:
           {seconds.toString().padStart(2, '0')}
-          <span className="text-lg sm:text-xl text-accent-dim">.{ms.toString().padStart(2, '0')}</span>
+          <span className="text-lg sm:text-xl text-white/70">.{ms.toString().padStart(2, '0')}</span>
         </>
       ) : (
         "00:00.00"

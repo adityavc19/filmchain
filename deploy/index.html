@@ -67,7 +67,7 @@
   <div id="root" class="min-h-screen flex flex-col"></div>
 
   <script type="text/babel">
-    const { useState, useEffect, useRef } = React;
+    const { useState, useEffect } = React;
 
     const TMDB_API_KEY = '81d2e74ce1c54d587d152b68d900b8c8';
     const TMDB_BASE = 'https://api.themoviedb.org/3';
@@ -88,7 +88,6 @@
     function filterCredits(cast = [], crew = []) {
       const map = new Map();
 
-      // 1. Process Cast
       for (const c of cast) {
         if (c && c.id && c.order < MAX_CAST_ORDER) {
           map.set(c.id, {
@@ -102,7 +101,6 @@
         }
       }
 
-      // 2. Process Crew with multi-role prioritization
       const jobPriority = {
         'Director': 1, 'Screenplay': 2, 'Writer': 3, 'Story': 4,
         'Creator': 5, 'Producer': 6, 'Executive Producer': 7,
@@ -150,23 +148,27 @@
 
     function App() {
       const [screen, setScreen] = useState('home'); // 'home' | 'game' | 'results' | 'leaderboard'
+      const [currentView, setCurrentView] = useState('film'); // 'film' | 'person'
       const [todayPuzzle, setTodayPuzzle] = useState(null);
       const [loading, setLoading] = useState(true);
+      const [loadingStep, setLoadingStep] = useState(false);
       const [handle] = useState(getOrCreateHandle);
 
       // Game state
       const [startFilm, setStartFilm] = useState(null);
       const [targetFilm, setTargetFilm] = useState(null);
       const [currentMedia, setCurrentMedia] = useState(null);
+      const [currentPerson, setCurrentPerson] = useState(null);
+      const [personMovies, setPersonMovies] = useState([]);
+      const [personTvShows, setPersonTvShows] = useState([]);
       const [filmCredits, setFilmCredits] = useState([]);
-      const [selectedPerson, setSelectedPerson] = useState(null);
-      const [loadingPersonFilms, setLoadingPersonFilms] = useState(false);
       const [path, setPath] = useState([]);
       const [clickCount, setClickCount] = useState(0);
       const [startTime, setStartTime] = useState(null);
       const [endTime, setEndTime] = useState(null);
       const [elapsedSec, setElapsedSec] = useState(0);
       const [filmTab, setFilmTab] = useState('all');
+      const [personTab, setPersonTab] = useState('all');
       const [leaderboard, setLeaderboard] = useState([]);
       const [copied, setCopied] = useState(false);
 
@@ -176,21 +178,19 @@
         if (screen === 'game' && startTime && !endTime) {
           interval = setInterval(() => {
             setElapsedSec((Date.now() - startTime) / 1000);
-          }, 100);
+          }, 50);
         }
         return () => clearInterval(interval);
       }, [screen, startTime, endTime]);
 
-      // Load initial daily puzzle & TMDb metadata
+      // Load initial daily puzzle
       useEffect(() => {
         async function loadPuzzle() {
           try {
-            // Default fallback
             let pDate = '2026-08-21';
             let sId = 155; // The Dark Knight
             let tId = 27205; // Inception
 
-            // Try to fetch latest puzzle from Supabase
             try {
               const res = await fetch(`${SUPABASE_URL}/rest/v1/daily_puzzles?select=*&order=date.desc&limit=1`, {
                 headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` }
@@ -202,10 +202,9 @@
                 tId = data[0].end_film_id;
               }
             } catch (e) {
-              console.warn('Using default puzzle pair');
+              console.warn('Using fallback puzzle pair');
             }
 
-            // Fetch TMDb details for start & target
             const [sDetails, tDetails] = await Promise.all([
               fetch(`${TMDB_BASE}/movie/${sId}?api_key=${TMDB_API_KEY}`).then(r => r.json()),
               fetch(`${TMDB_BASE}/movie/${tId}?api_key=${TMDB_API_KEY}`).then(r => r.json()),
@@ -241,6 +240,7 @@
       }, []);
 
       async function fetchFilmDetails(filmId) {
+        setLoadingStep(true);
         try {
           const [details, credits] = await Promise.all([
             fetch(`${TMDB_BASE}/movie/${filmId}?api_key=${TMDB_API_KEY}`).then(r => r.json()),
@@ -259,10 +259,48 @@
             poster_path: details.poster_path,
           });
           setFilmCredits(filtered);
-          setSelectedPerson(null);
+          setCurrentView('film');
           setFilmTab('all');
         } catch (e) {
           console.error('Error fetching film details:', e);
+        } finally {
+          setLoadingStep(false);
+        }
+      }
+
+      async function fetchPersonDetails(personId) {
+        setLoadingStep(true);
+        try {
+          const [pDetails, movieRes, tvRes] = await Promise.all([
+            fetch(`${TMDB_BASE}/person/${personId}?api_key=${TMDB_API_KEY}`).then(r => r.json()),
+            fetch(`${TMDB_BASE}/person/${personId}/movie_credits?api_key=${TMDB_API_KEY}`).then(r => r.json()),
+            fetch(`${TMDB_BASE}/person/${personId}/tv_credits?api_key=${TMDB_API_KEY}`).then(r => r.json()),
+          ]);
+
+          const movies = (movieRes.cast || []).concat(movieRes.crew || []).filter(f => f && f.id && f.title);
+          const tvShows = (tvRes.cast || []).concat(tvRes.crew || []).map(t => ({
+            ...t,
+            title: t.name || t.original_name,
+            release_date: t.first_air_date,
+          })).filter(t => t && t.id && t.title);
+
+          setCurrentPerson({
+            id: pDetails.id,
+            name: pDetails.name,
+            profile_path: pDetails.profile_path,
+            biography: pDetails.biography,
+            known_for: pDetails.known_for_department,
+            birthday: pDetails.birthday,
+            place_of_birth: pDetails.place_of_birth,
+          });
+          setPersonMovies(movies);
+          setPersonTvShows(tvShows);
+          setCurrentView('person');
+          setPersonTab('all');
+        } catch (e) {
+          console.error('Error fetching person details:', e);
+        } finally {
+          setLoadingStep(false);
         }
       }
 
@@ -279,47 +317,10 @@
       }
 
       async function onSelectPerson(personId, name) {
-        if (selectedPerson && selectedPerson.id === personId) {
-          onCancelPerson();
-          return;
-        }
-
-        setLoadingPersonFilms(true);
         const newPath = [...path, { type: 'person', id: personId, name }];
         setPath(newPath);
         setClickCount(c => c + 1);
-
-        try {
-          const [movieRes, tvRes] = await Promise.all([
-            fetch(`${TMDB_BASE}/person/${personId}/movie_credits?api_key=${TMDB_API_KEY}`).then(r => r.json()),
-            fetch(`${TMDB_BASE}/person/${personId}/tv_credits?api_key=${TMDB_API_KEY}`).then(r => r.json()),
-          ]);
-
-          const movies = (movieRes.cast || []).concat(movieRes.crew || []).filter(f => f && f.id && f.title);
-          const tvShows = (tvRes.cast || []).concat(tvRes.crew || []).map(t => ({
-            ...t,
-            title: t.name || t.original_name,
-            release_date: t.first_air_date,
-          })).filter(t => t && t.id && t.title);
-
-          setSelectedPerson({
-            id: personId,
-            name,
-            movies,
-            tvShows,
-          });
-        } catch (e) {
-          console.error('Error fetching person credits:', e);
-        } finally {
-          setLoadingPersonFilms(false);
-        }
-      }
-
-      function onCancelPerson() {
-        if (path.length > 0 && path[path.length - 1].type === 'person') {
-          setPath(path.slice(0, -1));
-        }
-        setSelectedPerson(null);
+        await fetchPersonDetails(personId);
       }
 
       async function onSelectFilm(filmId, title) {
@@ -328,13 +329,11 @@
         setClickCount(newClicks);
 
         if (targetFilm && filmId === targetFilm.tmdb_id) {
-          // Won!
           const end = Date.now();
           setEndTime(end);
           setPath(newPath);
           setScreen('results');
 
-          // Submit to Supabase leaderboard
           try {
             const timeSec = Math.max(1, Math.round((end - (startTime || end)) / 1000));
             const hops = Math.floor(newPath.length / 2);
@@ -360,17 +359,20 @@
           }
         } else {
           setPath(newPath);
-          fetchFilmDetails(filmId);
+          await fetchFilmDetails(filmId);
         }
       }
 
       function onRewindTo(idx) {
         const truncated = path.slice(0, idx + 1);
         const node = truncated[truncated.length - 1];
-        if (node && node.type === 'film') {
+        if (node) {
           setPath(truncated);
-          setSelectedPerson(null);
-          fetchFilmDetails(node.id);
+          if (node.type === 'film') {
+            fetchFilmDetails(node.id);
+          } else {
+            fetchPersonDetails(node.id);
+          }
         }
       }
 
@@ -399,13 +401,8 @@
         });
       }
 
-      // Filter helpers
       const castList = filmCredits.filter(c => c.role === 'cast');
       const crewList = filmCredits.filter(c => c.role === 'crew' || c.job);
-      const visitedFilmIds = path.filter(p => p.type === 'film').map(p => p.id);
-      const availablePersonFilms = selectedPerson
-        ? [...selectedPerson.movies, ...selectedPerson.tvShows].filter(f => !visitedFilmIds.includes(f.id))
-        : [];
 
       return (
         <div className="flex-1 flex flex-col">
@@ -421,17 +418,12 @@
                       <stop offset="100%" stopColor="#40bcf4" />
                     </linearGradient>
                   </defs>
-                  {/* Left Film Frame */}
                   <rect x="2" y="5" width="12" height="12" rx="2" stroke="#40bcf4" strokeWidth="1.75" fill="#1c2228" />
                   <line x1="2" y1="8" x2="14" y2="8" stroke="#40bcf4" strokeWidth="1" strokeDasharray="1.5 1.5" />
                   <line x1="2" y1="14" x2="14" y2="14" stroke="#40bcf4" strokeWidth="1" strokeDasharray="1.5 1.5" />
-                  
-                  {/* Right Film Frame */}
                   <rect x="18" y="15" width="12" height="12" rx="2" stroke="#00e054" strokeWidth="1.75" fill="#1c2228" />
                   <line x1="18" y1="18" x2="30" y2="18" stroke="#00e054" strokeWidth="1" strokeDasharray="1.5 1.5" />
                   <line x1="18" y1="24" x2="30" y2="24" stroke="#00e054" strokeWidth="1" strokeDasharray="1.5 1.5" />
-
-                  {/* Glowing Trace Trail Line */}
                   <path d="M 8 11 C 14 11 16 21 24 21" stroke="url(#ft-nav-grad)" strokeWidth="2.2" strokeLinecap="round" />
                   <circle cx="8" cy="11" r="2" fill="#40bcf4" />
                   <circle cx="16" cy="16" r="1.5" fill="#ff8000" />
@@ -482,7 +474,6 @@
                       <h1 className="text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-tight">
                         FILMTRACE
                       </h1>
-
                       <p className="text-sm sm:text-base text-text-secondary max-w-md leading-relaxed font-medium">
                         Two films. One trail. How fast can you connect them?
                       </p>
@@ -530,26 +521,24 @@
                 {/* Sticky Status HUD */}
                 <div className="flex flex-col gap-3.5 bg-bg-card p-4 sm:p-5 rounded-[4px] border border-border sticky top-16 z-30 shadow-2xl backdrop-blur-md">
                   <div className="flex items-center justify-between gap-4 flex-wrap sm:flex-nowrap">
-                    {/* Goal Film */}
-                    <div className="flex items-center gap-3.5">
-                      <div className="relative rounded-[4px] overflow-hidden flex-shrink-0 bg-bg-secondary border border-border shadow-md w-[56px] h-[84px]">
+                    {/* Goal Film (100% larger thumbnail + clean GOAL label) */}
+                    <div className="flex items-center gap-4">
+                      <div className="relative rounded-[4px] overflow-hidden flex-shrink-0 bg-bg-secondary border border-border shadow-md w-[84px] h-[126px]">
                         <img src={posterUrl(targetFilm.poster_path, 'w185')} alt={targetFilm.title} className="w-full h-full object-cover" />
                       </div>
                       <div className="flex flex-col text-left gap-1">
-                        <div className="flex items-center">
-                          <span className="text-[10px] font-semibold text-text-secondary bg-bg-secondary px-2 py-0.5 rounded border border-border">
-                            Goal
-                          </span>
-                        </div>
-                        <span className="font-bold text-white text-sm sm:text-base leading-tight">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary block">
+                          GOAL
+                        </span>
+                        <span className="font-bold text-white text-base sm:text-lg leading-tight max-w-[200px] truncate">
                           {targetFilm.title}
                         </span>
                         <span className="text-text-secondary text-xs">{targetFilm.year}</span>
                       </div>
                     </div>
 
-                    {/* Right Metrics: Clicks & Timer */}
-                    <div className="flex items-center gap-6 sm:gap-8">
+                    {/* Right Metrics: 100% more distance (gap-14 sm:gap-20) + White timer */}
+                    <div className="flex items-center gap-14 sm:gap-20">
                       <div className="text-right">
                         <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary block">CLICKS</span>
                         <span className="font-mono text-2xl sm:text-3xl font-black text-white leading-tight">
@@ -558,9 +547,9 @@
                       </div>
                       <div className="text-right">
                         <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary block">TIME</span>
-                        <div className="font-mono text-2xl sm:text-3xl font-bold text-accent tracking-wider tabular-nums select-none drop-shadow-[0_0_8px_rgba(0,224,84,0.3)]">
+                        <div className="font-mono text-2xl sm:text-3xl font-bold text-white tracking-wider tabular-nums select-none">
                           {String(Math.floor(elapsedSec / 60)).padStart(2, '0')}:{String(Math.floor(elapsedSec % 60)).padStart(2, '0')}
-                          <span className="text-lg sm:text-xl text-accent-dim">.{Math.floor((elapsedSec % 1) * 100).toString().padStart(2, '0')}</span>
+                          <span className="text-lg sm:text-xl text-white/70">.{Math.floor((elapsedSec % 1) * 100).toString().padStart(2, '0')}</span>
                         </div>
                       </div>
                     </div>
@@ -572,7 +561,7 @@
                       {path.map((node, i) => {
                         const isLast = i === path.length - 1;
                         const isFilm = node.type === 'film';
-                        const canRewind = isFilm && !isLast;
+                        const canRewind = !isLast;
 
                         return (
                           <div key={`${node.id}-${i}`} className="flex items-center gap-1.5">
@@ -599,204 +588,256 @@
                   </div>
                 </div>
 
-                {/* Movie Synopsis Showcase */}
-                {currentMedia && (
-                  <div className="bg-bg-card border border-border rounded-[4px] p-4 sm:p-5 flex flex-col sm:flex-row gap-4 sm:gap-6 text-left shadow-lg">
-                    <div className="relative w-28 h-40 sm:w-32 sm:h-48 rounded-[4px] overflow-hidden bg-bg-secondary border border-white/10 flex-shrink-0 self-center sm:self-start">
-                      <img src={posterUrl(currentMedia.poster_path, 'w342')} alt={currentMedia.title} className="w-full h-full object-cover" />
-                    </div>
-
-                    <div className="flex flex-col gap-2 min-w-0 justify-center">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        {currentMedia.year && <span className="text-xs font-semibold text-text-secondary">{currentMedia.year}</span>}
-                        {currentMedia.runtime && <span className="text-xs text-text-muted">· {currentMedia.runtime} min</span>}
+                {/* VIEW: FILM SCREEN */}
+                {currentView === 'film' && currentMedia && (
+                  <>
+                    {/* Movie Synopsis Showcase (40% smaller cover thumbnail) */}
+                    <div className="bg-bg-card border border-border rounded-[4px] p-4 sm:p-5 flex flex-col sm:flex-row gap-4 sm:gap-6 text-left shadow-lg">
+                      <div className="relative w-20 h-[116px] sm:w-[84px] sm:h-[126px] rounded-[4px] overflow-hidden bg-bg-secondary border border-white/10 flex-shrink-0 self-center sm:self-start">
+                        <img src={posterUrl(currentMedia.poster_path, 'w342')} alt={currentMedia.title} className="w-full h-full object-cover" />
                       </div>
 
-                      <h1 className="text-xl sm:text-2xl font-black text-white leading-tight">
-                        {currentMedia.title}
-                      </h1>
-
-                      {currentMedia.tagline && (
-                        <p className="text-xs sm:text-sm italic text-text-secondary font-medium">
-                          &ldquo;{currentMedia.tagline}&rdquo;
-                        </p>
-                      )}
-
-                      {currentMedia.genres && currentMedia.genres.length > 0 && (
-                        <div className="flex items-center gap-1.5 flex-wrap my-0.5">
-                          {currentMedia.genres.map(g => (
-                            <span key={g.id} className="text-[10px] uppercase font-medium bg-bg-secondary text-text-secondary px-2 py-0.5 rounded border border-border">
-                              {g.name}
-                            </span>
-                          ))}
+                      <div className="flex flex-col gap-1.5 min-w-0 justify-center">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          {currentMedia.year && <span className="text-xs font-semibold text-text-secondary">{currentMedia.year}</span>}
+                          {currentMedia.runtime && <span className="text-xs text-text-muted">· {currentMedia.runtime} min</span>}
                         </div>
-                      )}
 
-                      {currentMedia.overview && (
-                        <p className="text-xs sm:text-sm text-text-primary/90 leading-relaxed line-clamp-3 sm:line-clamp-4 mt-1">
-                          {currentMedia.overview}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                )}
+                        <h1 className="text-xl sm:text-2xl font-black text-white leading-tight">
+                          {currentMedia.title}
+                        </h1>
 
-                {/* Subheader & Tabs */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-3 px-1">
-                  <span className="text-base sm:text-lg font-extrabold text-white tracking-tight">
-                    Choose next person
-                  </span>
+                        {currentMedia.tagline && (
+                          <p className="text-xs sm:text-sm italic text-text-secondary font-medium">
+                            &ldquo;{currentMedia.tagline}&rdquo;
+                          </p>
+                        )}
 
-                  <div className="flex items-center gap-1 bg-bg-secondary p-1 rounded-[4px] border border-border self-start sm:self-auto">
-                    <button
-                      onClick={() => setFilmTab('all')}
-                      className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${filmTab === 'all' ? 'bg-accent text-bg-primary font-bold' : 'text-text-secondary hover:text-white'}`}
-                    >
-                      All ({filmCredits.length})
-                    </button>
-                    <button
-                      onClick={() => setFilmTab('cast')}
-                      className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${filmTab === 'cast' ? 'bg-accent text-bg-primary font-bold' : 'text-text-secondary hover:text-white'}`}
-                    >
-                      Cast ({castList.length})
-                    </button>
-                    <button
-                      onClick={() => setFilmTab('crew')}
-                      className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${filmTab === 'crew' ? 'bg-accent text-bg-primary font-bold' : 'text-text-secondary hover:text-white'}`}
-                    >
-                      Crew ({crewList.length})
-                    </button>
-                  </div>
-                </div>
-
-                {/* Cast & Crew Grid */}
-                <div className="flex flex-col gap-6">
-                  {filmTab === 'all' && (
-                    <>
-                      {castList.length > 0 && (
-                        <div className="flex flex-col gap-3">
-                          <div className="flex items-center gap-2 border-b border-border/60 pb-1.5">
-                            <span className="text-xs font-bold uppercase tracking-wider text-text-primary">Cast / Actors</span>
-                            <span className="text-[11px] text-text-muted">({castList.length})</span>
+                        {currentMedia.genres && currentMedia.genres.length > 0 && (
+                          <div className="flex items-center gap-1.5 flex-wrap my-0.5">
+                            {currentMedia.genres.map(g => (
+                              <span key={g.id} className="text-[10px] uppercase font-medium bg-bg-secondary text-text-secondary px-2 py-0.5 rounded border border-border">
+                                {g.name}
+                              </span>
+                            ))}
                           </div>
+                        )}
+
+                        {currentMedia.overview && (
+                          <p className="text-xs sm:text-sm text-text-primary/90 leading-relaxed line-clamp-3 sm:line-clamp-4 mt-1">
+                            {currentMedia.overview}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Subheader & Tabs */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-3 px-1">
+                      <span className="text-base sm:text-lg font-extrabold text-white tracking-tight">
+                        Choose next person
+                      </span>
+
+                      <div className="flex items-center gap-1 bg-bg-secondary p-1 rounded-[4px] border border-border self-start sm:self-auto">
+                        <button
+                          onClick={() => setFilmTab('all')}
+                          className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${filmTab === 'all' ? 'bg-accent text-bg-primary font-bold' : 'text-text-secondary hover:text-white'}`}
+                        >
+                          All ({filmCredits.length})
+                        </button>
+                        <button
+                          onClick={() => setFilmTab('cast')}
+                          className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${filmTab === 'cast' ? 'bg-accent text-bg-primary font-bold' : 'text-text-secondary hover:text-white'}`}
+                        >
+                          Cast ({castList.length})
+                        </button>
+                        <button
+                          onClick={() => setFilmTab('crew')}
+                          className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${filmTab === 'crew' ? 'bg-accent text-bg-primary font-bold' : 'text-text-secondary hover:text-white'}`}
+                        >
+                          Crew ({crewList.length})
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Cast & Crew Grid */}
+                    {loadingStep ? (
+                      <div className="flex items-center justify-center py-16 gap-3">
+                        <div className="w-6 h-6 border-2 border-accent border-t-transparent rounded-full animate-spin"></div>
+                        <span className="text-xs text-text-secondary uppercase tracking-widest">Loading...</span>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col gap-6">
+                        {filmTab === 'all' && (
+                          <>
+                            {castList.length > 0 && (
+                              <div className="flex flex-col gap-3">
+                                <div className="flex items-center gap-2 border-b border-border/60 pb-1.5">
+                                  <span className="text-xs font-bold uppercase tracking-wider text-text-primary">Cast / Actors</span>
+                                  <span className="text-[11px] text-text-muted">({castList.length})</span>
+                                </div>
+                                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
+                                  {castList.map(c => (
+                                    <div
+                                      key={`cast-${c.id}`}
+                                      onClick={() => onSelectPerson(c.id, c.name)}
+                                      className="group flex flex-col gap-1.5 transition-all select-none cursor-pointer w-[110px]"
+                                    >
+                                      <div className="relative w-full h-[165px] rounded-[4px] overflow-hidden bg-bg-card border border-white/10 group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)] transition-all duration-200">
+                                        {c.profile_path ? (
+                                          <img src={profileUrl(c.profile_path, 'w185')} alt={c.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                                        ) : (
+                                          <div className="w-full h-full flex items-center justify-center text-3xl">👤</div>
+                                        )}
+                                      </div>
+                                      <div className="flex flex-col text-left">
+                                        <span className="font-medium text-text-primary text-xs line-clamp-1 group-hover:text-accent transition-colors leading-tight">{c.name}</span>
+                                        <span className="text-[11px] text-text-secondary line-clamp-1 mt-0.5">{c.character || c.job}</span>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {crewList.length > 0 && (
+                              <div className="flex flex-col gap-3 mt-2">
+                                <div className="flex items-center gap-2 border-b border-border/60 pb-1.5">
+                                  <span className="text-xs font-bold uppercase tracking-wider text-text-primary">Crew (Director, Producer, Writer)</span>
+                                  <span className="text-[11px] text-text-muted">({crewList.length})</span>
+                                </div>
+                                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
+                                  {crewList.map(c => (
+                                    <div
+                                      key={`crew-${c.id}`}
+                                      onClick={() => onSelectPerson(c.id, c.name)}
+                                      className="group flex flex-col gap-1.5 transition-all select-none cursor-pointer w-[110px]"
+                                    >
+                                      <div className="relative w-full h-[165px] rounded-[4px] overflow-hidden bg-bg-card border border-white/10 group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)] transition-all duration-200">
+                                        {c.profile_path ? (
+                                          <img src={profileUrl(c.profile_path, 'w185')} alt={c.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                                        ) : (
+                                          <div className="w-full h-full flex items-center justify-center text-3xl">👤</div>
+                                        )}
+                                      </div>
+                                      <div className="flex flex-col text-left">
+                                        <span className="font-medium text-text-primary text-xs line-clamp-1 group-hover:text-accent transition-colors leading-tight">{c.name}</span>
+                                        <span className="text-[11px] text-text-secondary line-clamp-2 leading-tight mt-0.5">{c.job}</span>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </>
+                        )}
+
+                        {filmTab === 'cast' && (
                           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
                             {castList.map(c => (
-                              <div
-                                key={`cast-${c.id}`}
-                                onClick={() => onSelectPerson(c.id, c.name)}
-                                className="group flex flex-col gap-1.5 transition-all select-none cursor-pointer w-[110px]"
-                              >
+                              <div key={`cast-tab-${c.id}`} onClick={() => onSelectPerson(c.id, c.name)} className="group flex flex-col gap-1.5 transition-all select-none cursor-pointer w-[110px]">
                                 <div className="relative w-full h-[165px] rounded-[4px] overflow-hidden bg-bg-card border border-white/10 group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)] transition-all duration-200">
-                                  {c.profile_path ? (
-                                    <img src={profileUrl(c.profile_path, 'w185')} alt={c.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                                  ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-3xl">👤</div>
-                                  )}
-                                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-2 text-center pointer-events-none">
-                                    <span className="text-white text-xs font-semibold drop-shadow">Select</span>
-                                  </div>
+                                  {c.profile_path ? <img src={profileUrl(c.profile_path, 'w185')} alt={c.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-3xl">👤</div>}
                                 </div>
-                                <div className="flex flex-col text-left">
-                                  <span className="font-medium text-text-primary text-xs line-clamp-1 group-hover:text-accent transition-colors leading-tight">{c.name}</span>
-                                  <span className="text-[11px] text-text-secondary line-clamp-1 mt-0.5">{c.character || c.job}</span>
-                                </div>
+                                <span className="font-medium text-text-primary text-xs line-clamp-1 leading-tight">{c.name}</span>
+                                <span className="text-[11px] text-text-secondary line-clamp-1">{c.character}</span>
                               </div>
                             ))}
                           </div>
-                        </div>
-                      )}
+                        )}
 
-                      {crewList.length > 0 && (
-                        <div className="flex flex-col gap-3 mt-2">
-                          <div className="flex items-center gap-2 border-b border-border/60 pb-1.5">
-                            <span className="text-xs font-bold uppercase tracking-wider text-text-primary">Crew (Director, Producer, Writer)</span>
-                            <span className="text-[11px] text-text-muted">({crewList.length})</span>
-                          </div>
+                        {filmTab === 'crew' && (
                           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
                             {crewList.map(c => (
-                              <div
-                                key={`crew-${c.id}`}
-                                onClick={() => onSelectPerson(c.id, c.name)}
-                                className="group flex flex-col gap-1.5 transition-all select-none cursor-pointer w-[110px]"
-                              >
+                              <div key={`crew-tab-${c.id}`} onClick={() => onSelectPerson(c.id, c.name)} className="group flex flex-col gap-1.5 transition-all select-none cursor-pointer w-[110px]">
                                 <div className="relative w-full h-[165px] rounded-[4px] overflow-hidden bg-bg-card border border-white/10 group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)] transition-all duration-200">
-                                  {c.profile_path ? (
-                                    <img src={profileUrl(c.profile_path, 'w185')} alt={c.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                                  ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-3xl">👤</div>
-                                  )}
-                                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-2 text-center pointer-events-none">
-                                    <span className="text-white text-xs font-semibold drop-shadow">Select</span>
-                                  </div>
+                                  {c.profile_path ? <img src={profileUrl(c.profile_path, 'w185')} alt={c.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-3xl">👤</div>}
                                 </div>
-                                <div className="flex flex-col text-left">
-                                  <span className="font-medium text-text-primary text-xs line-clamp-1 group-hover:text-accent transition-colors leading-tight">{c.name}</span>
-                                  <span className="text-[11px] text-text-secondary line-clamp-2 leading-tight mt-0.5">{c.job}</span>
-                                </div>
+                                <span className="font-medium text-text-primary text-xs line-clamp-1 leading-tight">{c.name}</span>
+                                <span className="text-[11px] text-text-secondary line-clamp-2 leading-tight">{c.job}</span>
                               </div>
                             ))}
                           </div>
-                        </div>
-                      )}
-                    </>
-                  )}
-
-                  {filmTab === 'cast' && (
-                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
-                      {castList.map(c => (
-                        <div key={`cast-tab-${c.id}`} onClick={() => onSelectPerson(c.id, c.name)} className="group flex flex-col gap-1.5 transition-all select-none cursor-pointer w-[110px]">
-                          <div className="relative w-full h-[165px] rounded-[4px] overflow-hidden bg-bg-card border border-white/10 group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)] transition-all duration-200">
-                            {c.profile_path ? <img src={profileUrl(c.profile_path, 'w185')} alt={c.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-3xl">👤</div>}
-                          </div>
-                          <span className="font-medium text-text-primary text-xs line-clamp-1 leading-tight">{c.name}</span>
-                          <span className="text-[11px] text-text-secondary line-clamp-1">{c.character}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {filmTab === 'crew' && (
-                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
-                      {crewList.map(c => (
-                        <div key={`crew-tab-${c.id}`} onClick={() => onSelectPerson(c.id, c.name)} className="group flex flex-col gap-1.5 transition-all select-none cursor-pointer w-[110px]">
-                          <div className="relative w-full h-[165px] rounded-[4px] overflow-hidden bg-bg-card border border-white/10 group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)] transition-all duration-200">
-                            {c.profile_path ? <img src={profileUrl(c.profile_path, 'w185')} alt={c.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-3xl">👤</div>}
-                          </div>
-                          <span className="font-medium text-text-primary text-xs line-clamp-1 leading-tight">{c.name}</span>
-                          <span className="text-[11px] text-text-secondary line-clamp-2 leading-tight">{c.job}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Selected Person Film Picker Panel */}
-                {selectedPerson && (
-                  <div className="flex flex-col gap-3 bg-bg-secondary border border-border rounded-[4px] p-4 sm:p-5 mt-2 shadow-xl animate-in fade-in duration-300">
-                    <div className="flex items-center justify-between border-b border-border/80 pb-2">
-                      <span className="text-xs sm:text-sm font-bold text-white">
-                        Choose next film &mdash; <span className="text-accent">{selectedPerson.name}</span>
-                      </span>
-                      <button
-                        onClick={onCancelPerson}
-                        className="text-xs font-semibold text-text-secondary hover:text-white cursor-pointer transition-colors"
-                      >
-                        Cancel &times;
-                      </button>
-                    </div>
-
-                    {loadingPersonFilms ? (
-                      <div className="flex items-center gap-2 py-6 justify-center">
-                        <div className="w-4 h-4 border-2 border-accent border-t-transparent rounded-full animate-spin"></div>
-                        <span className="text-xs text-text-secondary">Loading filmography...</span>
+                        )}
                       </div>
-                    ) : availablePersonFilms.length === 0 ? (
-                      <p className="text-xs text-text-muted py-2">
-                        No new films found for this person &mdash; try someone else.
-                      </p>
+                    )}
+                  </>
+                )}
+
+                {/* VIEW: PERSON SCREEN (Full page for Person when clicked) */}
+                {currentView === 'person' && currentPerson && (
+                  <>
+                    {/* Person Bio Showcase Banner */}
+                    <div className="bg-bg-card border border-border rounded-[4px] p-4 sm:p-5 flex flex-col sm:flex-row gap-4 sm:gap-6 text-left shadow-lg">
+                      <div className="relative w-20 h-[116px] sm:w-[84px] sm:h-[126px] rounded-[4px] overflow-hidden bg-bg-secondary border border-white/10 flex-shrink-0 self-center sm:self-start">
+                        {currentPerson.profile_path ? (
+                          <img src={profileUrl(currentPerson.profile_path, 'w185')} alt={currentPerson.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-2xl">👤</div>
+                        )}
+                      </div>
+
+                      <div className="flex flex-col gap-1.5 min-w-0 justify-center">
+                        <div className="flex items-center gap-2 flex-wrap text-xs text-text-secondary">
+                          {currentPerson.known_for && <span>{currentPerson.known_for}</span>}
+                          {currentPerson.place_of_birth && <span>· {currentPerson.place_of_birth}</span>}
+                        </div>
+
+                        <h1 className="text-xl sm:text-2xl font-black text-white leading-tight">
+                          {currentPerson.name}
+                        </h1>
+
+                        {currentPerson.biography && (
+                          <p className="text-xs sm:text-sm text-text-primary/90 leading-relaxed line-clamp-3 sm:line-clamp-4 mt-1">
+                            {currentPerson.biography}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Sub-Header & Tabs */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-3 px-1">
+                      <span className="text-base sm:text-lg font-extrabold text-white tracking-tight">
+                        Choose next title
+                      </span>
+
+                      <div className="flex items-center gap-1 bg-bg-secondary p-1 rounded-[4px] border border-border self-start sm:self-auto">
+                        <button
+                          onClick={() => setPersonTab('all')}
+                          className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${personTab === 'all' ? 'bg-accent text-bg-primary font-bold' : 'text-text-secondary hover:text-white'}`}
+                        >
+                          All ({personMovies.length + personTvShows.length})
+                        </button>
+                        <button
+                          onClick={() => setPersonTab('movies')}
+                          className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${personTab === 'movies' ? 'bg-accent text-bg-primary font-bold' : 'text-text-secondary hover:text-white'}`}
+                        >
+                          Movies ({personMovies.length})
+                        </button>
+                        {personTvShows.length > 0 && (
+                          <button
+                            onClick={() => setPersonTab('tv')}
+                            className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${personTab === 'tv' ? 'bg-accent text-bg-primary font-bold' : 'text-text-secondary hover:text-white'}`}
+                          >
+                            TV Shows ({personTvShows.length})
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Filmography Grid */}
+                    {loadingStep ? (
+                      <div className="flex items-center justify-center py-16 gap-3">
+                        <div className="w-6 h-6 border-2 border-accent border-t-transparent rounded-full animate-spin"></div>
+                        <span className="text-xs text-text-secondary uppercase tracking-widest">Loading...</span>
+                      </div>
                     ) : (
-                      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4 pt-1">
-                        {availablePersonFilms.map(f => (
+                      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
+                        {(personTab === 'all'
+                          ? [...personMovies, ...personTvShows]
+                          : personTab === 'movies'
+                          ? personMovies
+                          : personTvShows
+                        ).map(f => (
                           <div
                             key={`person-film-${f.id}`}
                             onClick={() => onSelectFilm(f.id, f.title)}
@@ -822,7 +863,7 @@
                         ))}
                       </div>
                     )}
-                  </div>
+                  </>
                 )}
               </div>
             )}
