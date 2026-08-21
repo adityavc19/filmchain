@@ -33,7 +33,7 @@ export default function Timer({ startTime, endTime }: TimerProps) {
   const ms = Math.floor((elapsed % 1000) / 10);
 
   return (
-    <div className="font-mono text-2xl sm:text-3xl font-bold text-white tracking-wider tabular-nums select-none">
+    <div className="font-mono text-2xl sm:text-3xl font-bold text-slate-300 tracking-wider tabular-nums select-none">
       {startTime ? (
         `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
       ) : (

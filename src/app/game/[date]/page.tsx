@@ -903,7 +903,7 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
                 <span className="text-[11px] font-bold uppercase tracking-widest text-text-secondary block mb-1">
                   Time
                 </span>
-                <span className="font-mono text-3xl sm:text-4xl font-extrabold text-white">
+                <span className="font-mono text-3xl sm:text-4xl font-extrabold text-slate-300">
                   {Math.floor(Math.max(1, Math.round(((state.endTime || 0) - (state.startTime || 0)) / 1000)) / 60)}:
                   {String(Math.max(1, Math.round(((state.endTime || 0) - (state.startTime || 0)) / 1000)) % 60).padStart(2, '0')}
                 </span>
