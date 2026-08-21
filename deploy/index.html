@@ -2180,9 +2180,20 @@
           <footer className="border-t border-[#2c3440] bg-[#14181c] py-6 mt-auto">
             <div className="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-text-muted">
               <div className="flex items-center gap-2">
-                <span className="font-semibold text-text-secondary">Filmtrace</span> — Two films. One trail. How fast can you connect them?
+                <span className="font-semibold text-text-secondary">Filmtrace</span> &mdash; Two films. One trail.
               </div>
-              <div>Film data powered by TMDb</div>
+              <div className="flex items-center gap-1.5 text-text-secondary">
+                <span>Made with ❤️ and too many movie rewatches by</span>
+                <a 
+                  href="https://github.com/adityavc19" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="font-bold text-white hover:text-accent underline underline-offset-2 transition-colors cursor-pointer"
+                >
+                  Aditya
+                </a>
+              </div>
+              <div className="text-[11px] text-text-muted">Film data powered by TMDb</div>
             </div>
           </footer>
         </div>
