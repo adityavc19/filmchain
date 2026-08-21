@@ -79,10 +79,11 @@ export async function GET(
     }
 
     const filmography = Array.from(movieMap.values()).sort((a, b) => {
-      if (b.release_date && a.release_date) {
-        return b.release_date.localeCompare(a.release_date);
-      }
-      return (b.popularity || 0) - (a.popularity || 0);
+      const voteDiff = (b.vote_count || 0) - (a.vote_count || 0);
+      if (voteDiff !== 0) return voteDiff;
+      const popDiff = (b.popularity || 0) - (a.popularity || 0);
+      if (popDiff !== 0) return popDiff;
+      return (b.release_date || '').localeCompare(a.release_date || '');
     });
 
     // 2. Build TV Credits
@@ -109,10 +110,11 @@ export async function GET(
     }
 
     const tvList = Array.from(tvMap.values()).sort((a, b) => {
-      if (b.release_date && a.release_date) {
-        return b.release_date.localeCompare(a.release_date);
-      }
-      return (b.popularity || 0) - (a.popularity || 0);
+      const voteDiff = (b.vote_count || 0) - (a.vote_count || 0);
+      if (voteDiff !== 0) return voteDiff;
+      const popDiff = (b.popularity || 0) - (a.popularity || 0);
+      if (popDiff !== 0) return popDiff;
+      return (b.release_date || '').localeCompare(a.release_date || '');
     });
 
     const newPerson = {

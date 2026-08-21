@@ -488,12 +488,46 @@
             fetch(`${TMDB_BASE}/person/${personId}/tv_credits?api_key=${TMDB_API_KEY}`).then(r => r.json()),
           ]);
 
-          const movies = (movieRes.cast || []).concat(movieRes.crew || []).filter(f => f && f.id && f.title);
-          const tvShows = (tvRes.cast || []).concat(tvRes.crew || []).map(t => ({
-            ...t,
-            title: t.name || t.original_name,
-            release_date: t.first_air_date,
-          })).filter(t => t && t.id && t.title);
+          // Build deduplicated and sorted movie filmography (highest vote count & popularity first)
+          const movieMap = new Map();
+          const allMovieRaw = (movieRes.cast || []).concat(movieRes.crew || []);
+          for (const f of allMovieRaw) {
+            if (f && f.id && f.title) {
+              if (!movieMap.has(f.id)) {
+                movieMap.set(f.id, f);
+              }
+            }
+          }
+          const movies = Array.from(movieMap.values()).sort((a, b) => {
+            const voteDiff = (b.vote_count || 0) - (a.vote_count || 0);
+            if (voteDiff !== 0) return voteDiff;
+            const popDiff = (b.popularity || 0) - (a.popularity || 0);
+            if (popDiff !== 0) return popDiff;
+            return (b.release_date || '').localeCompare(a.release_date || '');
+          });
+
+          // Build deduplicated and sorted TV credits (highest vote count & popularity first)
+          const tvMap = new Map();
+          const allTvRaw = (tvRes.cast || []).concat(tvRes.crew || []);
+          for (const t of allTvRaw) {
+            const title = t.name || t.original_name || t.title;
+            if (t && t.id && title) {
+              if (!tvMap.has(t.id)) {
+                tvMap.set(t.id, {
+                  ...t,
+                  title: title,
+                  release_date: t.first_air_date || t.release_date || '',
+                });
+              }
+            }
+          }
+          const tvShows = Array.from(tvMap.values()).sort((a, b) => {
+            const voteDiff = (b.vote_count || 0) - (a.vote_count || 0);
+            if (voteDiff !== 0) return voteDiff;
+            const popDiff = (b.popularity || 0) - (a.popularity || 0);
+            if (popDiff !== 0) return popDiff;
+            return (b.release_date || '').localeCompare(a.release_date || '');
+          });
 
           setCurrentPerson({
             id: pDetails.id,
