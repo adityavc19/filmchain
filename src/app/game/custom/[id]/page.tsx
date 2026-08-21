@@ -539,7 +539,7 @@ export default function CustomGamePage({ params }: { params: Promise<{ id: strin
         /* Won Screen */
         <div className="flex flex-col items-center gap-7 py-6 w-full animate-in fade-in duration-500">
           <div className="flex flex-col items-center gap-3 text-center">
-            <span className="text-xs font-bold uppercase tracking-widest text-accent">Custom Chain Complete</span>
+            <span className="text-xs font-bold uppercase tracking-widest text-accent">Challenge Completed</span>
             <div className="flex items-center gap-3.5 my-1">
               <div className="w-16 h-24 rounded overflow-hidden bg-bg-secondary border border-border relative">
                 {startFilm?.poster_path && <Image src={posterUrl(startFilm.poster_path, 'w185')} alt={startFilm.title} fill className="object-cover" />}

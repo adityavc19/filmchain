@@ -828,7 +828,7 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
         <div className="flex flex-col items-center gap-7 py-6 w-full animate-in fade-in duration-500">
           <div className="flex flex-col items-center gap-3 text-center">
             <span className="text-xs font-bold uppercase tracking-widest text-accent">
-              Chain Complete
+              Challenge Completed
             </span>
 
             <div className="flex items-center gap-3.5 my-1">
