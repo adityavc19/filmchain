@@ -390,7 +390,7 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
                   <div className="w-full h-full flex items-center justify-center text-xs text-text-muted">🎬</div>
                 )}
               </div>
-              <div className="flex flex-col text-left justify-start">
+              <div className="flex flex-col text-left justify-start pt-0.5">
                 <span className="text-[10px] font-bold uppercase tracking-widest text-[#00e054]">
                   GOAL
                 </span>
@@ -400,12 +400,15 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
                 {state.targetFilm.year && (
                   <span className="text-text-secondary text-[11px] font-mono mt-0.5">{state.targetFilm.year}</span>
                 )}
+                <p className="text-[11px] text-text-secondary leading-snug mt-1 max-w-[180px] sm:max-w-[280px]">
+                  Reach this movie through connected cast &amp; crew
+                </p>
               </div>
             </div>
           )}
 
           {/* Right Metrics: Clicks & Timer (Top-aligned labels) */}
-          <div className="flex items-start gap-8 sm:gap-14">
+          <div className="flex items-start gap-8 sm:gap-14 pt-0.5">
             {/* Clicks Counter */}
             <div className="flex flex-col text-right">
               <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary leading-tight">CLICKS</span>
@@ -435,8 +438,8 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
           {/* VIEW: UNIFIED FILM CARD & CAST/CREW CONTAINER */}
           {state.currentView === 'film' && currentMedia && (
             <div className="bg-bg-card border border-border rounded-[6px] shadow-2xl overflow-hidden flex flex-col">
-              {/* Film Header Banner (50% shorter thumbnail, title & year only) */}
-              <div className="p-3 sm:p-4 bg-gradient-to-b from-bg-secondary/40 to-bg-card border-b border-border flex items-center gap-3.5 text-left">
+              {/* Film Header Banner (Top-aligned title & year) */}
+              <div className="p-3 sm:p-4 bg-gradient-to-b from-bg-secondary/40 to-bg-card border-b border-border flex items-start gap-3.5 text-left">
                 <div className="relative w-11 h-15 sm:w-12 sm:h-18 rounded-[4px] overflow-hidden bg-bg-secondary border border-border flex-shrink-0 shadow">
                   {currentMedia.poster_path ? (
                     <Image
@@ -452,7 +455,7 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
                 </div>
 
                 {/* Title and Year only */}
-                <div className="flex flex-col min-w-0 justify-center">
+                <div className="flex flex-col min-w-0 justify-start pt-0.5">
                   <div className="flex items-center gap-2 flex-wrap">
                     <h1 className="text-lg sm:text-xl font-black text-white tracking-tight leading-tight truncate">
                       {currentMedia.title}
@@ -466,8 +469,8 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
 
               {/* Integrated Cast & Crew Section */}
               <div className="p-4 sm:p-6 flex flex-col gap-5">
-                {/* Filter Navigation Bar with Search */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-3">
+                {/* Filter Navigation Bar with Search Stacked */}
+                <div className="flex flex-col gap-3 border-b border-border pb-3">
                   <div className="flex items-center gap-2">
                     <span className="text-sm sm:text-base font-extrabold uppercase tracking-wider text-white">
                       Choose next person
@@ -475,15 +478,16 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
                     <span className="text-xs text-text-muted font-mono">({filteredFilmCredits.length})</span>
                   </div>
 
-                  <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                  {/* Search Input & Filter Pills below heading */}
+                  <div className="flex items-center gap-2.5 flex-wrap sm:flex-nowrap w-full">
                     {/* Search Input */}
-                    <div className="relative flex items-center flex-1 sm:flex-none">
+                    <div className="relative flex items-center flex-1 sm:max-w-xs">
                       <input
                         type="text"
                         placeholder="Search person or role..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="bg-bg-primary border border-border text-white text-xs rounded pl-8 pr-7 py-1.5 focus:outline-none focus:border-text-secondary w-full sm:w-52 transition-all placeholder:text-text-muted"
+                        className="bg-bg-primary border border-border text-white text-xs rounded pl-8 pr-7 py-1.5 focus:outline-none focus:border-text-secondary w-full transition-all placeholder:text-text-muted"
                       />
                       <span className="absolute left-2.5 text-text-muted text-xs">🔍</span>
                       {searchQuery && (
@@ -653,7 +657,8 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
           {state.currentView === 'person' && currentPerson && (
             <div className="bg-bg-card border border-border rounded-[6px] shadow-2xl overflow-hidden flex flex-col">
               {/* Person Header Banner (50% shorter thumbnail, clean name & tags) */}
-              <div className="p-3 sm:p-4 bg-gradient-to-b from-bg-secondary/40 to-bg-card border-b border-border flex items-center gap-3.5 text-left">
+              {/* Person Header Banner (Top-aligned name & tags) */}
+              <div className="p-3 sm:p-4 bg-gradient-to-b from-bg-secondary/40 to-bg-card border-b border-border flex items-start gap-3.5 text-left">
                 <div className="relative w-11 h-15 sm:w-12 sm:h-18 rounded-[4px] overflow-hidden bg-bg-secondary border border-border flex-shrink-0 shadow">
                   {currentPerson.profile_path ? (
                     <Image
@@ -668,7 +673,7 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
                   )}
                 </div>
 
-                <div className="flex flex-col min-w-0 justify-center">
+                <div className="flex flex-col min-w-0 justify-start pt-0.5">
                   <div className="flex items-center gap-2 flex-wrap">
                     <h1 className="text-lg sm:text-xl font-black text-white tracking-tight leading-tight truncate">
                       {currentPerson.name}
@@ -682,8 +687,8 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
 
               {/* Integrated Filmography Section */}
               <div className="p-4 sm:p-6 flex flex-col gap-5">
-                {/* Sub-Header & Filmography Tabs with Search */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-3">
+                {/* Sub-Header & Filmography Tabs with Search Stacked */}
+                <div className="flex flex-col gap-3 border-b border-border pb-3">
                   <div className="flex items-center gap-2">
                     <span className="text-sm sm:text-base font-extrabold uppercase tracking-wider text-white">
                       Choose next title
@@ -691,15 +696,16 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
                     <span className="text-xs text-text-muted font-mono">({filteredPersonAll.length})</span>
                   </div>
 
-                  <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                  {/* Search Input & Filter Pills below heading */}
+                  <div className="flex items-center gap-2.5 flex-wrap sm:flex-nowrap w-full">
                     {/* Search Input */}
-                    <div className="relative flex items-center flex-1 sm:flex-none">
+                    <div className="relative flex items-center flex-1 sm:max-w-xs">
                       <input
                         type="text"
                         placeholder="Search title or character..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="bg-bg-primary border border-border text-white text-xs rounded pl-8 pr-7 py-1.5 focus:outline-none focus:border-text-secondary w-full sm:w-52 transition-all placeholder:text-text-muted"
+                        className="bg-bg-primary border border-border text-white text-xs rounded pl-8 pr-7 py-1.5 focus:outline-none focus:border-text-secondary w-full transition-all placeholder:text-text-muted"
                       />
                       <span className="absolute left-2.5 text-text-muted text-xs">🔍</span>
                       {searchQuery && (
