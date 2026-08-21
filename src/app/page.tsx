@@ -100,7 +100,7 @@ export default function Home() {
           </h1>
 
           {/* Clean Concise Subtitle */}
-          <p className="text-sm sm:text-base text-text-secondary font-normal leading-relaxed max-w-md">
+          <p className="mt-4 sm:mt-5 text-sm sm:text-base text-text-secondary font-normal leading-relaxed max-w-md">
             Trace the shortest path through shared actors, directors, and writers.
           </p>
 
