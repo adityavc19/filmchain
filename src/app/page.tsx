@@ -202,7 +202,7 @@ export default function Home() {
 
             {/* Clean Concise Subtitle */}
             <p className="mt-4 sm:mt-5 text-sm sm:text-base text-text-secondary font-normal leading-relaxed max-w-md">
-              Trace the shortest path through shared actors, directors, and writers.
+              Trace the shortest path between two films traversing through the cast &amp; crew
             </p>
 
             {/* Primary Action Button (Clean Solid White) */}
