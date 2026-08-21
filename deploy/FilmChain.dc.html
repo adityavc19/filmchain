@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet" />
+  <style>
+    body { margin: 0; background: #14181c; }
+    a { color: #40bcf4; }
+    a:hover { color: #6cc9f7; }
+  </style>
+</helmet>
+
+<div style="min-height:100vh;display:flex;flex-direction:column;background:#14181c;color:#ffffff;font-family:'Inter',system-ui,sans-serif;">
+
+  <header style="border-bottom:1px solid #2c3440;position:sticky;top:0;z-index:40;background:rgba(20,24,28,0.95);backdrop-filter:blur(8px);">
+    <div style="max-width:960px;margin:0 auto;padding:0 16px;min-height:56px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+      <div style="display:flex;align-items:center;gap:8px;cursor:pointer;" onClick="{{ goHome }}">
+        <div style="display:flex;align-items:center;gap:4px;">
+          <span style="width:10px;height:10px;border-radius:50%;background:#00e054;"></span>
+          <span style="width:10px;height:10px;border-radius:50%;background:#ff8000;"></span>
+          <span style="width:10px;height:10px;border-radius:50%;background:#40bcf4;"></span>
+        </div>
+        <span style="font-weight:900;letter-spacing:-0.02em;font-size:18px;">FILMCHAIN</span>
+      </div>
+      <nav style="display:flex;align-items:center;gap:12px;">
+        <span style="{{ navPuzzleStyle }}" onClick="{{ goHome }}">Daily Puzzle</span>
+        <span style="{{ navLeaderboardStyle }}" onClick="{{ goLeaderboard }}">Leaderboard</span>
+        <span style="padding:4px 12px;font-size:12px;font-weight:600;color:#667788;display:flex;align-items:center;gap:6px;">Freeform <span style="font-size:9px;background:#1c2228;border:1px solid #2c3440;padding:1px 6px;border-radius:3px;">SOON</span></span>
+      </nav>
+    </div>
+  </header>
+
+  <main style="flex:1;max-width:960px;margin:0 auto;width:100%;padding:24px 16px 48px;display:flex;flex-direction:column;gap:24px;box-sizing:border-box;">
+
+    <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;gap:40px;text-align:center;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:14px;max-width:560px;">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="width:8px;height:8px;border-radius:50%;background:#00e054;"></span>
+            <span style="width:8px;height:8px;border-radius:50%;background:#ff8000;"></span>
+            <span style="width:8px;height:8px;border-radius:50%;background:#40bcf4;"></span>
+            <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#9ab0e0;margin-left:4px;">Daily Movie Connections &middot; Aug 21</span>
+          </div>
+          <h1 style="font-size:42px;font-weight:800;letter-spacing:-0.02em;margin:0;line-height:1.15;text-wrap:balance;">
+            {{ startFilm.title }} <span style="color:#667788;">&rarr;</span> {{ targetFilm.title }}
+          </h1>
+          <p style="font-size:15px;color:#9ab0e0;margin:0;max-width:420px;">Every day, two films. Click through shared cast and crew to connect them in as few moves as possible.</p>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:20px;">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+            <div style="width:132px;height:198px;border-radius:4px;overflow:hidden;background:repeating-linear-gradient(135deg,#1c2228 0 10px,#242c34 10px 20px);border:1px solid #2c3440;display:flex;align-items:center;justify-content:center;text-align:center;padding:8px;box-sizing:border-box;">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#667788;">{{ startFilm.title }}</span>
+            </div>
+            <span style="font-weight:700;font-size:14px;">{{ startFilm.title }}</span>
+            <span style="font-size:12px;color:#9ab0e0;">{{ startFilm.year }}</span>
+          </div>
+
+          <div style="width:36px;height:1px;background:repeating-linear-gradient(to right, #2c3440 0 6px, transparent 6px 12px);align-self:center;margin-top:-32px;"></div>
+
+          <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+            <div style="{{ targetPosterStyle }}">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#667788;">{{ targetFilm.title }}</span>
+            </div>
+            <span style="font-weight:700;font-size:14px;">{{ targetFilm.title }}</span>
+            <span style="font-size:12px;color:#9ab0e0;">{{ targetFilm.year }}</span>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+          <button style="{{ playButtonStyle }}" onClick="{{ startGame }}">Play Today's Puzzle</button>
+          <span style="font-size:11px;color:#667788;">1,204 solves logged</span>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isGame }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:16px;">
+
+        <div style="display:flex;flex-direction:column;gap:14px;background:#202830;padding:16px 20px;border-radius:4px;border:1px solid #2c3440;position:sticky;top:64px;z-index:30;box-shadow:0 20px 40px rgba(0,0,0,0.4);box-sizing:border-box;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+            <div style="display:flex;align-items:center;gap:14px;">
+              <div style="width:56px;height:84px;border-radius:4px;overflow:hidden;background:repeating-linear-gradient(135deg,#1c2228 0 8px,#242c34 8px 16px);border:1px solid #2c3440;flex-shrink:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:4px;box-sizing:border-box;">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:8px;color:#667788;">{{ targetFilm.title }}</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:2px;">
+                <span style="font-size:10px;font-weight:600;color:#9ab0e0;background:#1c2228;padding:1px 8px;border-radius:3px;border:1px solid #2c3440;width:fit-content;">Goal</span>
+                <span style="font-weight:700;font-size:15px;">{{ targetFilm.title }}</span>
+                <span style="font-size:11px;color:#9ab0e0;">{{ targetFilm.year }}</span>
+              </div>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:28px;">
+              <div style="text-align:right;">
+                <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#9ab0e0;display:block;">Clicks</span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:800;">{{ clickCount }}</span>
+              </div>
+              <div style="text-align:right;">
+                <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#9ab0e0;display:block;">Time</span>
+                <div style="{{ timerStyle }}">{{ timeMain }}<span style="{{ timerDecimalStyle }}">{{ timeDecimal }}</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div style="border-top:1px solid rgba(44,52,64,0.7);padding-top:8px;overflow-x:auto;">
+            <div style="display:flex;align-items:center;gap:6px;white-space:nowrap;font-size:12px;">
+              <sc-for list="{{ breadcrumbItems }}" as="node" hint-placeholder-count="1">
+                <div style="{{ node.chipStyle }}" onClick="{{ node.onClick }}">
+                  <span style="font-size:11px;opacity:0.7;font-family:'JetBrains Mono',monospace;">#{{ node.num }}</span>
+                  <span>{{ node.icon }}</span>
+                  <span style="max-width:150px;overflow:hidden;text-overflow:ellipsis;">{{ node.label }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:row;gap:20px;background:#202830;border:1px solid #2c3440;border-radius:4px;padding:20px;box-sizing:border-box;flex-wrap:wrap;">
+          <div style="width:128px;height:192px;border-radius:4px;overflow:hidden;background:repeating-linear-gradient(135deg,#1c2228 0 10px,#242c34 10px 20px);border:1px solid rgba(255,255,255,0.1);flex-shrink:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:8px;box-sizing:border-box;">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#667788;">{{ currentFilm.title }}</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;min-width:0;flex:1;justify-content:center;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-size:12px;font-weight:600;color:#9ab0e0;">{{ currentFilm.year }}</span>
+              <span style="font-size:12px;color:#667788;">&middot; {{ currentFilm.runtime }} min</span>
+            </div>
+            <h2 style="font-size:22px;font-weight:800;margin:0;">{{ currentFilm.title }}</h2>
+            <p style="font-size:13px;font-style:italic;color:#9ab0e0;font-weight:500;margin:0;">{{ currentFilm.quote }}</p>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin:2px 0;">
+              <sc-for list="{{ currentFilm.genres }}" as="genre" hint-placeholder-count="2">
+                <span style="font-size:10px;text-transform:uppercase;font-weight:500;background:#1c2228;color:#9ab0e0;padding:2px 8px;border-radius:3px;border:1px solid #2c3440;">{{ genre }}</span>
+              </sc-for>
+            </div>
+            <p style="font-size:13px;color:rgba(255,255,255,0.9);line-height:1.5;margin:4px 0 0;">{{ currentFilm.synopsis }}</p>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #2c3440;padding-bottom:12px;flex-wrap:wrap;">
+          <span style="font-size:17px;font-weight:800;color:#ffffff;letter-spacing:-0.01em;">Choose next person</span>
+          <div style="display:flex;align-items:center;gap:4px;background:#1c2228;padding:4px;border-radius:4px;border:1px solid #2c3440;">
+            <button style="{{ allTabStyle }}" onClick="{{ setTabAll }}">All ({{ allCount }})</button>
+            <button style="{{ castTabStyle }}" onClick="{{ setTabCast }}">Cast ({{ castCount }})</button>
+            <button style="{{ crewTabStyle }}" onClick="{{ setTabCrew }}">Crew ({{ crewCount }})</button>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(96px,1fr));gap:16px;">
+          <sc-for list="{{ visiblePeople }}" as="person" hint-placeholder-count="6">
+            <div style="display:flex;flex-direction:column;gap:6px;cursor:pointer;" onClick="{{ person.onClick }}">
+              <div style="width:100%;aspect-ratio:2/3;border-radius:4px;overflow:hidden;background:repeating-linear-gradient(135deg,#1c2228 0 8px,#242c34 8px 16px);border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;text-align:center;padding:6px;box-sizing:border-box;">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#667788;">{{ person.name }}</span>
+              </div>
+              <div style="display:flex;flex-direction:column;">
+                <span style="font-size:12px;font-weight:500;">{{ person.name }}</span>
+                <span style="font-size:11px;color:#9ab0e0;">{{ person.role }}</span>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+
+        <sc-if value="{{ hasSelectedPerson }}" hint-placeholder-val="{{ false }}">
+          <div style="{{ selectedPanelStyle }}">
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <span style="{{ selectedPanelLabelStyle }}">Choose next film &mdash; {{ selectedPersonName }}</span>
+              <button style="background:none;border:none;color:#9ab0e0;font-size:12px;cursor:pointer;" onClick="{{ cancelPerson }}">Cancel &times;</button>
+            </div>
+            <sc-if value="{{ hasNoFilmOptions }}" hint-placeholder-val="{{ false }}">
+              <p style="font-size:12px;color:#667788;margin:0;">No new films found for this person &mdash; try someone else.</p>
+            </sc-if>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(90px,1fr));gap:12px;margin-top:12px;">
+              <sc-for list="{{ personFilmOptions }}" as="opt" hint-placeholder-count="2">
+                <div style="display:flex;flex-direction:column;gap:6px;cursor:pointer;" onClick="{{ opt.onClick }}">
+                  <div style="width:100%;aspect-ratio:2/3;border-radius:4px;overflow:hidden;background:repeating-linear-gradient(135deg,#1c2228 0 8px,#242c34 8px 16px);border:1px solid #2c3440;display:flex;align-items:center;justify-content:center;text-align:center;padding:6px;box-sizing:border-box;">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#667788;">{{ opt.title }}</span>
+                  </div>
+                  <span style="font-size:11px;font-weight:600;">{{ opt.title }}</span>
+                  <span style="font-size:10px;color:#9ab0e0;">{{ opt.year }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isLeaderboard }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px;width:100%;max-width:440px;margin:0 auto;padding:24px 0;">
+        <span style="font-size:22px;font-weight:800;color:#ffffff;">Leaderboard</span>
+        <span style="font-size:12px;color:#667788;margin-bottom:16px;">Today's fastest chains</span>
+        <div style="display:flex;flex-direction:column;gap:0;background:#1c2228;border:1px solid #2c3440;border-radius:4px;padding:6px 20px;width:100%;box-sizing:border-box;">
+          <table style="width:100%;border-collapse:collapse;font-size:12px;">
+            <thead>
+              <tr style="border-bottom:1px solid #2c3440;">
+                <th style="padding:9px 6px;text-align:center;font-size:10px;color:#9ab0e0;text-transform:uppercase;width:36px;">Pos</th>
+                <th style="padding:9px 6px;text-align:left;font-size:10px;color:#9ab0e0;text-transform:uppercase;">Player</th>
+                <th style="padding:9px 6px;text-align:right;font-size:10px;color:#9ab0e0;text-transform:uppercase;">Time</th>
+                <th style="padding:9px 6px;text-align:right;font-size:10px;color:#9ab0e0;text-transform:uppercase;">Clicks</th>
+              </tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{ leaderboardStandaloneRows }}" as="row" hint-placeholder-count="4">
+                <tr style="{{ row.rowStyle }}">
+                  <td style="{{ row.rankStyle }}">{{ row.rank }}</td>
+                  <td style="padding:9px 6px;"><span style="{{ row.nameStyle }}">{{ row.handle }}</span></td>
+                  <td style="padding:9px 6px;text-align:right;color:#9ab0e0;font-family:'JetBrains Mono',monospace;">{{ row.time }}</td>
+                  <td style="padding:9px 6px;text-align:right;color:#9ab0e0;font-family:'JetBrains Mono',monospace;">{{ row.clicks }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+        <button style="{{ playButtonStyle }} margin-top:20px;" onClick="{{ startGame }}">Play Today's Puzzle</button>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isResults }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:28px;padding:24px 0;width:100%;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;">
+          <span style="{{ resultsLabelStyle }}">Chain Complete</span>
+          <div style="display:flex;align-items:center;gap:14px;">
+            <div style="{{ resultThumbStyle }}"><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#667788;">{{ startFilm.title }}</span></div>
+            <span style="font-size:22px;color:#667788;">&rarr;</span>
+            <div style="{{ resultThumbStyle }}"><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#667788;">{{ targetFilm.title }}</span></div>
+          </div>
+          <h2 style="font-size:18px;font-weight:600;margin:0;color:#9ab0e0;">{{ startFilm.title }} to {{ targetFilm.title }}</h2>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:10px;background:#202830;border:1px solid #2c3440;border-radius:4px;padding:28px;width:100%;max-width:440px;box-sizing:border-box;box-shadow:0 20px 40px rgba(0,0,0,0.4);">
+          <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#9ab0e0;">Your Result</span>
+          <div style="display:flex;gap:48px;justify-content:center;padding:6px 0 4px;">
+            <div style="text-align:center;">
+              <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#9ab0e0;display:block;margin-bottom:6px;">Time</span>
+              <div style="{{ resultsTimeStyle }}">{{ finalTimeMain }}<span style="{{ resultsTimeDecimalStyle }}">{{ finalTimeDecimal }}</span></div>
+            </div>
+            <div style="text-align:center;">
+              <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#9ab0e0;display:block;margin-bottom:6px;">Clicks</span>
+              <span style="{{ resultsClicksStyle }}">{{ clickCount }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:12px;background:#1c2228;border:1px solid #2c3440;border-radius:4px;padding:20px 20px 6px;width:100%;max-width:440px;box-sizing:border-box;">
+          <div style="display:flex;flex-direction:column;gap:2px;">
+            <span style="font-size:14px;font-weight:800;color:#ffffff;">Leaderboard</span>
+            <span style="font-size:11px;color:#667788;">Today's fastest chains</span>
+          </div>
+          <table style="width:100%;border-collapse:collapse;font-size:12px;">
+            <thead>
+              <tr style="border-bottom:1px solid #2c3440;">
+                <th style="padding:9px 6px;text-align:center;font-size:10px;color:#9ab0e0;text-transform:uppercase;width:36px;">Pos</th>
+                <th style="padding:9px 6px;text-align:left;font-size:10px;color:#9ab0e0;text-transform:uppercase;">Player</th>
+                <th style="padding:9px 6px;text-align:right;font-size:10px;color:#9ab0e0;text-transform:uppercase;">Time</th>
+                <th style="padding:9px 6px;text-align:right;font-size:10px;color:#9ab0e0;text-transform:uppercase;">Clicks</th>
+              </tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{ leaderboardRows }}" as="row" hint-placeholder-count="5">
+                <tr style="{{ row.rowStyle }}">
+                  <td style="{{ row.rankStyle }}">{{ row.rank }}</td>
+                  <td style="padding:9px 6px;"><span style="{{ row.nameStyle }}">{{ row.handle }}</span></td>
+                  <td style="padding:9px 6px;text-align:right;color:#9ab0e0;font-family:'JetBrains Mono',monospace;">{{ row.time }}</td>
+                  <td style="padding:9px 6px;text-align:right;color:#9ab0e0;font-family:'JetBrains Mono',monospace;">{{ row.clicks }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:8px;width:100%;max-width:440px;box-sizing:border-box;">
+          <span style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:#667788;">Share</span>
+          <pre style="background:#1c2228;border:1px solid #2c3440;border-radius:4px;padding:12px;font-size:11px;color:#9ab0e0;font-family:'JetBrains Mono',monospace;white-space:pre-wrap;margin:0;">{{ shareText }}</pre>
+          <button style="{{ copyButtonStyle }}" onClick="{{ copyShare }}">
+            <sc-if value="{{ copied }}" hint-placeholder-val="{{ false }}">Copied!</sc-if>
+            <sc-if value="{{ notCopied }}" hint-placeholder-val="{{ true }}">Copy Result</sc-if>
+          </button>
+        </div>
+
+        <button style="padding:12px 32px;background:transparent;color:#9ab0e0;font-size:13px;font-weight:600;border:1px solid #2c3440;border-radius:4px;cursor:pointer;" onClick="{{ goHome }}">&larr; Back to Home</button>
+      </div>
+    </sc-if>
+
+  </main>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: {&quot;width&quot;: 900, &quot;height&quot;: 700},
+  &quot;accentColor&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;orange&quot;, &quot;tsType&quot;: &quot;'green'|'orange'|'blue'&quot;, &quot;options&quot;: [&quot;green&quot;, &quot;orange&quot;, &quot;blue&quot;], &quot;section&quot;: &quot;Theme&quot;}
+}">
+class Component extends DCLogic {
+  static START_ID = 'fight_club';
+  static TARGET_ID = 'marty_supreme';
+
+  films = {
+    fight_club: {
+      id: 'fight_club', title: 'Fight Club', year: 1999, runtime: 139,
+      quote: 'A support group for men who\'d rather punch than talk.',
+      genres: ['Drama', 'Thriller'],
+      synopsis: 'An insomniac office worker and a soap salesman form an underground fight club that evolves into something far more dangerous.',
+      cast: [
+        { id: 'brad_pitt', role: 'Tyler Durden' },
+        { id: 'edward_norton', role: 'The Narrator' },
+        { id: 'helena_bonham_carter', role: 'Marla Singer' },
+        { id: 'meat_loaf', role: 'Robert Paulson' },
+      ],
+      crew: [{ id: 'david_fincher', role: 'Director' }],
+    },
+    se7en: {
+      id: 'se7en', title: 'Se7en', year: 1995, runtime: 127,
+      quote: 'Seven deadly sins. One relentless killer.',
+      genres: ['Crime', 'Mystery', 'Thriller'],
+      synopsis: 'Two detectives, one about to retire and one new to the force, hunt a serial killer who stages murders around the seven deadly sins.',
+      cast: [
+        { id: 'brad_pitt', role: 'Detective Mills' },
+        { id: 'morgan_freeman', role: 'Detective Somerset' },
+        { id: 'gwyneth_paltrow', role: 'Tracy Mills' },
+      ],
+      crew: [{ id: 'david_fincher', role: 'Director' }],
+    },
+    marty_supreme: {
+      id: 'marty_supreme', title: 'Marty Supreme', year: 2025, runtime: 150,
+      quote: 'Greatness, one point at a time.',
+      genres: ['Drama', 'Sport'],
+      synopsis: 'A driven table-tennis obsessive chases an improbable shot at greatness in 1950s New York.',
+      cast: [
+        { id: 'timothee_chalamet', role: 'Marty Mauser' },
+        { id: 'gwyneth_paltrow', role: 'Judith Amsalem' },
+        { id: 'odessa_azion', role: 'Supporting Role' },
+      ],
+      crew: [{ id: 'josh_safdie', role: 'Director' }],
+    },
+  };
+
+  people = {
+    brad_pitt: { id: 'brad_pitt', name: 'Brad Pitt', films: ['fight_club', 'se7en'] },
+    edward_norton: { id: 'edward_norton', name: 'Edward Norton', films: ['fight_club'] },
+    helena_bonham_carter: { id: 'helena_bonham_carter', name: 'Helena Bonham Carter', films: ['fight_club'] },
+    meat_loaf: { id: 'meat_loaf', name: 'Meat Loaf', films: ['fight_club'] },
+    david_fincher: { id: 'david_fincher', name: 'David Fincher', films: ['fight_club', 'se7en'] },
+    morgan_freeman: { id: 'morgan_freeman', name: 'Morgan Freeman', films: ['se7en'] },
+    gwyneth_paltrow: { id: 'gwyneth_paltrow', name: 'Gwyneth Paltrow', films: ['se7en', 'marty_supreme'] },
+    timothee_chalamet: { id: 'timothee_chalamet', name: 'Timothee Chalamet', films: ['marty_supreme'] },
+    odessa_azion: { id: 'odessa_azion', name: "Odessa A'zion", films: ['marty_supreme'] },
+    josh_safdie: { id: 'josh_safdie', name: 'Josh Safdie', films: ['marty_supreme'] },
+  };
+
+  state = {
+    screen: 'home',
+    currentFilmId: null,
+    path: [],
+    clickCount: 0,
+    elapsedMs: 0,
+    selectedPersonId: null,
+    tab: 'all',
+    finalElapsedMs: 0,
+    copied: false,
+    puzzleStartId: Component.START_ID,
+    puzzleTargetId: Component.TARGET_ID,
+    freeformStartId: null,
+    freeformTargetId: null,
+    copiedFreeform: false,
+  };
+
+  componentWillUnmount() {
+    if (this.timer) clearInterval(this.timer);
+  }
+
+  accentMap() {
+    const color = this.props.accentColor ?? 'orange';
+    const map = {
+      green: { main: '#00e054', dim: '#00b042' },
+      orange: { main: '#ff8000', dim: '#cc6600' },
+      blue: { main: '#40bcf4', dim: '#2f93c9' },
+    };
+    return map[color] || map.green;
+  }
+
+  startGame = (startId, targetId) => {
+    const s = startId || Component.START_ID;
+    const t = targetId || Component.TARGET_ID;
+    if (this.timer) clearInterval(this.timer);
+    this.startTs = Date.now();
+    this.timer = setInterval(() => {
+      this.setState({ elapsedMs: Date.now() - this.startTs });
+    }, 100);
+    this.setState({
+      screen: 'game',
+      puzzleStartId: s,
+      puzzleTargetId: t,
+      currentFilmId: s,
+      path: [{ type: 'film', id: s }],
+      clickCount: 0,
+      elapsedMs: 0,
+      selectedPersonId: null,
+      tab: 'all',
+      copied: false,
+    });
+  };
+
+  playDaily = () => this.startGame(Component.START_ID, Component.TARGET_ID);
+
+  playFreeform = () => {
+    const s = this.state;
+    if (s.freeformStartId && s.freeformTargetId && s.freeformStartId !== s.freeformTargetId) {
+      this.startGame(s.freeformStartId, s.freeformTargetId);
+    }
+  };
+
+  goHome = () => {
+    if (this.timer) clearInterval(this.timer);
+    this.setState({ screen: 'home' });
+  };
+
+  goLeaderboard = () => {
+    if (this.timer) clearInterval(this.timer);
+    this.setState({ screen: 'leaderboard' });
+  };
+
+  goFreeform = () => {
+    if (this.timer) clearInterval(this.timer);
+    this.setState({ screen: 'freeform' });
+  };
+
+  selectFreeformStart = (id) => this.setState({ freeformStartId: id });
+  selectFreeformTarget = (id) => this.setState({ freeformTargetId: id });
+
+  copyFreeformLink = () => {
+    const s = this.state;
+    const url = `filmchain.app/freeform/${s.freeformStartId}-${s.freeformTargetId}`;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(url).then(() => {
+        this.setState({ copiedFreeform: true });
+        setTimeout(() => this.setState({ copiedFreeform: false }), 2000);
+      });
+    }
+  };
+
+  setTab = (tab) => this.setState({ tab });
+
+  selectPerson = (personId) => {
+    this.setState((s) => ({
+      selectedPersonId: personId,
+      clickCount: s.clickCount + 1,
+      path: [...s.path, { type: 'person', id: personId }],
+    }));
+  };
+
+  cancelPerson = () => {
+    this.setState((s) => ({ selectedPersonId: null, path: s.path.slice(0, -1) }));
+  };
+
+  chooseFilm = (filmId) => {
+    this.setState((s) => {
+      const newPath = [...s.path, { type: 'film', id: filmId }];
+      const won = filmId === s.puzzleTargetId;
+      if (won && this.timer) clearInterval(this.timer);
+      return {
+        currentFilmId: filmId,
+        path: newPath,
+        clickCount: s.clickCount + 1,
+        selectedPersonId: null,
+        screen: won ? 'results' : 'game',
+        finalElapsedMs: won ? s.elapsedMs : s.finalElapsedMs,
+      };
+    });
+  };
+
+  rewindTo = (idx) => {
+    this.setState((s) => {
+      const truncated = s.path.slice(0, idx + 1);
+      const last = truncated[truncated.length - 1];
+      return { path: truncated, currentFilmId: last.id, selectedPersonId: null };
+    });
+  };
+
+  copyShare = () => {
+    const text = this.buildShareText();
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(() => {
+        this.setState({ copied: true });
+        setTimeout(() => this.setState({ copied: false }), 2000);
+      });
+    }
+  };
+
+  buildShareText() {
+    const s = this.state;
+    const emojiPath = s.path.map((p) => (p.type === 'film' ? 'F' : 'P')).join(' > ');
+    return `FILMCHAIN\n${this.formatClock(Math.floor(s.finalElapsedMs / 1000))} * ${s.clickCount} clicks\n${emojiPath}`;
+  }
+
+  formatClock(totalSec) {
+    const m = Math.floor(totalSec / 60);
+    const sec = totalSec % 60;
+    return String(m).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
+  }
+
+  timeToSec(t) {
+    const [m, s] = t.split(':');
+    return parseInt(m, 10) * 60 + parseFloat(s);
+  }
+
+  buildLeaderboard(yourTime, yourClicks, accent) {
+    const fake = [
+      { handle: 'cinephile_23', time: '0:38.4', clicks: 4 },
+      { handle: 'reelworld', time: '0:51.2', clicks: 5 },
+      { handle: 'popcorn_kid', time: '1:04.9', clicks: 6 },
+      { handle: 'grindhouse', time: '1:22.0', clicks: 7 },
+    ];
+    const rows = fake.map((f) => ({ ...f, isYou: false }));
+    if (yourTime) rows.push({ handle: 'you', time: yourTime, clicks: yourClicks, isYou: true });
+    rows.sort((a, b) => this.timeToSec(a.time) - this.timeToSec(b.time));
+    const rankColors = { 1: '#00e054', 2: '#40bcf4', 3: '#ff8000' };
+    return rows.map((r, i) => {
+      const rank = i + 1;
+      return {
+        ...r,
+        rank,
+        rowStyle: 'transition:background 0.15s;' + (r.isYou ? `background:${accent.main}1a;` : ''),
+        rankStyle: `padding:10px 12px;text-align:center;font-family:'JetBrains Mono',monospace;font-weight:700;color:${rankColors[rank] || '#667788'};`,
+        nameStyle: `font-weight:600;color:${r.isYou ? accent.main : '#ffffff'};`,
+      };
+    });
+  }
+
+  renderVals() {
+    const st = this.state;
+    const films = this.films;
+    const people = this.people;
+    const accent = this.accentMap();
+    const startFilm = films[Component.START_ID];
+    const targetFilm = films[Component.TARGET_ID];
+    const currentFilm = st.currentFilmId ? films[st.currentFilmId] : startFilm;
+    const puzzleStartFilm = films[st.puzzleStartId] || startFilm;
+    const puzzleTargetFilm = films[st.puzzleTargetId] || targetFilm;
+
+    const cardStyleFor = (isSelected, isDisabled) => {
+      let s = 'display:flex;flex-direction:column;';
+      if (isDisabled) return s + 'opacity:0.3;pointer-events:none;';
+      s += 'cursor:pointer;';
+      if (isSelected) s += 'outline:2px solid #ffffff;border-radius:4px;';
+      return s;
+    };
+    const freeformStartOptions = Object.values(films).map((f) => ({
+      id: f.id, title: f.title, year: f.year,
+      cardStyle: cardStyleFor(st.freeformStartId === f.id, st.freeformTargetId === f.id),
+      onClick: () => this.selectFreeformStart(f.id),
+    }));
+    const freeformTargetOptions = Object.values(films).map((f) => ({
+      id: f.id, title: f.title, year: f.year,
+      cardStyle: cardStyleFor(st.freeformTargetId === f.id, st.freeformStartId === f.id),
+      onClick: () => this.selectFreeformTarget(f.id),
+    }));
+    const canPlayFreeform = !!(st.freeformStartId && st.freeformTargetId && st.freeformStartId !== st.freeformTargetId);
+
+    const breadcrumbItems = st.path.map((node, i) => {
+      const isFilm = node.type === 'film';
+      const isLast = i === st.path.length - 1;
+      const label = isFilm ? films[node.id].title : people[node.id].name;
+      let chipStyle = 'display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:4px;font-weight:600;';
+      if (isLast) {
+        chipStyle += 'border:1px solid #ffffff;color:#ffffff;background:transparent;';
+      } else if (isFilm) {
+        chipStyle += 'border:1px solid #2c3440;color:#9ab0e0;background:#1c2228;cursor:pointer;';
+      } else {
+        chipStyle += 'border:1px solid transparent;color:#667788;background:transparent;';
+      }
+      return {
+        key: i + '-' + node.id,
+        icon: isFilm ? 'F' : 'P',
+        label,
+        num: i + 1,
+        chipStyle,
+        onClick: isFilm && !isLast ? () => this.rewindTo(i) : undefined,
+      };
+    });
+
+    let visiblePeople = [];
+    if (currentFilm) {
+      const castList = currentFilm.cast.map((c) => ({ ...c, kind: 'cast' }));
+      const crewList = currentFilm.crew.map((c) => ({ ...c, kind: 'crew' }));
+      const all = [...castList, ...crewList];
+      const filtered = st.tab === 'all' ? all : all.filter((p) => p.kind === st.tab);
+      visiblePeople = filtered.map((p) => ({
+        id: p.id,
+        role: p.role,
+        name: people[p.id].name,
+        onClick: () => this.selectPerson(p.id),
+      }));
+    }
+    const castCount = currentFilm ? currentFilm.cast.length : 0;
+    const crewCount = currentFilm ? currentFilm.crew.length : 0;
+
+    const selectedPerson = st.selectedPersonId ? people[st.selectedPersonId] : null;
+    let personFilmOptions = [];
+    if (selectedPerson) {
+      const visitedFilmIds = st.path.filter((p) => p.type === 'film').map((p) => p.id);
+      personFilmOptions = selectedPerson.films
+        .filter((fid) => !visitedFilmIds.includes(fid))
+        .map((fid) => ({
+          id: fid,
+          title: films[fid].title,
+          year: films[fid].year,
+          onClick: () => this.chooseFilm(fid),
+        }));
+    }
+
+    const tabBtnBase = 'padding:6px 12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;border-radius:3px;border:none;cursor:pointer;';
+    const activeTab = 'background:#ffffff;color:#14181c;';
+    const inactiveTab = 'background:transparent;color:#9ab0e0;';
+
+    const elapsedTotalSec = st.elapsedMs / 1000;
+    const timeMain = this.formatClock(Math.floor(elapsedTotalSec));
+    const timeDecimal = '.' + Math.floor((elapsedTotalSec % 1) * 100).toString().padStart(2, '0');
+    const finalTotalSec = st.finalElapsedMs / 1000;
+    const finalTimeMain = this.formatClock(Math.floor(finalTotalSec));
+    const finalTimeDecimal = '.' + Math.floor((finalTotalSec % 1) * 100).toString().padStart(2, '0');
+    const hopsCount = st.path.filter((p) => p.type === 'film').length - 1;
+
+    return {
+      isHome: st.screen === 'home',
+      isGame: st.screen === 'game',
+      isResults: st.screen === 'results',
+      isLeaderboard: st.screen === 'leaderboard',
+      isFreeform: st.screen === 'freeform',
+      goLeaderboard: this.goLeaderboard,
+      goFreeform: this.goFreeform,
+      playDaily: this.playDaily,
+      navPuzzleStyle: `padding:4px 12px;font-size:12px;font-weight:600;color:${st.screen === 'home' || st.screen === 'game' || st.screen === 'results' ? '#ffffff' : '#9ab0e0'};cursor:pointer;`,
+      navLeaderboardStyle: `padding:4px 12px;font-size:12px;font-weight:600;color:${st.screen === 'leaderboard' ? '#ffffff' : '#9ab0e0'};cursor:pointer;`,
+      navFreeformStyle: `padding:4px 12px;font-size:12px;font-weight:600;color:${st.screen === 'freeform' ? '#ffffff' : '#9ab0e0'};cursor:pointer;`,
+      leaderboardStandaloneRows: this.buildLeaderboard(null, null, accent),
+      puzzleStartFilm, puzzleTargetFilm,
+      freeformStartOptions, freeformTargetOptions, canPlayFreeform,
+      cannotPlayFreeform: !canPlayFreeform,
+      freeformShareUrl: `filmchain.app/freeform/${st.freeformStartId || '...'}-${st.freeformTargetId || '...'}`,
+      copyFreeformLink: this.copyFreeformLink,
+      copiedFreeform: !!st.copiedFreeform,
+      notCopiedFreeform: !st.copiedFreeform,
+      playFreeform: this.playFreeform,
+      startFilm, targetFilm, currentFilm,
+      accentMain: accent.main,
+      targetBadgeStyle: `font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#14181c;background:#00e054;padding:3px 9px;border-radius:3px;`,
+      targetPosterStyle: `width:112px;height:168px;border-radius:4px;overflow:hidden;background:repeating-linear-gradient(135deg,#1c2228 0 10px,#242c34 10px 20px);border:2px solid #00e054;display:flex;align-items:center;justify-content:center;text-align:center;padding:8px;box-sizing:border-box;`,
+      playButtonStyle: `width:100%;max-width:260px;padding:12px;background:${accent.main};color:#14181c;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;border:none;border-radius:4px;cursor:pointer;box-shadow:0 0 16px ${accent.main}59;`,
+      goHome: this.goHome,
+      startGame: this.startGame,
+      breadcrumbItems,
+      visiblePeople,
+      castCount, crewCount, allCount: castCount + crewCount,
+      allTabStyle: tabBtnBase + (st.tab === 'all' ? activeTab : inactiveTab),
+      castTabStyle: tabBtnBase + (st.tab === 'cast' ? activeTab : inactiveTab),
+      crewTabStyle: tabBtnBase + (st.tab === 'crew' ? activeTab : inactiveTab),
+      setTabAll: () => this.setTab('all'),
+      setTabCast: () => this.setTab('cast'),
+      setTabCrew: () => this.setTab('crew'),
+      hasSelectedPerson: !!selectedPerson,
+      selectedPersonName: selectedPerson ? selectedPerson.name : '',
+      selectedPanelStyle: 'display:flex;flex-direction:column;gap:8px;background:#1c2228;border:1px solid #2c3440;border-radius:4px;padding:16px;box-sizing:border-box;',
+      selectedPanelLabelStyle: 'font-size:12px;font-weight:700;color:#ffffff;',
+      personFilmOptions,
+      hasNoFilmOptions: !!selectedPerson && personFilmOptions.length === 0,
+      cancelPerson: this.cancelPerson,
+      clickCount: st.clickCount,
+      timeMain, timeDecimal,
+      timerStyle: "font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:800;color:#ffffff;",
+      timerDecimalStyle: 'font-size:16px;color:#667788;',
+      finalTimeMain, finalTimeDecimal,
+      resultsTimeStyle: "font-family:'JetBrains Mono',monospace;font-size:36px;font-weight:800;color:#ffffff;",
+      resultsTimeDecimalStyle: 'font-size:18px;color:#667788;',
+      resultsClicksStyle: `font-family:'JetBrains Mono',monospace;font-size:36px;font-weight:800;color:#ffffff;`,
+      resultThumbStyle: `width:64px;height:96px;border-radius:4px;overflow:hidden;background:repeating-linear-gradient(135deg,#1c2228 0 8px,#242c34 8px 16px);border:1px solid #2c3440;display:flex;align-items:center;justify-content:center;text-align:center;padding:6px;box-sizing:border-box;`,
+      resultsLabelStyle: `font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:${accent.main};`,
+      shareText: this.buildShareText(),
+      copyShare: this.copyShare,
+      copied: !!st.copied,
+      notCopied: !st.copied,
+      copyButtonStyle: `width:100%;padding:8px;background:transparent;color:${accent.main};font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;border:1px solid ${accent.main};border-radius:4px;cursor:pointer;`,
+      leaderboardRows: this.buildLeaderboard(finalTimeMain + finalTimeDecimal, st.clickCount, accent),
+    };
+  }
+}
+</script>
+</body>
+</html>

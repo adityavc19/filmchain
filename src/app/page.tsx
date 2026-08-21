@@ -54,7 +54,7 @@ export default function Home() {
               <span className="w-2 h-2 rounded-full bg-[#ff8000]"></span>
               <span className="w-2 h-2 rounded-full bg-[#40bcf4]"></span>
               <span className="text-[11px] font-bold uppercase tracking-widest text-text-secondary ml-1">
-                Daily Movie Connections &middot; {new Date(puzzle.date + 'T00:00:00Z').toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' })}
+                Filmtrace &middot; Daily Puzzle &middot; {new Date(puzzle.date + 'T00:00:00Z').toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' })}
               </span>
             </div>
 
@@ -62,8 +62,8 @@ export default function Home() {
               {puzzle.startFilm.title} <span className="text-text-muted font-light">&rarr;</span> {puzzle.endFilm.title}
             </h1>
 
-            <p className="text-sm sm:text-[15px] text-text-secondary max-w-md leading-relaxed">
-              Every day, two films. Click through shared cast and crew to connect them in as few moves as possible.
+            <p className="text-sm sm:text-base text-text-secondary max-w-md leading-relaxed font-medium">
+              Two films. One trail. How fast can you connect them?
             </p>
           </div>
 

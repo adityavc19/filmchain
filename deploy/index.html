@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Filmtrace — Two films. One trail. How fast can you connect them?</title>
+  <meta name="description" content="Two films. One trail. How fast can you connect them?" />
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet" />
+  
+  <!-- React & ReactDOM UMD -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  
+  <!-- Babel Standalone for in-browser JSX -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'bg-primary': '#14181c',
+            'bg-secondary': '#1c2228',
+            'bg-card': '#202830',
+            'bg-hover': '#2c3440',
+            'accent': '#00e054',
+            'accent-dim': '#00b042',
+            'accent-orange': '#ff8000',
+            'accent-blue': '#40bcf4',
+            'text-primary': '#ffffff',
+            'text-secondary': '#9ab0e0',
+            'text-muted': '#667788',
+            'border': '#2c3440',
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    body {
+      background-color: #14181c;
+      color: #ffffff;
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-accent selection:text-bg-primary">
+  <div id="root" class="min-h-screen flex flex-col"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    const TMDB_API_KEY = '81d2e74ce1c54d587d152b68d900b8c8';
+    const TMDB_BASE = 'https://api.themoviedb.org/3';
+    const SUPABASE_URL = 'https://erajnosmxvgcpjfxotpc.supabase.co';
+    const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVyYWpub3NteHZnY3BqZnhvdHBjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAwMTc2NTcsImV4cCI6MjA1NTU5MzY1N30.2g60X2r-vB-wW2oX2M_Y_Y769jW6hOq8VpMhY14tG4s';
+
+    function posterUrl(path, size = 'w342') {
+      return path ? `https://image.tmdb.org/t/p/${size}${path}` : '';
+    }
+
+    function profileUrl(path, size = 'w185') {
+      return path ? `https://image.tmdb.org/t/p/${size}${path}` : '';
+    }
+
+    const VALID_CREW_JOBS = ['Director', 'Screenplay', 'Story', 'Writer', 'Producer', 'Executive Producer', 'Creator'];
+    const MAX_CAST_ORDER = 12;
+
+    function filterCredits(cast = [], crew = []) {
+      const map = new Map();
+
+      // 1. Process Cast
+      for (const c of cast) {
+        if (c && c.id && c.order < MAX_CAST_ORDER) {
+          map.set(c.id, {
+            id: c.id,
+            name: c.name,
+            profile_path: c.profile_path,
+            order: c.order,
+            role: 'cast',
+            character: c.character || '',
+          });
+        }
+      }
+
+      // 2. Process Crew with multi-role prioritization
+      const jobPriority = {
+        'Director': 1, 'Screenplay': 2, 'Writer': 3, 'Story': 4,
+        'Creator': 5, 'Producer': 6, 'Executive Producer': 7,
+      };
+
+      for (const c of crew) {
+        if (c && c.id && VALID_CREW_JOBS.includes(c.job)) {
+          if (map.has(c.id)) {
+            const existing = map.get(c.id);
+            const currentJobs = existing.job ? existing.job.split(', ') : [];
+            if (!currentJobs.includes(c.job)) {
+              currentJobs.push(c.job);
+              currentJobs.sort((a, b) => (jobPriority[a] || 99) - (jobPriority[b] || 99));
+              existing.job = currentJobs.join(', ');
+            }
+          } else {
+            map.set(c.id, {
+              id: c.id,
+              name: c.name,
+              profile_path: c.profile_path,
+              order: MAX_CAST_ORDER + map.size,
+              role: 'crew',
+              job: c.job,
+            });
+          }
+        }
+      }
+
+      return Array.from(map.values()).sort((a, b) => a.order - b.order);
+    }
+
+    function getOrCreateHandle() {
+      if (typeof window === 'undefined') return 'cinephile';
+      const stored = localStorage.getItem('filmtrace-handle');
+      if (stored) return stored;
+      const adjectives = ['cinematic', 'golden', 'silver', 'crimson', 'velvet', 'midnight', 'cosmic', 'electric', 'phantom', 'neon', 'shadow', 'stellar', 'mystic', 'rogue', 'vivid', 'blazing', 'frozen', 'silent', 'wild', 'rapid', 'bold', 'keen', 'swift', 'dark', 'bright', 'grand', 'noble', 'epic', 'fierce', 'clever'];
+      const nouns = ['fox', 'owl', 'hawk', 'wolf', 'bear', 'lynx', 'stag', 'crow', 'hare', 'viper', 'raven', 'tiger', 'eagle', 'cobra', 'puma', 'falcon', 'otter', 'mantis', 'heron', 'drake', 'shark', 'panther', 'phoenix', 'griffin', 'condor', 'badger', 'crane', 'bison', 'jaguar', 'osprey'];
+      const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
+      const noun = nouns[Math.floor(Math.random() * nouns.length)];
+      const num = Math.floor(Math.random() * 900) + 100;
+      const h = `${adj}-${noun}-${num}`;
+      localStorage.setItem('filmtrace-handle', h);
+      return h;
+    }
+
+    function App() {
+      const [screen, setScreen] = useState('home'); // 'home' | 'game' | 'results' | 'leaderboard'
+      const [todayPuzzle, setTodayPuzzle] = useState(null);
+      const [loading, setLoading] = useState(true);
+      const [handle] = useState(getOrCreateHandle);
+
+      // Game state
+      const [startFilm, setStartFilm] = useState(null);
+      const [targetFilm, setTargetFilm] = useState(null);
+      const [currentMedia, setCurrentMedia] = useState(null);
+      const [filmCredits, setFilmCredits] = useState([]);
+      const [selectedPerson, setSelectedPerson] = useState(null);
+      const [loadingPersonFilms, setLoadingPersonFilms] = useState(false);
+      const [path, setPath] = useState([]);
+      const [clickCount, setClickCount] = useState(0);
+      const [startTime, setStartTime] = useState(null);
+      const [endTime, setEndTime] = useState(null);
+      const [elapsedSec, setElapsedSec] = useState(0);
+      const [filmTab, setFilmTab] = useState('all');
+      const [leaderboard, setLeaderboard] = useState([]);
+      const [copied, setCopied] = useState(false);
+
+      // Timer ticker
+      useEffect(() => {
+        let interval = null;
+        if (screen === 'game' && startTime && !endTime) {
+          interval = setInterval(() => {
+            setElapsedSec((Date.now() - startTime) / 1000);
+          }, 100);
+        }
+        return () => clearInterval(interval);
+      }, [screen, startTime, endTime]);
+
+      // Load initial daily puzzle & TMDb metadata
+      useEffect(() => {
+        async function loadPuzzle() {
+          try {
+            // Default fallback
+            let pDate = '2026-08-21';
+            let sId = 155; // The Dark Knight
+            let tId = 27205; // Inception
+
+            // Try to fetch latest puzzle from Supabase
+            try {
+              const res = await fetch(`${SUPABASE_URL}/rest/v1/daily_puzzles?select=*&order=date.desc&limit=1`, {
+                headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` }
+              });
+              const data = await res.json();
+              if (data && data[0]) {
+                pDate = data[0].date;
+                sId = data[0].start_film_id;
+                tId = data[0].end_film_id;
+              }
+            } catch (e) {
+              console.warn('Using default puzzle pair');
+            }
+
+            // Fetch TMDb details for start & target
+            const [sDetails, tDetails] = await Promise.all([
+              fetch(`${TMDB_BASE}/movie/${sId}?api_key=${TMDB_API_KEY}`).then(r => r.json()),
+              fetch(`${TMDB_BASE}/movie/${tId}?api_key=${TMDB_API_KEY}`).then(r => r.json()),
+            ]);
+
+            const puzzleObj = {
+              date: pDate,
+              startFilm: {
+                tmdb_id: sDetails.id,
+                title: sDetails.title,
+                year: sDetails.release_date ? parseInt(sDetails.release_date.split('-')[0]) : null,
+                poster_path: sDetails.poster_path,
+              },
+              endFilm: {
+                tmdb_id: tDetails.id,
+                title: tDetails.title,
+                year: tDetails.release_date ? parseInt(tDetails.release_date.split('-')[0]) : null,
+                poster_path: tDetails.poster_path,
+              },
+            };
+
+            setTodayPuzzle(puzzleObj);
+            setStartFilm(puzzleObj.startFilm);
+            setTargetFilm(puzzleObj.endFilm);
+            setLoading(false);
+          } catch (err) {
+            console.error('Error loading puzzle:', err);
+            setLoading(false);
+          }
+        }
+
+        loadPuzzle();
+      }, []);
+
+      async function fetchFilmDetails(filmId) {
+        try {
+          const [details, credits] = await Promise.all([
+            fetch(`${TMDB_BASE}/movie/${filmId}?api_key=${TMDB_API_KEY}`).then(r => r.json()),
+            fetch(`${TMDB_BASE}/movie/${filmId}/credits?api_key=${TMDB_API_KEY}`).then(r => r.json()),
+          ]);
+
+          const filtered = filterCredits(credits.cast || [], credits.crew || []);
+          setCurrentMedia({
+            id: details.id,
+            title: details.title,
+            year: details.release_date ? parseInt(details.release_date.split('-')[0]) : null,
+            runtime: details.runtime,
+            tagline: details.tagline,
+            overview: details.overview,
+            genres: details.genres || [],
+            poster_path: details.poster_path,
+          });
+          setFilmCredits(filtered);
+          setSelectedPerson(null);
+          setFilmTab('all');
+        } catch (e) {
+          console.error('Error fetching film details:', e);
+        }
+      }
+
+      function startGame() {
+        if (!startFilm || !targetFilm) return;
+        const startPath = [{ type: 'film', id: startFilm.tmdb_id, name: startFilm.title }];
+        setPath(startPath);
+        setClickCount(0);
+        setStartTime(Date.now());
+        setEndTime(null);
+        setElapsedSec(0);
+        setScreen('game');
+        fetchFilmDetails(startFilm.tmdb_id);
+      }
+
+      async function onSelectPerson(personId, name) {
+        if (selectedPerson && selectedPerson.id === personId) {
+          onCancelPerson();
+          return;
+        }
+
+        setLoadingPersonFilms(true);
+        const newPath = [...path, { type: 'person', id: personId, name }];
+        setPath(newPath);
+        setClickCount(c => c + 1);
+
+        try {
+          const [movieRes, tvRes] = await Promise.all([
+            fetch(`${TMDB_BASE}/person/${personId}/movie_credits?api_key=${TMDB_API_KEY}`).then(r => r.json()),
+            fetch(`${TMDB_BASE}/person/${personId}/tv_credits?api_key=${TMDB_API_KEY}`).then(r => r.json()),
+          ]);
+
+          const movies = (movieRes.cast || []).concat(movieRes.crew || []).filter(f => f && f.id && f.title);
+          const tvShows = (tvRes.cast || []).concat(tvRes.crew || []).map(t => ({
+            ...t,
+            title: t.name || t.original_name,
+            release_date: t.first_air_date,
+          })).filter(t => t && t.id && t.title);
+
+          setSelectedPerson({
+            id: personId,
+            name,
+            movies,
+            tvShows,
+          });
+        } catch (e) {
+          console.error('Error fetching person credits:', e);
+        } finally {
+          setLoadingPersonFilms(false);
+        }
+      }
+
+      function onCancelPerson() {
+        if (path.length > 0 && path[path.length - 1].type === 'person') {
+          setPath(path.slice(0, -1));
+        }
+        setSelectedPerson(null);
+      }
+
+      async function onSelectFilm(filmId, title) {
+        const newPath = [...path, { type: 'film', id: filmId, name: title }];
+        const newClicks = clickCount + 1;
+        setClickCount(newClicks);
+
+        if (targetFilm && filmId === targetFilm.tmdb_id) {
+          // Won!
+          const end = Date.now();
+          setEndTime(end);
+          setPath(newPath);
+          setScreen('results');
+
+          // Submit to Supabase leaderboard
+          try {
+            const timeSec = Math.max(1, Math.round((end - (startTime || end)) / 1000));
+            const hops = Math.floor(newPath.length / 2);
+            await fetch(`${SUPABASE_URL}/rest/v1/leaderboard_entries`, {
+              method: 'POST',
+              headers: {
+                'apikey': SUPABASE_ANON,
+                'Authorization': `Bearer ${SUPABASE_ANON}`,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=representation'
+              },
+              body: JSON.stringify({
+                puzzle_date: todayPuzzle.date,
+                handle,
+                time_seconds: timeSec,
+                hop_count: hops,
+                path: newPath,
+              })
+            });
+            fetchLeaderboardData(todayPuzzle.date);
+          } catch (e) {
+            console.error('Failed to submit score:', e);
+          }
+        } else {
+          setPath(newPath);
+          fetchFilmDetails(filmId);
+        }
+      }
+
+      function onRewindTo(idx) {
+        const truncated = path.slice(0, idx + 1);
+        const node = truncated[truncated.length - 1];
+        if (node && node.type === 'film') {
+          setPath(truncated);
+          setSelectedPerson(null);
+          fetchFilmDetails(node.id);
+        }
+      }
+
+      async function fetchLeaderboardData(date) {
+        try {
+          const res = await fetch(`${SUPABASE_URL}/rest/v1/leaderboard_entries?puzzle_date=eq.${date}&order=time_seconds.asc&limit=15`, {
+            headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` }
+          });
+          const data = await res.json();
+          setLeaderboard(data || []);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      function copyShare() {
+        const mins = Math.floor(elapsedSec / 60);
+        const secs = Math.floor(elapsedSec % 60);
+        const timeStr = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        const emojiPath = path.map(p => (p.type === 'film' ? '🎬' : '👤')).join(' > ');
+        const text = `FILMTRACE\n${timeStr} * ${clickCount} clicks\n${emojiPath}\nhttps://filmtrace.app`;
+
+        navigator.clipboard.writeText(text).then(() => {
+          setCopied(true);
+          setTimeout(() => setCopied(false), 2000);
+        });
+      }
+
+      // Filter helpers
+      const castList = filmCredits.filter(c => c.role === 'cast');
+      const crewList = filmCredits.filter(c => c.role === 'crew' || c.job);
+      const visitedFilmIds = path.filter(p => p.type === 'film').map(p => p.id);
+      const availablePersonFilms = selectedPerson
+        ? [...selectedPerson.movies, ...selectedPerson.tvShows].filter(f => !visitedFilmIds.includes(f.id))
+        : [];
+
+      return (
+        <div className="flex-1 flex flex-col">
+          {/* Header */}
+          <header className="border-b border-border bg-bg-primary/95 backdrop-blur sticky top-0 z-50">
+            <div className="max-w-5xl mx-auto px-4 min-h-[56px] flex items-center justify-between flex-wrap gap-2">
+              <div onClick={() => setScreen('home')} className="flex items-center gap-2 cursor-pointer group">
+                <div className="flex items-center gap-1">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#00e054]"></span>
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#ff8000]"></span>
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#40bcf4]"></span>
+                </div>
+                <span className="font-black tracking-tight text-lg text-white group-hover:text-accent transition-colors">
+                  FILMTRACE
+                </span>
+              </div>
+
+              <nav className="flex items-center gap-3 sm:gap-4 text-xs font-semibold">
+                <button
+                  onClick={() => setScreen('home')}
+                  className={`px-3 py-1 transition-colors cursor-pointer ${screen === 'home' || screen === 'game' || screen === 'results' ? 'text-white' : 'text-text-secondary hover:text-white'}`}
+                >
+                  Daily Puzzle
+                </button>
+                <button
+                  onClick={() => {
+                    setScreen('leaderboard');
+                    if (todayPuzzle) fetchLeaderboardData(todayPuzzle.date);
+                  }}
+                  className={`px-3 py-1 transition-colors cursor-pointer ${screen === 'leaderboard' ? 'text-white' : 'text-text-secondary hover:text-white'}`}
+                >
+                  Leaderboard
+                </button>
+                <span className="px-3 py-1 text-text-muted flex items-center gap-1.5 cursor-default">
+                  Freeform <span className="text-[9px] bg-bg-secondary border border-border px-1.5 py-0.5 rounded font-mono">SOON</span>
+                </span>
+              </nav>
+            </div>
+          </header>
+
+          {/* Main Content */}
+          <main className="flex-1 max-w-5xl mx-auto w-full px-4 py-6 box-border flex flex-col gap-6">
+
+            {/* SCREEN: HOME */}
+            {screen === 'home' && (
+              <div className="flex flex-col items-center justify-center min-h-[70vh] gap-10 text-center py-8">
+                {loading ? (
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin"></div>
+                    <p className="text-xs uppercase tracking-widest text-text-secondary">Loading Today's Challenge...</p>
+                  </div>
+                ) : todayPuzzle && (
+                  <div className="flex flex-col items-center gap-10 w-full">
+                    <div className="flex flex-col items-center gap-3.5 max-w-xl">
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-[#00e054]"></span>
+                        <span className="w-2 h-2 rounded-full bg-[#ff8000]"></span>
+                        <span className="w-2 h-2 rounded-full bg-[#40bcf4]"></span>
+                        <span className="text-[11px] font-bold uppercase tracking-widest text-text-secondary ml-1">
+                          Filmtrace &middot; Daily Puzzle &middot; {todayPuzzle.date}
+                        </span>
+                      </div>
+
+                      <h1 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight">
+                        {todayPuzzle.startFilm.title} <span className="text-text-muted font-light">&rarr;</span> {todayPuzzle.endFilm.title}
+                      </h1>
+
+                      <p className="text-sm sm:text-base text-text-secondary max-w-md leading-relaxed font-medium">
+                        Two films. One trail. How fast can you connect them?
+                      </p>
+                    </div>
+
+                    <div className="flex items-center justify-center gap-5 sm:gap-8">
+                      {/* Start Film */}
+                      <div className="flex flex-col items-center gap-2.5">
+                        <div className="relative w-[132px] h-[198px] rounded-[4px] overflow-hidden bg-bg-secondary border border-border shadow-lg">
+                          <img src={posterUrl(todayPuzzle.startFilm.poster_path, 'w342')} alt={todayPuzzle.startFilm.title} className="w-full h-full object-cover" />
+                        </div>
+                        <span className="font-bold text-sm text-white max-w-[132px] truncate">{todayPuzzle.startFilm.title}</span>
+                        <span className="text-xs text-text-secondary">{todayPuzzle.startFilm.year}</span>
+                      </div>
+
+                      <div className="w-8 sm:w-12 h-px bg-border/80 self-center mb-8"></div>
+
+                      {/* Target Film */}
+                      <div className="flex flex-col items-center gap-2.5">
+                        <div className="relative w-[132px] h-[198px] rounded-[4px] overflow-hidden bg-bg-secondary border-2 border-accent shadow-[0_0_16px_rgba(0,224,84,0.3)]">
+                          <img src={posterUrl(todayPuzzle.endFilm.poster_path, 'w342')} alt={todayPuzzle.endFilm.title} className="w-full h-full object-cover" />
+                        </div>
+                        <span className="font-bold text-sm text-white max-w-[132px] truncate">{todayPuzzle.endFilm.title}</span>
+                        <span className="text-xs text-text-secondary">{todayPuzzle.endFilm.year}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col items-center gap-3 w-full">
+                      <button
+                        onClick={startGame}
+                        className="w-full max-w-[260px] py-3 bg-accent text-bg-primary text-xs sm:text-sm font-bold uppercase tracking-wider rounded-[4px] hover:bg-accent-dim transition-all shadow-[0_0_16px_rgba(0,224,84,0.35)] cursor-pointer"
+                      >
+                        Play Today's Puzzle
+                      </button>
+                      <span className="text-[11px] text-text-muted">Over 1,000+ daily solvers</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* SCREEN: GAME */}
+            {screen === 'game' && targetFilm && (
+              <div className="flex flex-col gap-6">
+                {/* Sticky Status HUD */}
+                <div className="flex flex-col gap-3.5 bg-bg-card p-4 sm:p-5 rounded-[4px] border border-border sticky top-16 z-30 shadow-2xl backdrop-blur-md">
+                  <div className="flex items-center justify-between gap-4 flex-wrap sm:flex-nowrap">
+                    {/* Goal Film */}
+                    <div className="flex items-center gap-3.5">
+                      <div className="relative rounded-[4px] overflow-hidden flex-shrink-0 bg-bg-secondary border border-border shadow-md w-[56px] h-[84px]">
+                        <img src={posterUrl(targetFilm.poster_path, 'w185')} alt={targetFilm.title} className="w-full h-full object-cover" />
+                      </div>
+                      <div className="flex flex-col text-left gap-1">
+                        <div className="flex items-center">
+                          <span className="text-[10px] font-semibold text-text-secondary bg-bg-secondary px-2 py-0.5 rounded border border-border">
+                            Goal
+                          </span>
+                        </div>
+                        <span className="font-bold text-white text-sm sm:text-base leading-tight">
+                          {targetFilm.title}
+                        </span>
+                        <span className="text-text-secondary text-xs">{targetFilm.year}</span>
+                      </div>
+                    </div>
+
+                    {/* Right Metrics: Clicks & Timer */}
+                    <div className="flex items-center gap-6 sm:gap-8">
+                      <div className="text-right">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary block">CLICKS</span>
+                        <span className="font-mono text-2xl sm:text-3xl font-black text-white leading-tight">
+                          {clickCount}
+                        </span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary block">TIME</span>
+                        <div className="font-mono text-2xl sm:text-3xl font-bold text-accent tracking-wider tabular-nums select-none drop-shadow-[0_0_8px_rgba(0,224,84,0.3)]">
+                          {String(Math.floor(elapsedSec / 60)).padStart(2, '0')}:{String(Math.floor(elapsedSec % 60)).padStart(2, '0')}
+                          <span className="text-lg sm:text-xl text-accent-dim">.{Math.floor((elapsedSec % 1) * 100).toString().padStart(2, '0')}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Breadcrumb Trail with Rewind */}
+                  <div className="pt-2 border-t border-border/70 overflow-x-auto hide-scrollbar">
+                    <div className="flex items-center gap-1.5 whitespace-nowrap min-w-max text-xs">
+                      {path.map((node, i) => {
+                        const isLast = i === path.length - 1;
+                        const isFilm = node.type === 'film';
+                        const canRewind = isFilm && !isLast;
+
+                        return (
+                          <div key={`${node.id}-${i}`} className="flex items-center gap-1.5">
+                            <div
+                              onClick={canRewind ? () => onRewindTo(i) : undefined}
+                              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-[4px] border font-medium transition-all ${
+                                isLast
+                                  ? 'bg-transparent border-accent text-accent font-semibold'
+                                  : canRewind
+                                  ? 'bg-bg-secondary border-border text-text-secondary hover:text-white hover:border-text-secondary cursor-pointer'
+                                  : 'bg-transparent border-transparent text-text-muted cursor-default'
+                              }`}
+                              title={canRewind ? `Rewind to ${node.name}` : node.name}
+                            >
+                              <span className="text-[11px] opacity-70 font-mono">#{i + 1}</span>
+                              <span>{isFilm ? '🎬' : '👤'}</span>
+                              <span className="max-w-[150px] truncate">{node.name}</span>
+                            </div>
+                            {!isLast && <span className="text-text-muted text-xs font-bold px-0.5">›</span>}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Movie Synopsis Showcase */}
+                {currentMedia && (
+                  <div className="bg-bg-card border border-border rounded-[4px] p-4 sm:p-5 flex flex-col sm:flex-row gap-4 sm:gap-6 text-left shadow-lg">
+                    <div className="relative w-28 h-40 sm:w-32 sm:h-48 rounded-[4px] overflow-hidden bg-bg-secondary border border-white/10 flex-shrink-0 self-center sm:self-start">
+                      <img src={posterUrl(currentMedia.poster_path, 'w342')} alt={currentMedia.title} className="w-full h-full object-cover" />
+                    </div>
+
+                    <div className="flex flex-col gap-2 min-w-0 justify-center">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {currentMedia.year && <span className="text-xs font-semibold text-text-secondary">{currentMedia.year}</span>}
+                        {currentMedia.runtime && <span className="text-xs text-text-muted">· {currentMedia.runtime} min</span>}
+                      </div>
+
+                      <h1 className="text-xl sm:text-2xl font-black text-white leading-tight">
+                        {currentMedia.title}
+                      </h1>
+
+                      {currentMedia.tagline && (
+                        <p className="text-xs sm:text-sm italic text-text-secondary font-medium">
+                          &ldquo;{currentMedia.tagline}&rdquo;
+                        </p>
+                      )}
+
+                      {currentMedia.genres && currentMedia.genres.length > 0 && (
+                        <div className="flex items-center gap-1.5 flex-wrap my-0.5">
+                          {currentMedia.genres.map(g => (
+                            <span key={g.id} className="text-[10px] uppercase font-medium bg-bg-secondary text-text-secondary px-2 py-0.5 rounded border border-border">
+                              {g.name}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      {currentMedia.overview && (
+                        <p className="text-xs sm:text-sm text-text-primary/90 leading-relaxed line-clamp-3 sm:line-clamp-4 mt-1">
+                          {currentMedia.overview}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Subheader & Tabs */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-3 px-1">
+                  <span className="text-base sm:text-lg font-extrabold text-white tracking-tight">
+                    Choose next person
+                  </span>
+
+                  <div className="flex items-center gap-1 bg-bg-secondary p-1 rounded-[4px] border border-border self-start sm:self-auto">
+                    <button
+                      onClick={() => setFilmTab('all')}
+                      className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${filmTab === 'all' ? 'bg-accent text-bg-primary font-bold' : 'text-text-secondary hover:text-white'}`}
+                    >
+                      All ({filmCredits.length})
+                    </button>
+                    <button
+                      onClick={() => setFilmTab('cast')}
+                      className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${filmTab === 'cast' ? 'bg-accent text-bg-primary font-bold' : 'text-text-secondary hover:text-white'}`}
+                    >
+                      Cast ({castList.length})
+                    </button>
+                    <button
+                      onClick={() => setFilmTab('crew')}
+                      className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${filmTab === 'crew' ? 'bg-accent text-bg-primary font-bold' : 'text-text-secondary hover:text-white'}`}
+                    >
+                      Crew ({crewList.length})
+                    </button>
+                  </div>
+                </div>
+
+                {/* Cast & Crew Grid */}
+                <div className="flex flex-col gap-6">
+                  {filmTab === 'all' && (
+                    <>
+                      {castList.length > 0 && (
+                        <div className="flex flex-col gap-3">
+                          <div className="flex items-center gap-2 border-b border-border/60 pb-1.5">
+                            <span className="text-xs font-bold uppercase tracking-wider text-text-primary">Cast / Actors</span>
+                            <span className="text-[11px] text-text-muted">({castList.length})</span>
+                          </div>
+                          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
+                            {castList.map(c => (
+                              <div
+                                key={`cast-${c.id}`}
+                                onClick={() => onSelectPerson(c.id, c.name)}
+                                className="group flex flex-col gap-1.5 transition-all select-none cursor-pointer w-[110px]"
+                              >
+                                <div className="relative w-full h-[165px] rounded-[4px] overflow-hidden bg-bg-card border border-white/10 group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)] transition-all duration-200">
+                                  {c.profile_path ? (
+                                    <img src={profileUrl(c.profile_path, 'w185')} alt={c.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                                  ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-3xl">👤</div>
+                                  )}
+                                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-2 text-center pointer-events-none">
+                                    <span className="text-white text-xs font-semibold drop-shadow">Select</span>
+                                  </div>
+                                </div>
+                                <div className="flex flex-col text-left">
+                                  <span className="font-medium text-text-primary text-xs line-clamp-1 group-hover:text-accent transition-colors leading-tight">{c.name}</span>
+                                  <span className="text-[11px] text-text-secondary line-clamp-1 mt-0.5">{c.character || c.job}</span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {crewList.length > 0 && (
+                        <div className="flex flex-col gap-3 mt-2">
+                          <div className="flex items-center gap-2 border-b border-border/60 pb-1.5">
+                            <span className="text-xs font-bold uppercase tracking-wider text-text-primary">Crew (Director, Producer, Writer)</span>
+                            <span className="text-[11px] text-text-muted">({crewList.length})</span>
+                          </div>
+                          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
+                            {crewList.map(c => (
+                              <div
+                                key={`crew-${c.id}`}
+                                onClick={() => onSelectPerson(c.id, c.name)}
+                                className="group flex flex-col gap-1.5 transition-all select-none cursor-pointer w-[110px]"
+                              >
+                                <div className="relative w-full h-[165px] rounded-[4px] overflow-hidden bg-bg-card border border-white/10 group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)] transition-all duration-200">
+                                  {c.profile_path ? (
+                                    <img src={profileUrl(c.profile_path, 'w185')} alt={c.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                                  ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-3xl">👤</div>
+                                  )}
+                                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-2 text-center pointer-events-none">
+                                    <span className="text-white text-xs font-semibold drop-shadow">Select</span>
+                                  </div>
+                                </div>
+                                <div className="flex flex-col text-left">
+                                  <span className="font-medium text-text-primary text-xs line-clamp-1 group-hover:text-accent transition-colors leading-tight">{c.name}</span>
+                                  <span className="text-[11px] text-text-secondary line-clamp-2 leading-tight mt-0.5">{c.job}</span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
+
+                  {filmTab === 'cast' && (
+                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
+                      {castList.map(c => (
+                        <div key={`cast-tab-${c.id}`} onClick={() => onSelectPerson(c.id, c.name)} className="group flex flex-col gap-1.5 transition-all select-none cursor-pointer w-[110px]">
+                          <div className="relative w-full h-[165px] rounded-[4px] overflow-hidden bg-bg-card border border-white/10 group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)] transition-all duration-200">
+                            {c.profile_path ? <img src={profileUrl(c.profile_path, 'w185')} alt={c.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-3xl">👤</div>}
+                          </div>
+                          <span className="font-medium text-text-primary text-xs line-clamp-1 leading-tight">{c.name}</span>
+                          <span className="text-[11px] text-text-secondary line-clamp-1">{c.character}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {filmTab === 'crew' && (
+                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
+                      {crewList.map(c => (
+                        <div key={`crew-tab-${c.id}`} onClick={() => onSelectPerson(c.id, c.name)} className="group flex flex-col gap-1.5 transition-all select-none cursor-pointer w-[110px]">
+                          <div className="relative w-full h-[165px] rounded-[4px] overflow-hidden bg-bg-card border border-white/10 group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)] transition-all duration-200">
+                            {c.profile_path ? <img src={profileUrl(c.profile_path, 'w185')} alt={c.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-3xl">👤</div>}
+                          </div>
+                          <span className="font-medium text-text-primary text-xs line-clamp-1 leading-tight">{c.name}</span>
+                          <span className="text-[11px] text-text-secondary line-clamp-2 leading-tight">{c.job}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Selected Person Film Picker Panel */}
+                {selectedPerson && (
+                  <div className="flex flex-col gap-3 bg-bg-secondary border border-border rounded-[4px] p-4 sm:p-5 mt-2 shadow-xl animate-in fade-in duration-300">
+                    <div className="flex items-center justify-between border-b border-border/80 pb-2">
+                      <span className="text-xs sm:text-sm font-bold text-white">
+                        Choose next film &mdash; <span className="text-accent">{selectedPerson.name}</span>
+                      </span>
+                      <button
+                        onClick={onCancelPerson}
+                        className="text-xs font-semibold text-text-secondary hover:text-white cursor-pointer transition-colors"
+                      >
+                        Cancel &times;
+                      </button>
+                    </div>
+
+                    {loadingPersonFilms ? (
+                      <div className="flex items-center gap-2 py-6 justify-center">
+                        <div className="w-4 h-4 border-2 border-accent border-t-transparent rounded-full animate-spin"></div>
+                        <span className="text-xs text-text-secondary">Loading filmography...</span>
+                      </div>
+                    ) : availablePersonFilms.length === 0 ? (
+                      <p className="text-xs text-text-muted py-2">
+                        No new films found for this person &mdash; try someone else.
+                      </p>
+                    ) : (
+                      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4 pt-1">
+                        {availablePersonFilms.map(f => (
+                          <div
+                            key={`person-film-${f.id}`}
+                            onClick={() => onSelectFilm(f.id, f.title)}
+                            className="group flex flex-col gap-1.5 transition-all select-none cursor-pointer w-[110px]"
+                          >
+                            <div className={`relative w-full h-[165px] rounded-[4px] overflow-hidden bg-bg-card border transition-all duration-200 ${f.id === targetFilm.tmdb_id ? 'border-accent shadow-[0_0_16px_rgba(0,224,84,0.4)]' : 'border-white/10 group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)]'}`}>
+                              {f.poster_path ? (
+                                <img src={posterUrl(f.poster_path, 'w185')} alt={f.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center text-3xl">🎬</div>
+                              )}
+                              {f.id === targetFilm.tmdb_id && (
+                                <div className="absolute top-1.5 right-1.5 bg-accent text-bg-primary text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded shadow">
+                                  GOAL
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex flex-col text-left">
+                              <span className="font-medium text-text-primary text-xs line-clamp-1 group-hover:text-accent transition-colors leading-tight">{f.title}</span>
+                              <span className="text-[11px] text-text-secondary line-clamp-1 mt-0.5">{f.release_date ? f.release_date.split('-')[0] : ''}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* SCREEN: RESULTS */}
+            {screen === 'results' && startFilm && targetFilm && (
+              <div className="flex flex-col items-center gap-7 py-6 w-full animate-in fade-in duration-500">
+                <div className="flex flex-col items-center gap-3 text-center">
+                  <span className="text-xs font-bold uppercase tracking-widest text-accent">
+                    Chain Complete
+                  </span>
+
+                  <div className="flex items-center gap-3.5 my-1">
+                    <div className="w-16 h-24 rounded-[4px] overflow-hidden bg-bg-secondary border border-border relative">
+                      <img src={posterUrl(startFilm.poster_path, 'w185')} alt={startFilm.title} className="w-full h-full object-cover" />
+                    </div>
+                    <span className="text-2xl text-text-muted font-light">&rarr;</span>
+                    <div className="w-16 h-24 rounded-[4px] overflow-hidden bg-bg-secondary border border-border relative">
+                      <img src={posterUrl(targetFilm.poster_path, 'w185')} alt={targetFilm.title} className="w-full h-full object-cover" />
+                    </div>
+                  </div>
+
+                  <h2 className="text-base sm:text-lg font-semibold text-text-secondary">
+                    {startFilm.title} to {targetFilm.title}
+                  </h2>
+                </div>
+
+                {/* Score Box */}
+                <div className="flex flex-col gap-2.5 bg-bg-card border border-border rounded-[4px] p-6 w-full max-w-md shadow-2xl">
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-text-secondary text-left">
+                    Your Result
+                  </span>
+                  <div className="flex items-center justify-around py-3">
+                    <div className="text-center">
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-text-secondary block mb-1">
+                        Time
+                      </span>
+                      <span className="font-mono text-3xl sm:text-4xl font-extrabold text-white">
+                        {Math.floor(elapsedSec / 60)}:{String(Math.floor(elapsedSec % 60)).padStart(2, '0')}
+                      </span>
+                    </div>
+                    <div className="w-px h-10 bg-border"></div>
+                    <div className="text-center">
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-text-secondary block mb-1">
+                        Clicks
+                      </span>
+                      <span className="font-mono text-3xl sm:text-4xl font-extrabold text-accent">
+                        {clickCount}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Leaderboard */}
+                <div className="flex flex-col gap-3 bg-bg-secondary border border-border rounded-[4px] p-5 w-full max-w-md">
+                  <div className="flex flex-col text-left gap-0.5">
+                    <span className="text-sm font-extrabold text-white">Leaderboard</span>
+                    <span className="text-[11px] text-text-muted">Today's fastest chains</span>
+                  </div>
+
+                  <table className="w-full border-collapse text-xs">
+                    <thead>
+                      <tr className="border-b border-border text-[10px] uppercase text-text-secondary">
+                        <th className="py-2 px-1.5 text-center w-9">Pos</th>
+                        <th className="py-2 px-1.5 text-left">Player</th>
+                        <th className="py-2 px-1.5 text-right">Time</th>
+                        <th className="py-2 px-1.5 text-right">Clicks</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {leaderboard.length > 0 ? (
+                        leaderboard.slice(0, 10).map((entry, idx) => {
+                          const isYou = entry.handle === handle;
+                          const rankColors = { 1: '#00e054', 2: '#40bcf4', 3: '#ff8000' };
+                          const rankColor = rankColors[idx + 1] || '#667788';
+                          const mins = Math.floor(entry.time_seconds / 60);
+                          const secs = entry.time_seconds % 60;
+
+                          return (
+                            <tr key={entry.id || idx} className={`border-b border-border/50 ${isYou ? 'bg-accent/10' : ''}`}>
+                              <td className="py-2 px-1.5 text-center font-mono font-bold" style={{ color: rankColor }}>
+                                {idx + 1}
+                              </td>
+                              <td className="py-2 px-1.5 text-left font-medium">
+                                <span className={isYou ? 'text-accent font-bold' : 'text-white'}>
+                                  {entry.handle} {isYou ? '(You)' : ''}
+                                </span>
+                              </td>
+                              <td className="py-2 px-1.5 text-right font-mono text-text-secondary">
+                                {mins}:{String(secs).padStart(2, '0')}
+                              </td>
+                              <td className="py-2 px-1.5 text-right font-mono text-text-secondary">
+                                {entry.path ? Math.max(0, entry.path.length - 1) : entry.hop_count * 2}
+                              </td>
+                            </tr>
+                          );
+                        })
+                      ) : (
+                        <tr>
+                          <td colSpan={4} className="py-4 text-center text-text-muted">
+                            Great run! Be the first on today's leaderboard.
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Share Box */}
+                <div className="flex flex-col gap-2 w-full max-w-md text-left">
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-text-muted">Share</span>
+                  <pre className="bg-bg-secondary border border-border rounded-[4px] p-3 text-xs text-text-secondary font-mono whitespace-pre-wrap">
+                    {`FILMTRACE\n${Math.floor(elapsedSec / 60)}:${String(Math.floor(elapsedSec % 60)).padStart(2, '0')} * ${clickCount} clicks\n${path.map(p => (p.type === 'film' ? '🎬' : '👤')).join(' > ')}\nhttps://filmtrace.app`}
+                  </pre>
+                  <button
+                    onClick={copyShare}
+                    className="w-full py-2 bg-transparent text-accent text-xs font-bold uppercase tracking-wider border border-accent rounded-[4px] hover:bg-accent/10 transition-colors cursor-pointer"
+                  >
+                    {copied ? '✓ Copied!' : 'Copy Result'}
+                  </button>
+                </div>
+
+                <button
+                  onClick={() => setScreen('home')}
+                  className="px-8 py-2.5 bg-transparent text-text-secondary text-xs font-semibold border border-border rounded-[4px] hover:text-white hover:border-text-secondary transition-all cursor-pointer"
+                >
+                  &larr; Back to Home
+                </button>
+              </div>
+            )}
+
+            {/* SCREEN: LEADERBOARD */}
+            {screen === 'leaderboard' && (
+              <div className="flex flex-col items-center gap-4 w-full max-w-md mx-auto py-8 text-center">
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-white">Leaderboard</h1>
+                <p className="text-xs text-text-muted mb-4">Today's fastest chains</p>
+
+                <div className="flex flex-col gap-0 bg-bg-secondary border border-border rounded-[4px] p-5 w-full shadow-2xl">
+                  <table className="w-full border-collapse text-xs">
+                    <thead>
+                      <tr className="border-b border-border text-[10px] uppercase text-text-secondary">
+                        <th className="py-2.5 px-1.5 text-center w-10">Pos</th>
+                        <th className="py-2.5 px-1.5 text-left">Player</th>
+                        <th className="py-2.5 px-1.5 text-right">Time</th>
+                        <th className="py-2.5 px-1.5 text-right">Clicks</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {leaderboard.length > 0 ? (
+                        leaderboard.map((entry, idx) => {
+                          const isYou = entry.handle === handle;
+                          const rankColors = { 1: '#00e054', 2: '#40bcf4', 3: '#ff8000' };
+                          const rankColor = rankColors[idx + 1] || '#667788';
+                          const mins = Math.floor(entry.time_seconds / 60);
+                          const secs = entry.time_seconds % 60;
+
+                          return (
+                            <tr key={entry.id || idx} className={`border-b border-border/50 ${isYou ? 'bg-accent/10' : ''}`}>
+                              <td className="py-2.5 px-1.5 text-center font-mono font-bold" style={{ color: rankColor }}>
+                                {idx + 1}
+                              </td>
+                              <td className="py-2.5 px-1.5 text-left font-medium">
+                                <span className={isYou ? 'text-accent font-bold' : 'text-white'}>
+                                  {entry.handle} {isYou ? '(You)' : ''}
+                                </span>
+                              </td>
+                              <td className="py-2.5 px-1.5 text-right font-mono text-text-secondary">
+                                {mins}:{String(secs).padStart(2, '0')}
+                              </td>
+                              <td className="py-2.5 px-1.5 text-right font-mono text-text-secondary">
+                                {entry.path ? Math.max(0, entry.path.length - 1) : entry.hop_count * 2}
+                              </td>
+                            </tr>
+                          );
+                        })
+                      ) : (
+                        <tr>
+                          <td colSpan={4} className="py-8 text-center text-text-muted">
+                            No scores logged today yet. Be the first to solve!
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+
+                <button
+                  onClick={startGame}
+                  className="mt-6 w-full max-w-[260px] py-3 bg-accent text-bg-primary text-xs font-bold uppercase tracking-wider rounded-[4px] hover:bg-accent-dim transition-all shadow-[0_0_16px_rgba(0,224,84,0.3)] cursor-pointer"
+                >
+                  Play Today's Puzzle
+                </button>
+              </div>
+            )}
+
+          </main>
+
+          {/* Footer */}
+          <footer className="border-t border-border bg-bg-secondary py-6 mt-auto">
+            <div className="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-text-muted">
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-text-secondary">Filmtrace</span> — Two films. One trail. How fast can you connect them?
+              </div>
+              <div>Film data powered by TMDb</div>
+            </div>
+          </footer>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

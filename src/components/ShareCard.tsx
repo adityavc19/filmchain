@@ -25,7 +25,7 @@ export default function ShareCard({ date, time, hopCount, path }: ShareCardProps
     // Convert path to emojis
     const pathEmojis = path.map(step => step.type === 'film' ? '🎬' : '👤').join(' › ');
 
-    return `🎬 FILMCHAIN — ${dateFormatted}\n⏱ ${timeStr} · ${hopCount} hops\n${pathEmojis}\nhttps://filmchain.app`;
+    return `🎬 FILMTRACE — ${dateFormatted}\n⏱ ${timeStr} · ${hopCount} hops\n${pathEmojis}\nhttps://filmtrace.app`;
   };
 
   const handleCopy = async () => {

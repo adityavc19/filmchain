@@ -715,7 +715,7 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
               Share
             </span>
             <pre className="bg-bg-secondary border border-border rounded-[4px] p-3 text-xs text-text-secondary font-mono whitespace-pre-wrap">
-              {`FILMCHAIN\n${Math.floor(Math.max(1, Math.round(((state.endTime || 0) - (state.startTime || 0)) / 1000)) / 60)}:${String(Math.max(1, Math.round(((state.endTime || 0) - (state.startTime || 0)) / 1000)) % 60).padStart(2, '0')} * ${state.clickCount} clicks\n${state.path.map(p => (p.type === 'film' ? '🎬' : '👤')).join(' > ')}\nhttps://filmchain.app`}
+              {`FILMTRACE\n${Math.floor(Math.max(1, Math.round(((state.endTime || 0) - (state.startTime || 0)) / 1000)) / 60)}:${String(Math.max(1, Math.round(((state.endTime || 0) - (state.startTime || 0)) / 1000)) % 60).padStart(2, '0')} * ${state.clickCount} clicks\n${state.path.map(p => (p.type === 'film' ? '🎬' : '👤')).join(' > ')}\nhttps://filmtrace.app`}
             </pre>
             <button
               onClick={copyShareResult}

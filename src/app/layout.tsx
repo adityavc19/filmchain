@@ -6,8 +6,8 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'FilmChain — Movie Connections Game',
-  description: 'Connect movies through shared cast and crew members.',
+  title: 'Filmtrace — Two films. One trail. How fast can you connect them?',
+  description: 'Two films. One trail. How fast can you connect them?',
 };
 
 export default function RootLayout({
@@ -28,7 +28,7 @@ export default function RootLayout({
                 <span className="w-2.5 h-2.5 rounded-full bg-[#40bcf4]"></span>
               </div>
               <span className="font-black tracking-tight text-lg text-white group-hover:text-accent transition-colors">
-                FILMCHAIN
+                FILMTRACE
               </span>
             </Link>
 
@@ -55,7 +55,7 @@ export default function RootLayout({
         <footer className="border-t border-border bg-bg-secondary py-6 mt-auto">
           <div className="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-text-muted">
             <div className="flex items-center gap-2">
-              <span className="font-semibold text-text-secondary">FilmChain</span> — Connect movies through cast & crew
+              <span className="font-semibold text-text-secondary">Filmtrace</span> — Two films. One trail. How fast can you connect them?
             </div>
             <div>Film data powered by TMDb</div>
           </div>
