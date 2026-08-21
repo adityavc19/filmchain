@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Logo from '@/components/Logo';
 import { getOrCreateHandle } from '@/lib/handle';
-import { Clapperboard, Plus, Trophy, User } from 'lucide-react';
+import { Compass, Plus, Trophy, User } from 'lucide-react';
 
 export default function Navbar() {
   const [handle, setHandle] = useState('');
@@ -25,11 +25,11 @@ export default function Navbar() {
 
         <nav className="flex items-center gap-3 sm:gap-5 text-xs font-medium">
           <Link 
-            href="/" 
+            href="/community" 
             className="flex items-center gap-1.5 py-1 text-text-secondary hover:text-white transition-colors"
           >
-            <Clapperboard className="w-3.5 h-3.5" />
-            <span>Daily Puzzle</span>
+            <Compass className="w-3.5 h-3.5 text-[#40bcf4]" />
+            <span>Community Games</span>
           </Link>
           <Link 
             href="/create" 

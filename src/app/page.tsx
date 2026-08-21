@@ -182,14 +182,14 @@ export default function Home() {
                 Community Challenges
               </h2>
             </div>
-            <Link href="/create" className="text-xs text-accent hover:underline font-semibold flex items-center gap-1">
-              <span>+ Create Game</span>
+            <Link href="/community" className="text-xs text-accent hover:underline font-semibold flex items-center gap-1">
+              <span>View all games ({communityPuzzles.length})</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {communityPuzzles.map((cp) => (
+            {communityPuzzles.slice(0, 3).map((cp) => (
               <div key={cp.id} className="bg-[#1c242c] border border-[#28323e] p-4 rounded-[4px] flex flex-col justify-between gap-4 shadow hover:border-text-secondary transition-colors">
                 <div className="flex items-center gap-3">
                   <div className="w-11 h-16 relative rounded overflow-hidden bg-[#222b35] border border-[#28323e] flex-shrink-0">
@@ -224,6 +224,16 @@ export default function Home() {
                 </Link>
               </div>
             ))}
+          </div>
+
+          <div className="flex justify-center pt-1">
+            <Link
+              href="/community"
+              className="px-5 py-2 rounded bg-[#1c242c] hover:bg-[#222b35] border border-[#28323e] text-xs font-bold text-text-secondary hover:text-white uppercase tracking-wider transition-colors flex items-center gap-1.5"
+            >
+              <span>Explore All Community Games</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
           </div>
         </section>
       )}
