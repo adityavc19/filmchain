@@ -231,13 +231,13 @@ export default function Home() {
             ))}
           </div>
 
-          <div className="flex justify-center pt-2">
+          <div className="flex justify-center pt-1">
             <Link
               href="/community"
-              className="px-6 py-2.5 rounded bg-[#1c242c] hover:bg-[#222b35] border border-[#28323e] text-xs font-bold text-white uppercase tracking-wider transition-colors flex items-center gap-2 shadow-sm"
+              className="text-xs font-bold text-text-secondary hover:text-white uppercase tracking-wider transition-colors inline-flex items-center gap-1.5 cursor-pointer group"
             >
               <span>Explore All Community Games</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
             </Link>
           </div>
         </section>
