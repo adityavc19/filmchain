@@ -284,44 +284,36 @@ export default function Home() {
                     <Image src="/dil_chahta_hai.jpg" alt="Dil Chahta Hai" fill className="object-cover object-top" />
                   </div>
                   <span className="text-[11px] font-bold text-white text-center truncate max-w-full leading-tight">Dil Chahta Hai</span>
-                  <span className="text-[9px] font-bold uppercase tracking-wider text-[#40bcf4] bg-[#40bcf4]/10 border border-[#40bcf4]/30 px-1.5 py-0.5 rounded">
-                    Start
-                  </span>
                 </div>
 
                 <span className="text-text-muted text-xs sm:text-sm font-bold opacity-60">➔</span>
 
-                {/* 2. Actor / Crew (Hop 1) */}
+                {/* 2. Actor / Crew */}
                 <div className="flex flex-col items-center gap-1.5 w-[18%] sm:w-22">
                   <div className="w-full aspect-[2/3] rounded-[6px] bg-gradient-to-b from-[#222b35] to-[#182028] border border-[#2e3a47] flex flex-col items-center justify-center text-white shadow-sm gap-2 p-1.5">
                     <Users className="w-6 h-6 sm:w-7 sm:h-7 opacity-75 text-text-secondary" />
                     <span className="text-[9px] font-bold uppercase tracking-wider text-text-secondary text-center leading-tight">Cast / Crew</span>
                   </div>
-                  <span className="text-[9px] font-medium text-text-muted">Hop 1</span>
                 </div>
 
                 <span className="text-text-muted text-xs sm:text-sm font-bold opacity-60">➔</span>
 
-                {/* 3. Next Film (Hop 2) */}
+                {/* 3. Next Film */}
                 <div className="flex flex-col items-center gap-1.5 w-[18%] sm:w-22">
                   <div className="w-full aspect-[2/3] rounded-[6px] bg-gradient-to-b from-[#222b35] to-[#182028] border border-[#2e3a47] flex flex-col items-center justify-center text-white shadow-sm gap-2 p-1.5">
                     <Film className="w-6 h-6 sm:w-7 sm:h-7 opacity-75 text-text-secondary" />
                     <span className="text-[9px] font-bold uppercase tracking-wider text-text-secondary text-center leading-tight">Next Film</span>
                   </div>
-                  <span className="text-[9px] font-medium text-text-muted">Hop 2</span>
                 </div>
 
                 <span className="text-text-muted text-xs sm:text-sm font-mono tracking-widest opacity-60">···</span>
 
-                {/* 4. End Film (Oppenheimer - Uncropped 2:3 with Glowing Green Border) */}
+                {/* 4. End Film (Oppenheimer - Glowing Green Border) */}
                 <div className="flex flex-col items-center gap-1.5 w-[22%] sm:w-26">
                   <div className="w-full aspect-[2/3] rounded-[6px] bg-[#222b35] border-2 border-[#00e054] overflow-hidden shadow-[0_0_18px_rgba(0,224,84,0.35)] relative">
                     <Image src="/oppenheimer.jpg" alt="Oppenheimer" fill className="object-cover object-top" />
                   </div>
                   <span className="text-[11px] font-bold text-[#00e054] text-center truncate max-w-full leading-tight">Oppenheimer</span>
-                  <span className="text-[9px] font-bold uppercase tracking-wider text-[#00e054] bg-[#00e054]/10 border border-[#00e054]/30 px-1.5 py-0.5 rounded">
-                    Goal
-                  </span>
                 </div>
 
               </div>
