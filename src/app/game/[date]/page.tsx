@@ -76,6 +76,7 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
   });
 
   const [loadingStep, setLoadingStep] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const [filmCredits, setFilmCredits] = useState<TmdbFilmCredit[]>([]);
   const [currentMedia, setCurrentMedia] = useState<CurrentMediaDetails | null>(null);
   const [currentPerson, setCurrentPerson] = useState<CurrentPersonDetails | null>(null);
@@ -88,6 +89,7 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
 
   const fetchFilmCredits = async (id: number): Promise<TmdbFilmCredit[]> => {
     setLoadingStep(true);
+    setSearchQuery('');
     try {
       let res = await fetch(`/api/film/${id}`);
       let data = await res.json();
@@ -123,6 +125,7 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
 
   const fetchPersonCredits = async (id: number) => {
     setLoadingStep(true);
+    setSearchQuery('');
     try {
       let res = await fetch(`/api/person/${id}`);
       let data = await res.json();
@@ -287,8 +290,34 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
     }
   }
 
-  const castList = Array.from(castMap.values());
-  const crewList = Array.from(crewMap.values());
+  const allCastList = Array.from(castMap.values());
+  const allCrewList = Array.from(crewMap.values());
+
+  // Real-time Search Filtering
+  const q = searchQuery.toLowerCase().trim();
+
+  const filteredCast = allCastList.filter(c =>
+    !q || c.name.toLowerCase().includes(q) || (c.character && c.character.toLowerCase().includes(q)) || (c.job && c.job.toLowerCase().includes(q))
+  );
+
+  const filteredCrew = allCrewList.filter(c =>
+    !q || c.name.toLowerCase().includes(q) || (c.job && c.job.toLowerCase().includes(q))
+  );
+
+  const filteredFilmCredits = filmCredits.filter(c =>
+    !q || c.name.toLowerCase().includes(q) || (c.character && c.character.toLowerCase().includes(q)) || (c.job && c.job.toLowerCase().includes(q))
+  );
+
+  const allPersonTitles = [...personMovies, ...personTvShows];
+  const filteredPersonAll = allPersonTitles.filter(f =>
+    !q || f.title.toLowerCase().includes(q) || (f.character && f.character.toLowerCase().includes(q)) || (f.release_date && f.release_date.includes(q))
+  );
+  const filteredPersonMovies = personMovies.filter(f =>
+    !q || f.title.toLowerCase().includes(q) || (f.character && f.character.toLowerCase().includes(q)) || (f.release_date && f.release_date.includes(q))
+  );
+  const filteredPersonTv = personTvShows.filter(f =>
+    !q || f.title.toLowerCase().includes(q) || (f.character && f.character.toLowerCase().includes(q)) || (f.release_date && f.release_date.includes(q))
+  );
 
   if (state.phase === 'loading') {
     return (
@@ -304,7 +333,7 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
       {/* Sticky Game Status HUD */}
       <div className="flex flex-col gap-3.5 bg-bg-card p-4 sm:p-5 rounded-[4px] border border-border sticky top-16 z-30 shadow-2xl backdrop-blur-md">
         <div className="flex items-center justify-between gap-4 flex-wrap sm:flex-nowrap">
-          {/* Target Film Goal (Thumbnail increased by 100%, label matched to CLICKS & TIME) */}
+          {/* Target Film Goal */}
           {state.targetFilm && (
             <div className="flex items-center gap-4">
               <div
@@ -337,7 +366,7 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
             </div>
           )}
 
-          {/* Right Metrics: Clicks & Timer (Distance increased by 100% to gap-14 sm:gap-20) */}
+          {/* Right Metrics: Clicks & Timer */}
           <div className="flex items-center gap-14 sm:gap-20">
             {/* Clicks Counter */}
             <div className="text-right">
@@ -366,9 +395,8 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
           {/* VIEW: FILM DETAILS */}
           {state.currentView === 'film' && currentMedia && (
             <>
-              {/* Current Movie Showcase Banner (Thumbnail reduced by 40% to w-20 h-[116px] sm:w-[84px] sm:h-[126px]) */}
+              {/* Current Movie Showcase Banner (40% smaller cover image) */}
               <div className="bg-bg-card border border-border rounded-[4px] p-4 sm:p-5 flex flex-col sm:flex-row gap-4 sm:gap-6 text-left shadow-lg">
-                {/* 40% Smaller Poster */}
                 <div className="relative w-20 h-[116px] sm:w-[84px] sm:h-[126px] rounded-[4px] overflow-hidden bg-bg-secondary border border-white/10 flex-shrink-0 self-center sm:self-start">
                   {currentMedia.poster_path ? (
                     <Image
@@ -428,44 +456,66 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
                 </div>
               </div>
 
-              {/* Sub-Tabs: Filter Navigation Bar */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-3 px-1">
+              {/* Sub-Tabs: Filter Navigation Bar with Search Option */}
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-border pb-3 px-1">
                 <span className="text-base sm:text-lg font-extrabold text-white tracking-tight">
                   Choose next person
                 </span>
 
-                {/* Sub-Tabs: Cast vs Crew */}
-                <div className="flex items-center gap-1 bg-bg-secondary p-1 rounded-[4px] border border-border self-start sm:self-auto">
-                  <button
-                    onClick={() => setFilmTab('all')}
-                    className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${
-                      filmTab === 'all'
-                        ? 'bg-accent text-bg-primary font-bold'
-                        : 'text-text-secondary hover:text-text-primary'
-                    }`}
-                  >
-                    All ({filmCredits.length})
-                  </button>
-                  <button
-                    onClick={() => setFilmTab('cast')}
-                    className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${
-                      filmTab === 'cast'
-                        ? 'bg-accent text-bg-primary font-bold'
-                        : 'text-text-secondary hover:text-text-primary'
-                    }`}
-                  >
-                    Cast ({castList.length})
-                  </button>
-                  <button
-                    onClick={() => setFilmTab('crew')}
-                    className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${
-                      filmTab === 'crew'
-                        ? 'bg-accent text-bg-primary font-bold'
-                        : 'text-text-secondary hover:text-text-primary'
-                    }`}
-                  >
-                    Crew ({crewList.length})
-                  </button>
+                <div className="flex items-center gap-2 flex-wrap">
+                  {/* Real-time Search Input inside filter widget */}
+                  <div className="relative flex items-center">
+                    <input
+                      type="text"
+                      placeholder="Search person or role..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="bg-bg-secondary border border-border text-white text-xs rounded-[4px] pl-8 pr-7 py-1.5 focus:outline-none focus:border-accent w-48 sm:w-56 transition-all placeholder:text-text-muted"
+                    />
+                    <span className="absolute left-2.5 text-text-muted text-xs">🔍</span>
+                    {searchQuery && (
+                      <button
+                        onClick={() => setSearchQuery('')}
+                        className="absolute right-2 text-text-muted hover:text-white text-xs cursor-pointer"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Sub-Tabs: Cast vs Crew */}
+                  <div className="flex items-center gap-1 bg-bg-secondary p-1 rounded-[4px] border border-border">
+                    <button
+                      onClick={() => setFilmTab('all')}
+                      className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${
+                        filmTab === 'all'
+                          ? 'bg-accent text-bg-primary font-bold'
+                          : 'text-text-secondary hover:text-text-primary'
+                      }`}
+                    >
+                      All ({filteredFilmCredits.length})
+                    </button>
+                    <button
+                      onClick={() => setFilmTab('cast')}
+                      className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${
+                        filmTab === 'cast'
+                          ? 'bg-accent text-bg-primary font-bold'
+                          : 'text-text-secondary hover:text-text-primary'
+                      }`}
+                    >
+                      Cast ({filteredCast.length})
+                    </button>
+                    <button
+                      onClick={() => setFilmTab('crew')}
+                      className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${
+                        filmTab === 'crew'
+                          ? 'bg-accent text-bg-primary font-bold'
+                          : 'text-text-secondary hover:text-text-primary'
+                      }`}
+                    >
+                      Crew ({filteredCrew.length})
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -479,16 +529,16 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
                 <div className="flex flex-col gap-6">
                   {filmTab === 'all' && (
                     <>
-                      {castList.length > 0 && (
+                      {filteredCast.length > 0 && (
                         <div className="flex flex-col gap-3">
                           <div className="flex items-center gap-2 border-b border-border/60 pb-1.5">
                             <span className="text-xs font-bold uppercase tracking-wider text-text-primary">
                               Cast / Actors
                             </span>
-                            <span className="text-[11px] text-text-muted">({castList.length})</span>
+                            <span className="text-[11px] text-text-muted">({filteredCast.length})</span>
                           </div>
                           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
-                            {castList.map((credit) => (
+                            {filteredCast.map((credit) => (
                               <PersonCard
                                 key={`cast-${credit.id}`}
                                 tmdbId={credit.id}
@@ -504,16 +554,16 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
                         </div>
                       )}
 
-                      {crewList.length > 0 && (
+                      {filteredCrew.length > 0 && (
                         <div className="flex flex-col gap-3 mt-2">
                           <div className="flex items-center gap-2 border-b border-border/60 pb-1.5">
                             <span className="text-xs font-bold uppercase tracking-wider text-text-primary">
                               Crew (Director, Producer, Writer)
                             </span>
-                            <span className="text-[11px] text-text-muted">({crewList.length})</span>
+                            <span className="text-[11px] text-text-muted">({filteredCrew.length})</span>
                           </div>
                           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
-                            {crewList.map((credit) => (
+                            {filteredCrew.map((credit) => (
                               <PersonCard
                                 key={`crew-${credit.id}`}
                                 tmdbId={credit.id}
@@ -527,47 +577,65 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
                           </div>
                         </div>
                       )}
+
+                      {filteredCast.length === 0 && filteredCrew.length === 0 && (
+                        <p className="text-xs text-text-muted py-8 text-center">
+                          No cast or crew found matching &ldquo;{searchQuery}&rdquo;
+                        </p>
+                      )}
                     </>
                   )}
 
                   {filmTab === 'cast' && (
-                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
-                      {castList.map((credit) => (
-                        <PersonCard
-                          key={`cast-tab-${credit.id}`}
-                          tmdbId={credit.id}
-                          name={credit.name}
-                          profilePath={credit.profile_path}
-                          role={credit.character}
-                          job={credit.job}
-                          onClick={() => onSelectPerson(credit.id, credit.name)}
-                          size="sm"
-                        />
-                      ))}
-                    </div>
+                    filteredCast.length > 0 ? (
+                      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
+                        {filteredCast.map((credit) => (
+                          <PersonCard
+                            key={`cast-tab-${credit.id}`}
+                            tmdbId={credit.id}
+                            name={credit.name}
+                            profilePath={credit.profile_path}
+                            role={credit.character}
+                            job={credit.job}
+                            onClick={() => onSelectPerson(credit.id, credit.name)}
+                            size="sm"
+                          />
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-text-muted py-8 text-center">
+                        No cast members found matching &ldquo;{searchQuery}&rdquo;
+                      </p>
+                    )
                   )}
 
                   {filmTab === 'crew' && (
-                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
-                      {crewList.map((credit) => (
-                        <PersonCard
-                          key={`crew-tab-${credit.id}`}
-                          tmdbId={credit.id}
-                          name={credit.name}
-                          profilePath={credit.profile_path}
-                          job={credit.job}
-                          onClick={() => onSelectPerson(credit.id, credit.name)}
-                          size="sm"
-                        />
-                      ))}
-                    </div>
+                    filteredCrew.length > 0 ? (
+                      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
+                        {filteredCrew.map((credit) => (
+                          <PersonCard
+                            key={`crew-tab-${credit.id}`}
+                            tmdbId={credit.id}
+                            name={credit.name}
+                            profilePath={credit.profile_path}
+                            job={credit.job}
+                            onClick={() => onSelectPerson(credit.id, credit.name)}
+                            size="sm"
+                          />
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-text-muted py-8 text-center">
+                        No crew members found matching &ldquo;{searchQuery}&rdquo;
+                      </p>
+                    )
                   )}
                 </div>
               )}
             </>
           )}
 
-          {/* VIEW: PERSON DETAILS (Opened on click of actor/crew member) */}
+          {/* VIEW: PERSON DETAILS */}
           {state.currentView === 'person' && currentPerson && (
             <>
               {/* Person Bio Showcase Banner */}
@@ -604,45 +672,68 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
                 </div>
               </div>
 
-              {/* Sub-Header & Filmography Tabs */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-3 px-1">
+              {/* Sub-Header & Filmography Tabs with Search Option */}
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-border pb-3 px-1">
                 <span className="text-base sm:text-lg font-extrabold text-white tracking-tight">
                   Choose next title
                 </span>
 
-                <div className="flex items-center gap-1 bg-bg-secondary p-1 rounded-[4px] border border-border self-start sm:self-auto">
-                  <button
-                    onClick={() => setPersonTab('all')}
-                    className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${
-                      personTab === 'all'
-                        ? 'bg-accent text-bg-primary font-bold'
-                        : 'text-text-secondary hover:text-text-primary'
-                    }`}
-                  >
-                    All ({personMovies.length + personTvShows.length})
-                  </button>
-                  <button
-                    onClick={() => setPersonTab('movies')}
-                    className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${
-                      personTab === 'movies'
-                        ? 'bg-accent text-bg-primary font-bold'
-                        : 'text-text-secondary hover:text-text-primary'
-                    }`}
-                  >
-                    Movies ({personMovies.length})
-                  </button>
-                  {personTvShows.length > 0 && (
+                <div className="flex items-center gap-2 flex-wrap">
+                  {/* Search Input for titles */}
+                  <div className="relative flex items-center">
+                    <input
+                      type="text"
+                      placeholder="Search title or character..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="bg-bg-secondary border border-border text-white text-xs rounded-[4px] pl-8 pr-7 py-1.5 focus:outline-none focus:border-accent w-48 sm:w-56 transition-all placeholder:text-text-muted"
+                    />
+                    <span className="absolute left-2.5 text-text-muted text-xs">🔍</span>
+                    {searchQuery && (
+                      <button
+                        onClick={() => setSearchQuery('')}
+                        className="absolute right-2 text-text-muted hover:text-white text-xs cursor-pointer"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Tabs */}
+                  <div className="flex items-center gap-1 bg-bg-secondary p-1 rounded-[4px] border border-border">
                     <button
-                      onClick={() => setPersonTab('tv')}
+                      onClick={() => setPersonTab('all')}
                       className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${
-                        personTab === 'tv'
+                        personTab === 'all'
                           ? 'bg-accent text-bg-primary font-bold'
                           : 'text-text-secondary hover:text-text-primary'
                       }`}
                     >
-                      TV Shows ({personTvShows.length})
+                      All ({filteredPersonAll.length})
                     </button>
-                  )}
+                    <button
+                      onClick={() => setPersonTab('movies')}
+                      className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${
+                        personTab === 'movies'
+                          ? 'bg-accent text-bg-primary font-bold'
+                          : 'text-text-secondary hover:text-text-primary'
+                      }`}
+                    >
+                      Movies ({filteredPersonMovies.length})
+                    </button>
+                    {personTvShows.length > 0 && (
+                      <button
+                        onClick={() => setPersonTab('tv')}
+                        className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${
+                          personTab === 'tv'
+                            ? 'bg-accent text-bg-primary font-bold'
+                            : 'text-text-secondary hover:text-text-primary'
+                        }`}
+                      >
+                        TV Shows ({filteredPersonTv.length})
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -653,26 +744,39 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
                   <span className="text-xs text-text-secondary uppercase tracking-widest">Loading...</span>
                 </div>
               ) : (
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
+                <>
                   {(personTab === 'all'
-                    ? [...personMovies, ...personTvShows]
+                    ? filteredPersonAll
                     : personTab === 'movies'
-                    ? personMovies
-                    : personTvShows
-                  ).map((film) => (
-                    <FilmCard
-                      key={`film-${film.id}`}
-                      tmdbId={film.id}
-                      title={film.title}
-                      year={film.release_date ? parseInt(film.release_date.split('-')[0]) : null}
-                      posterPath={film.poster_path}
-                      character={film.character}
-                      isTarget={film.id === state.endFilmId}
-                      onClick={() => onSelectFilm(film.id, film.title)}
-                      size="sm"
-                    />
-                  ))}
-                </div>
+                    ? filteredPersonMovies
+                    : filteredPersonTv
+                  ).length > 0 ? (
+                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
+                      {(personTab === 'all'
+                        ? filteredPersonAll
+                        : personTab === 'movies'
+                        ? filteredPersonMovies
+                        : filteredPersonTv
+                      ).map((film) => (
+                        <FilmCard
+                          key={`film-${film.id}`}
+                          tmdbId={film.id}
+                          title={film.title}
+                          year={film.release_date ? parseInt(film.release_date.split('-')[0]) : null}
+                          posterPath={film.poster_path}
+                          character={film.character}
+                          isTarget={film.id === state.endFilmId}
+                          onClick={() => onSelectFilm(film.id, film.title)}
+                          size="sm"
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-text-muted py-8 text-center">
+                      No titles found matching &ldquo;{searchQuery}&rdquo;
+                    </p>
+                  )}
+                </>
               )}
             </>
           )}

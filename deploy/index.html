@@ -152,6 +152,7 @@
       const [todayPuzzle, setTodayPuzzle] = useState(null);
       const [loading, setLoading] = useState(true);
       const [loadingStep, setLoadingStep] = useState(false);
+      const [searchQuery, setSearchQuery] = useState('');
       const [handle] = useState(getOrCreateHandle);
 
       // Game state
@@ -241,6 +242,7 @@
 
       async function fetchFilmDetails(filmId) {
         setLoadingStep(true);
+        setSearchQuery('');
         try {
           const [details, credits] = await Promise.all([
             fetch(`${TMDB_BASE}/movie/${filmId}?api_key=${TMDB_API_KEY}`).then(r => r.json()),
@@ -270,6 +272,7 @@
 
       async function fetchPersonDetails(personId) {
         setLoadingStep(true);
+        setSearchQuery('');
         try {
           const [pDetails, movieRes, tvRes] = await Promise.all([
             fetch(`${TMDB_BASE}/person/${personId}?api_key=${TMDB_API_KEY}`).then(r => r.json()),
@@ -401,8 +404,31 @@
         });
       }
 
+      const q = searchQuery.toLowerCase().trim();
+
       const castList = filmCredits.filter(c => c.role === 'cast');
       const crewList = filmCredits.filter(c => c.role === 'crew' || c.job);
+
+      const filteredCast = castList.filter(c =>
+        !q || c.name.toLowerCase().includes(q) || (c.character && c.character.toLowerCase().includes(q)) || (c.job && c.job.toLowerCase().includes(q))
+      );
+      const filteredCrew = crewList.filter(c =>
+        !q || c.name.toLowerCase().includes(q) || (c.job && c.job.toLowerCase().includes(q))
+      );
+      const filteredFilmCredits = filmCredits.filter(c =>
+        !q || c.name.toLowerCase().includes(q) || (c.character && c.character.toLowerCase().includes(q)) || (c.job && c.job.toLowerCase().includes(q))
+      );
+
+      const allPersonTitles = [...personMovies, ...personTvShows];
+      const filteredPersonAll = allPersonTitles.filter(f =>
+        !q || f.title.toLowerCase().includes(q) || (f.character && f.character.toLowerCase().includes(q)) || (f.release_date && f.release_date.includes(q))
+      );
+      const filteredPersonMovies = personMovies.filter(f =>
+        !q || f.title.toLowerCase().includes(q) || (f.character && f.character.toLowerCase().includes(q)) || (f.release_date && f.release_date.includes(q))
+      );
+      const filteredPersonTv = personTvShows.filter(f =>
+        !q || f.title.toLowerCase().includes(q) || (f.character && f.character.toLowerCase().includes(q)) || (f.release_date && f.release_date.includes(q))
+      );
 
       return (
         <div className="flex-1 flex flex-col">
@@ -631,31 +657,54 @@
                       </div>
                     </div>
 
-                    {/* Subheader & Tabs */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-3 px-1">
+                    {/* Subheader & Tabs with Search Input */}
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-border pb-3 px-1">
                       <span className="text-base sm:text-lg font-extrabold text-white tracking-tight">
                         Choose next person
                       </span>
 
-                      <div className="flex items-center gap-1 bg-bg-secondary p-1 rounded-[4px] border border-border self-start sm:self-auto">
-                        <button
-                          onClick={() => setFilmTab('all')}
-                          className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${filmTab === 'all' ? 'bg-accent text-bg-primary font-bold' : 'text-text-secondary hover:text-white'}`}
-                        >
-                          All ({filmCredits.length})
-                        </button>
-                        <button
-                          onClick={() => setFilmTab('cast')}
-                          className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${filmTab === 'cast' ? 'bg-accent text-bg-primary font-bold' : 'text-text-secondary hover:text-white'}`}
-                        >
-                          Cast ({castList.length})
-                        </button>
-                        <button
-                          onClick={() => setFilmTab('crew')}
-                          className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${filmTab === 'crew' ? 'bg-accent text-bg-primary font-bold' : 'text-text-secondary hover:text-white'}`}
-                        >
-                          Crew ({crewList.length})
-                        </button>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {/* Search Input */}
+                        <div className="relative flex items-center">
+                          <input
+                            type="text"
+                            placeholder="Search person or role..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="bg-bg-secondary border border-border text-white text-xs rounded-[4px] pl-8 pr-7 py-1.5 focus:outline-none focus:border-accent w-48 sm:w-56 transition-all placeholder:text-text-muted"
+                          />
+                          <span className="absolute left-2.5 text-text-muted text-xs">🔍</span>
+                          {searchQuery && (
+                            <button
+                              onClick={() => setSearchQuery('')}
+                              className="absolute right-2 text-text-muted hover:text-white text-xs cursor-pointer"
+                            >
+                              ✕
+                            </button>
+                          )}
+                        </div>
+
+                        {/* Tabs */}
+                        <div className="flex items-center gap-1 bg-bg-secondary p-1 rounded-[4px] border border-border">
+                          <button
+                            onClick={() => setFilmTab('all')}
+                            className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${filmTab === 'all' ? 'bg-accent text-bg-primary font-bold' : 'text-text-secondary hover:text-white'}`}
+                          >
+                            All ({filteredFilmCredits.length})
+                          </button>
+                          <button
+                            onClick={() => setFilmTab('cast')}
+                            className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${filmTab === 'cast' ? 'bg-accent text-bg-primary font-bold' : 'text-text-secondary hover:text-white'}`}
+                          >
+                            Cast ({filteredCast.length})
+                          </button>
+                          <button
+                            onClick={() => setFilmTab('crew')}
+                            className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${filmTab === 'crew' ? 'bg-accent text-bg-primary font-bold' : 'text-text-secondary hover:text-white'}`}
+                          >
+                            Crew ({filteredCrew.length})
+                          </button>
+                        </div>
                       </div>
                     </div>
 
@@ -669,14 +718,14 @@
                       <div className="flex flex-col gap-6">
                         {filmTab === 'all' && (
                           <>
-                            {castList.length > 0 && (
+                            {filteredCast.length > 0 && (
                               <div className="flex flex-col gap-3">
                                 <div className="flex items-center gap-2 border-b border-border/60 pb-1.5">
                                   <span className="text-xs font-bold uppercase tracking-wider text-text-primary">Cast / Actors</span>
-                                  <span className="text-[11px] text-text-muted">({castList.length})</span>
+                                  <span className="text-[11px] text-text-muted">({filteredCast.length})</span>
                                 </div>
                                 <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
-                                  {castList.map(c => (
+                                  {filteredCast.map(c => (
                                     <div
                                       key={`cast-${c.id}`}
                                       onClick={() => onSelectPerson(c.id, c.name)}
@@ -699,14 +748,14 @@
                               </div>
                             )}
 
-                            {crewList.length > 0 && (
+                            {filteredCrew.length > 0 && (
                               <div className="flex flex-col gap-3 mt-2">
                                 <div className="flex items-center gap-2 border-b border-border/60 pb-1.5">
                                   <span className="text-xs font-bold uppercase tracking-wider text-text-primary">Crew (Director, Producer, Writer)</span>
-                                  <span className="text-[11px] text-text-muted">({crewList.length})</span>
+                                  <span className="text-[11px] text-text-muted">({filteredCrew.length})</span>
                                 </div>
                                 <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
-                                  {crewList.map(c => (
+                                  {filteredCrew.map(c => (
                                     <div
                                       key={`crew-${c.id}`}
                                       onClick={() => onSelectPerson(c.id, c.name)}
@@ -728,35 +777,53 @@
                                 </div>
                               </div>
                             )}
+
+                            {filteredCast.length === 0 && filteredCrew.length === 0 && (
+                              <p className="text-xs text-text-muted py-8 text-center">
+                                No cast or crew found matching &ldquo;{searchQuery}&rdquo;
+                              </p>
+                            )}
                           </>
                         )}
 
                         {filmTab === 'cast' && (
-                          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
-                            {castList.map(c => (
-                              <div key={`cast-tab-${c.id}`} onClick={() => onSelectPerson(c.id, c.name)} className="group flex flex-col gap-1.5 transition-all select-none cursor-pointer w-[110px]">
-                                <div className="relative w-full h-[165px] rounded-[4px] overflow-hidden bg-bg-card border border-white/10 group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)] transition-all duration-200">
-                                  {c.profile_path ? <img src={profileUrl(c.profile_path, 'w185')} alt={c.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-3xl">👤</div>}
+                          filteredCast.length > 0 ? (
+                            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
+                              {filteredCast.map(c => (
+                                <div key={`cast-tab-${c.id}`} onClick={() => onSelectPerson(c.id, c.name)} className="group flex flex-col gap-1.5 transition-all select-none cursor-pointer w-[110px]">
+                                  <div className="relative w-full h-[165px] rounded-[4px] overflow-hidden bg-bg-card border border-white/10 group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)] transition-all duration-200">
+                                    {c.profile_path ? <img src={profileUrl(c.profile_path, 'w185')} alt={c.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-3xl">👤</div>}
+                                  </div>
+                                  <span className="font-medium text-text-primary text-xs line-clamp-1 leading-tight">{c.name}</span>
+                                  <span className="text-[11px] text-text-secondary line-clamp-1">{c.character}</span>
                                 </div>
-                                <span className="font-medium text-text-primary text-xs line-clamp-1 leading-tight">{c.name}</span>
-                                <span className="text-[11px] text-text-secondary line-clamp-1">{c.character}</span>
-                              </div>
-                            ))}
-                          </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="text-xs text-text-muted py-8 text-center">
+                              No cast members found matching &ldquo;{searchQuery}&rdquo;
+                            </p>
+                          )
                         )}
 
                         {filmTab === 'crew' && (
-                          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
-                            {crewList.map(c => (
-                              <div key={`crew-tab-${c.id}`} onClick={() => onSelectPerson(c.id, c.name)} className="group flex flex-col gap-1.5 transition-all select-none cursor-pointer w-[110px]">
-                                <div className="relative w-full h-[165px] rounded-[4px] overflow-hidden bg-bg-card border border-white/10 group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)] transition-all duration-200">
-                                  {c.profile_path ? <img src={profileUrl(c.profile_path, 'w185')} alt={c.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-3xl">👤</div>}
+                          filteredCrew.length > 0 ? (
+                            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
+                              {filteredCrew.map(c => (
+                                <div key={`crew-tab-${c.id}`} onClick={() => onSelectPerson(c.id, c.name)} className="group flex flex-col gap-1.5 transition-all select-none cursor-pointer w-[110px]">
+                                  <div className="relative w-full h-[165px] rounded-[4px] overflow-hidden bg-bg-card border border-white/10 group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)] transition-all duration-200">
+                                    {c.profile_path ? <img src={profileUrl(c.profile_path, 'w185')} alt={c.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-3xl">👤</div>}
+                                  </div>
+                                  <span className="font-medium text-text-primary text-xs line-clamp-1 leading-tight">{c.name}</span>
+                                  <span className="text-[11px] text-text-secondary line-clamp-2 leading-tight">{c.job}</span>
                                 </div>
-                                <span className="font-medium text-text-primary text-xs line-clamp-1 leading-tight">{c.name}</span>
-                                <span className="text-[11px] text-text-secondary line-clamp-2 leading-tight">{c.job}</span>
-                              </div>
-                            ))}
-                          </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="text-xs text-text-muted py-8 text-center">
+                              No crew members found matching &ldquo;{searchQuery}&rdquo;
+                            </p>
+                          )
                         )}
                       </div>
                     )}
@@ -794,33 +861,56 @@
                       </div>
                     </div>
 
-                    {/* Sub-Header & Tabs */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-3 px-1">
+                    {/* Sub-Header & Tabs with Search */}
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-border pb-3 px-1">
                       <span className="text-base sm:text-lg font-extrabold text-white tracking-tight">
                         Choose next title
                       </span>
 
-                      <div className="flex items-center gap-1 bg-bg-secondary p-1 rounded-[4px] border border-border self-start sm:self-auto">
-                        <button
-                          onClick={() => setPersonTab('all')}
-                          className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${personTab === 'all' ? 'bg-accent text-bg-primary font-bold' : 'text-text-secondary hover:text-white'}`}
-                        >
-                          All ({personMovies.length + personTvShows.length})
-                        </button>
-                        <button
-                          onClick={() => setPersonTab('movies')}
-                          className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${personTab === 'movies' ? 'bg-accent text-bg-primary font-bold' : 'text-text-secondary hover:text-white'}`}
-                        >
-                          Movies ({personMovies.length})
-                        </button>
-                        {personTvShows.length > 0 && (
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {/* Search Input for titles */}
+                        <div className="relative flex items-center">
+                          <input
+                            type="text"
+                            placeholder="Search title or character..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="bg-bg-secondary border border-border text-white text-xs rounded-[4px] pl-8 pr-7 py-1.5 focus:outline-none focus:border-accent w-48 sm:w-56 transition-all placeholder:text-text-muted"
+                          />
+                          <span className="absolute left-2.5 text-text-muted text-xs">🔍</span>
+                          {searchQuery && (
+                            <button
+                              onClick={() => setSearchQuery('')}
+                              className="absolute right-2 text-text-muted hover:text-white text-xs cursor-pointer"
+                            >
+                              ✕
+                            </button>
+                          )}
+                        </div>
+
+                        {/* Tabs */}
+                        <div className="flex items-center gap-1 bg-bg-secondary p-1 rounded-[4px] border border-border">
                           <button
-                            onClick={() => setPersonTab('tv')}
-                            className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${personTab === 'tv' ? 'bg-accent text-bg-primary font-bold' : 'text-text-secondary hover:text-white'}`}
+                            onClick={() => setPersonTab('all')}
+                            className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${personTab === 'all' ? 'bg-accent text-bg-primary font-bold' : 'text-text-secondary hover:text-white'}`}
                           >
-                            TV Shows ({personTvShows.length})
+                            All ({filteredPersonAll.length})
                           </button>
-                        )}
+                          <button
+                            onClick={() => setPersonTab('movies')}
+                            className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${personTab === 'movies' ? 'bg-accent text-bg-primary font-bold' : 'text-text-secondary hover:text-white'}`}
+                          >
+                            Movies ({filteredPersonMovies.length})
+                          </button>
+                          {personTvShows.length > 0 && (
+                            <button
+                              onClick={() => setPersonTab('tv')}
+                              className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${personTab === 'tv' ? 'bg-accent text-bg-primary font-bold' : 'text-text-secondary hover:text-white'}`}
+                            >
+                              TV Shows ({filteredPersonTv.length})
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </div>
 
@@ -831,37 +921,50 @@
                         <span className="text-xs text-text-secondary uppercase tracking-widest">Loading...</span>
                       </div>
                     ) : (
-                      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
+                      <>
                         {(personTab === 'all'
-                          ? [...personMovies, ...personTvShows]
+                          ? filteredPersonAll
                           : personTab === 'movies'
-                          ? personMovies
-                          : personTvShows
-                        ).map(f => (
-                          <div
-                            key={`person-film-${f.id}`}
-                            onClick={() => onSelectFilm(f.id, f.title)}
-                            className="group flex flex-col gap-1.5 transition-all select-none cursor-pointer w-[110px]"
-                          >
-                            <div className={`relative w-full h-[165px] rounded-[4px] overflow-hidden bg-bg-card border transition-all duration-200 ${f.id === targetFilm.tmdb_id ? 'border-accent shadow-[0_0_16px_rgba(0,224,84,0.4)]' : 'border-white/10 group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)]'}`}>
-                              {f.poster_path ? (
-                                <img src={posterUrl(f.poster_path, 'w185')} alt={f.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center text-3xl">🎬</div>
-                              )}
-                              {f.id === targetFilm.tmdb_id && (
-                                <div className="absolute top-1.5 right-1.5 bg-accent text-bg-primary text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded shadow">
-                                  GOAL
+                          ? filteredPersonMovies
+                          : filteredPersonTv
+                        ).length > 0 ? (
+                          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
+                            {(personTab === 'all'
+                              ? filteredPersonAll
+                              : personTab === 'movies'
+                              ? filteredPersonMovies
+                              : filteredPersonTv
+                            ).map(f => (
+                              <div
+                                key={`person-film-${f.id}`}
+                                onClick={() => onSelectFilm(f.id, f.title)}
+                                className="group flex flex-col gap-1.5 transition-all select-none cursor-pointer w-[110px]"
+                              >
+                                <div className={`relative w-full h-[165px] rounded-[4px] overflow-hidden bg-bg-card border transition-all duration-200 ${f.id === targetFilm.tmdb_id ? 'border-accent shadow-[0_0_16px_rgba(0,224,84,0.4)]' : 'border-white/10 group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)]'}`}>
+                                  {f.poster_path ? (
+                                    <img src={posterUrl(f.poster_path, 'w185')} alt={f.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                                  ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-3xl">🎬</div>
+                                  )}
+                                  {f.id === targetFilm.tmdb_id && (
+                                    <div className="absolute top-1.5 right-1.5 bg-accent text-bg-primary text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded shadow">
+                                      GOAL
+                                    </div>
+                                  )}
                                 </div>
-                              )}
-                            </div>
-                            <div className="flex flex-col text-left">
-                              <span className="font-medium text-text-primary text-xs line-clamp-1 group-hover:text-accent transition-colors leading-tight">{f.title}</span>
-                              <span className="text-[11px] text-text-secondary line-clamp-1 mt-0.5">{f.release_date ? f.release_date.split('-')[0] : ''}</span>
-                            </div>
+                                <div className="flex flex-col text-left">
+                                  <span className="font-medium text-text-primary text-xs line-clamp-1 group-hover:text-accent transition-colors leading-tight">{f.title}</span>
+                                  <span className="text-[11px] text-text-secondary line-clamp-1 mt-0.5">{f.release_date ? f.release_date.split('-')[0] : ''}</span>
+                                </div>
+                              </div>
+                            ))}
                           </div>
-                        ))}
-                      </div>
+                        ) : (
+                          <p className="text-xs text-text-muted py-8 text-center">
+                            No titles found matching &ldquo;{searchQuery}&rdquo;
+                          </p>
+                        )}
+                      </>
                     )}
                   </>
                 )}
