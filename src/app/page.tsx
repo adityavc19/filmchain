@@ -95,7 +95,7 @@ export default function Home() {
 
           {/* Clean 2-Line Headline */}
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.08]">
-            Two films. <br />
+            <span className="text-[#00e054]">Two films.</span> <br />
             <span className="text-[#9ab0c2]">How do you connect them?</span>
           </h1>
 
@@ -169,10 +169,10 @@ export default function Home() {
 
                 {/* 4. End Film */}
                 <div className="flex flex-col items-center gap-1.5">
-                  <div className="w-12 h-14 rounded bg-[#222b35] border border-[#28323e] flex items-center justify-center text-white shadow-sm">
-                    <Film className="w-5 h-5 text-white" />
+                  <div className="w-12 h-14 rounded bg-[#222b35] border-2 border-[#00e054] flex items-center justify-center text-[#00e054] shadow-[0_0_12px_rgba(0,224,84,0.25)]">
+                    <Film className="w-5 h-5 text-[#00e054]" />
                   </div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-white">End</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#00e054]">End</span>
                 </div>
               </div>
 
