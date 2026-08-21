@@ -99,7 +99,7 @@ export default function Home() {
           <div className="pt-2 w-full sm:w-auto">
             <button
               onClick={() => setShowBrief(true)}
-              className="flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-[4px] bg-[#00e054] hover:bg-[#00b042] text-[#0e1114] font-black text-sm uppercase tracking-wider transition-all shadow-[0_0_20px_rgba(0,224,84,0.25)] cursor-pointer"
+              className="flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-[4px] bg-white hover:bg-[#e6e6e6] text-[#0e1114] font-black text-sm uppercase tracking-wider transition-all shadow-md cursor-pointer"
             >
               <Clapperboard className="w-4 h-4" />
               <span>Play Today&apos;s Puzzle</span>
@@ -122,80 +122,58 @@ export default function Home() {
           )}
         </div>
 
-        {/* Right Column: Multi-Hop "How It Works" Visual Diagram */}
+        {/* Right Column: Clean Minimalist Icon-Based "How It Works" Visual */}
         <div className="lg:col-span-6 flex items-center justify-center">
-          <div className="w-full bg-[#1c242c] border border-[#28323e] rounded-[6px] p-5 shadow-2xl relative overflow-hidden">
-            
-            <div className="flex flex-col gap-4 relative z-10">
+          <div className="w-full bg-[#1c242c] border border-[#28323e] rounded-[6px] p-5 shadow-xl">
+            <div className="flex flex-col gap-4">
               
               {/* Widget Header */}
               <div className="flex items-center justify-between text-[11px] font-mono uppercase text-text-muted border-b border-[#28323e] pb-2">
                 <span>HOW IT WORKS</span>
-                <span className="text-text-secondary">THE TRAIL</span>
+                <span className="text-text-secondary">CHAIN OF LINKS</span>
               </div>
 
-              {/* Multi-Hop Connected Trail (Start -> Person -> Movie -> Person -> Goal) */}
-              <div className="flex items-center justify-between gap-2 overflow-x-auto hide-scrollbar py-1">
-                
-                {/* 1. Start Movie */}
-                <div className="flex flex-col items-center gap-1 flex-shrink-0 w-20">
-                  <div className="w-18 h-24 rounded-[4px] bg-[#222b35] border border-[#28323e] flex flex-col items-center justify-center p-1.5 text-center shadow">
-                    <Film className="w-4 h-4 text-text-muted mb-0.5" />
-                    <span className="text-[10px] font-bold text-white leading-tight line-clamp-2">Dark Knight</span>
-                    <span className="text-[8px] text-text-muted font-mono mt-0.5">2008</span>
+              {/* Clean Icon Flow (Film -> Actor -> Film -> ... -> End) */}
+              <div className="flex items-center justify-center gap-2 sm:gap-3 py-3">
+                {/* 1. Start Film */}
+                <div className="flex flex-col items-center gap-1.5">
+                  <div className="w-12 h-14 rounded bg-[#222b35] border border-[#28323e] flex items-center justify-center text-white shadow-sm">
+                    <Film className="w-5 h-5 text-text-secondary" />
                   </div>
-                  <span className="text-[8px] font-bold uppercase tracking-wider text-text-secondary bg-[#0e1114] px-1.5 py-0.5 rounded border border-[#28323e]">
-                    Start
-                  </span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-text-secondary">Film</span>
                 </div>
 
-                <span className="text-text-muted text-xs font-mono">&rarr;</span>
+                <span className="text-text-muted text-xs">&rarr;</span>
 
-                {/* 2. Person 1 */}
-                <div className="flex flex-col items-center gap-1 flex-shrink-0">
-                  <div className="px-2 py-1 rounded bg-[#222b35] border border-[#28323e] text-[10px] font-semibold text-text-primary text-center shadow">
-                    Christian Bale
+                {/* 2. Actor / Crew */}
+                <div className="flex flex-col items-center gap-1.5">
+                  <div className="w-12 h-14 rounded bg-[#222b35] border border-[#28323e] flex items-center justify-center text-white shadow-sm">
+                    <Users className="w-5 h-5 text-text-secondary" />
                   </div>
-                  <span className="text-[8px] text-text-muted">Actor</span>
+                  <span className="text-[10px] font-medium text-text-secondary">Cast / Crew</span>
                 </div>
 
-                <span className="text-text-muted text-xs font-mono">&rarr;</span>
+                <span className="text-text-muted text-xs">&rarr;</span>
 
-                {/* 3. Intermediate Movie */}
-                <div className="flex flex-col items-center gap-1 flex-shrink-0 w-20">
-                  <div className="w-18 h-24 rounded-[4px] bg-[#222b35] border border-[#28323e] flex flex-col items-center justify-center p-1.5 text-center shadow">
-                    <Film className="w-4 h-4 text-text-muted mb-0.5" />
-                    <span className="text-[10px] font-bold text-white leading-tight line-clamp-2">The Prestige</span>
-                    <span className="text-[8px] text-text-muted font-mono mt-0.5">2006</span>
+                {/* 3. Next Film */}
+                <div className="flex flex-col items-center gap-1.5">
+                  <div className="w-12 h-14 rounded bg-[#222b35] border border-[#28323e] flex items-center justify-center text-white shadow-sm">
+                    <Film className="w-5 h-5 text-text-secondary" />
                   </div>
-                  <span className="text-[8px] font-semibold text-text-muted">Link</span>
+                  <span className="text-[10px] font-medium text-text-secondary">Film</span>
                 </div>
 
-                <span className="text-text-muted text-xs font-mono">&rarr;</span>
+                <span className="text-text-muted text-sm font-mono tracking-widest px-1">&middot;&middot;&middot;</span>
 
-                {/* 4. Person 2 */}
-                <div className="flex flex-col items-center gap-1 flex-shrink-0">
-                  <div className="px-2 py-1 rounded bg-[#222b35] border border-[#28323e] text-[10px] font-semibold text-text-primary text-center shadow">
-                    Hugh Jackman
+                {/* 4. End Film */}
+                <div className="flex flex-col items-center gap-1.5">
+                  <div className="w-12 h-14 rounded bg-[#222b35] border border-accent/50 flex items-center justify-center text-accent shadow-sm">
+                    <Film className="w-5 h-5 text-accent" />
                   </div>
-                  <span className="text-[8px] text-text-muted">Actor</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-accent">End</span>
                 </div>
-
-                <span className="text-text-muted text-xs font-mono">&rarr;</span>
-
-                {/* 5. Goal Movie */}
-                <div className="flex flex-col items-center gap-1 flex-shrink-0 w-20">
-                  <div className="w-18 h-24 rounded-[4px] bg-[#222b35] border border-[#28323e] flex flex-col items-center justify-center p-1.5 text-center shadow">
-                    <Film className="w-4 h-4 text-text-muted mb-0.5" />
-                    <span className="text-[10px] font-bold text-white leading-tight line-clamp-2">Prisoners</span>
-                    <span className="text-[8px] text-text-muted font-mono mt-0.5">2013</span>
-                  </div>
-                  <span className="text-[8px] font-bold uppercase tracking-wider text-accent bg-[#0e1114] px-1.5 py-0.5 rounded border border-[#28323e]">
-                    Goal
-                  </span>
-                </div>
-
               </div>
+
             </div>
           </div>
         </div>
