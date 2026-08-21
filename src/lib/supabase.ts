@@ -36,6 +36,46 @@ export interface LeaderboardEntryRow {
   submitted_at: string;
 }
 
+export interface ProfileRow {
+  username: string;
+  display_name?: string | null;
+  bio?: string | null;
+  created_at: string;
+  last_active_at: string;
+}
+
+export interface CustomPuzzleRow {
+  id: string;
+  creator_handle: string | null;
+  start_film_id: number;
+  end_film_id: number;
+  title: string | null;
+  play_count: number;
+  created_at: string;
+  startFilm?: {
+    tmdb_id: number;
+    title: string;
+    year: number | null;
+    poster_path: string | null;
+  };
+  endFilm?: {
+    tmdb_id: number;
+    title: string;
+    year: number | null;
+    poster_path: string | null;
+  };
+}
+
+export interface CustomLeaderboardEntryRow {
+  id: string;
+  puzzle_id: string;
+  handle: string;
+  time_seconds: number;
+  hop_count: number;
+  path: PathStep[];
+  submitted_at: string;
+}
+
 export interface PathStep {
   type: 'film' | 'person';
   id: number;

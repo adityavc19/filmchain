@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import Link from 'next/link';
 import { posterUrl } from '@/lib/tmdb';
 
 interface FilmInfo {
@@ -20,30 +21,43 @@ interface TodayPuzzle {
   playerCount: number;
 }
 
+interface CommunityPuzzle {
+  id: string;
+  creator_handle: string | null;
+  title: string | null;
+  play_count: number;
+  created_at: string;
+  startFilm?: FilmInfo | null;
+  endFilm?: FilmInfo | null;
+}
+
 export default function Home() {
   const router = useRouter();
   const [puzzle, setPuzzle] = useState<TodayPuzzle | null>(null);
+  const [communityPuzzles, setCommunityPuzzles] = useState<CommunityPuzzle[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/puzzle/today')
-      .then((res) => res.json())
-      .then((data) => {
-        setPuzzle(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setLoading(false);
-      });
+    Promise.all([
+      fetch('/api/puzzle/today').then(r => r.json()).catch(() => null),
+      fetch('/api/puzzle/community').then(r => r.json()).catch(() => ({ puzzles: [] })),
+    ]).then(([todayData, commData]) => {
+      if (todayData && !todayData.error) {
+        setPuzzle(todayData);
+      }
+      if (commData && commData.puzzles) {
+        setCommunityPuzzles(commData.puzzles);
+      }
+      setLoading(false);
+    });
   }, []);
 
   return (
-    <main className="flex flex-col items-center justify-center min-h-[70vh] gap-10 text-center py-6 max-w-4xl mx-auto w-full">
+    <main className="flex flex-col items-center justify-center min-h-[70vh] gap-12 text-center py-4 max-w-4xl mx-auto w-full">
       {loading ? (
         <div className="flex flex-col items-center justify-center min-h-[50vh] gap-3">
           <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
-          <p className="text-xs uppercase tracking-widest text-text-secondary">Loading Today&apos;s Puzzle...</p>
+          <p className="text-xs uppercase tracking-widest text-text-secondary">Loading Today&apos;s Challenge...</p>
         </div>
       ) : puzzle && puzzle.startFilm && puzzle.endFilm ? (
         <div className="flex flex-col items-center gap-10 w-full">
@@ -158,6 +172,75 @@ export default function Home() {
                 {puzzle.playerCount ? `👥 ${puzzle.playerCount.toLocaleString()} solves logged today` : 'Be the first to solve today'}
               </span>
             </div>
+          </div>
+
+          {/* COMMUNITY PUZZLES SECTION */}
+          {communityPuzzles.length > 0 && (
+            <div className="flex flex-col gap-4 w-full max-w-2xl text-left">
+              <div className="flex items-center justify-between border-b border-border pb-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-base">🧩</span>
+                  <h2 className="text-sm sm:text-base font-bold uppercase tracking-wider text-white">
+                    Community Puzzles
+                  </h2>
+                </div>
+                <Link href="/create" className="text-xs text-accent hover:underline font-semibold">
+                  + Create Your Own
+                </Link>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                {communityPuzzles.map((cp) => (
+                  <div key={cp.id} className="bg-bg-card border border-border p-4 rounded-[4px] flex flex-col gap-3 justify-between shadow-md hover:border-text-secondary transition-colors">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-10 h-14 relative rounded overflow-hidden bg-bg-secondary border border-border flex-shrink-0">
+                        {cp.startFilm?.poster_path ? (
+                          <Image src={posterUrl(cp.startFilm.poster_path, 'w92')} alt={cp.startFilm.title} fill className="object-cover" />
+                        ) : <div className="w-full h-full flex items-center justify-center text-xs">🎬</div>}
+                      </div>
+                      <span className="text-xs font-light text-accent">➔</span>
+                      <div className="w-10 h-14 relative rounded overflow-hidden bg-bg-secondary border-2 border-accent flex-shrink-0">
+                        {cp.endFilm?.poster_path ? (
+                          <Image src={posterUrl(cp.endFilm.poster_path, 'w92')} alt={cp.endFilm.title} fill className="object-cover" />
+                        ) : <div className="w-full h-full flex items-center justify-center text-xs">🎬</div>}
+                      </div>
+                      <div className="flex flex-col min-w-0">
+                        <span className="font-bold text-xs text-white truncate">
+                          {cp.title || `${cp.startFilm?.title} → ${cp.endFilm?.title}`}
+                        </span>
+                        {cp.creator_handle && (
+                          <span className="text-[10px] text-text-secondary font-mono">
+                            by @{cp.creator_handle}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <Link
+                      href={`/game/custom/${cp.id}`}
+                      className="w-full py-1.5 bg-bg-secondary hover:bg-accent hover:text-bg-primary text-text-primary text-[11px] font-bold uppercase tracking-wider rounded text-center border border-border transition-colors"
+                    >
+                      Play Puzzle &rarr;
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* CREATE YOUR OWN CTA BANNER */}
+          <div className="bg-gradient-to-r from-[#1c2228] via-[#202830] to-[#1c2228] border border-border p-6 rounded-[4px] w-full max-w-2xl flex flex-col sm:flex-row items-center justify-between gap-4 text-left shadow-lg">
+            <div className="flex flex-col gap-1">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-[#40bcf4]">Freeform Studio</span>
+              <h3 className="text-base sm:text-lg font-black text-white">Have a tricky movie connection?</h3>
+              <p className="text-xs text-text-secondary">Create a custom puzzle with any 2 films and challenge your friends.</p>
+            </div>
+            <Link
+              href="/create"
+              className="px-5 py-2.5 bg-accent hover:bg-accent-dim text-bg-primary text-xs font-bold uppercase tracking-wider rounded transition-colors whitespace-nowrap shadow-[0_0_12px_rgba(0,224,84,0.3)]"
+            >
+              Create Puzzle &rarr;
+            </Link>
           </div>
 
           {/* INLINE "HOW TO PLAY" COMPLETE GUIDE */}

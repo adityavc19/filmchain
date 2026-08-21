@@ -172,7 +172,7 @@ export async function fetchPopularMovies(page: number): Promise<TmdbMovieDetails
   return data.results;
 }
 
-export function posterUrl(path: string | null, size: 'w185' | 'w342' | 'w500' = 'w342'): string {
+export function posterUrl(path: string | null, size: 'w92' | 'w185' | 'w342' | 'w500' = 'w342'): string {
   if (!path) return '/placeholder-poster.png';
   return `${TMDB_IMAGE_BASE}/${size}${path}`;
 }

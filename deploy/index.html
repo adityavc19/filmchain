@@ -67,7 +67,7 @@
   <div id="root" class="min-h-screen flex flex-col"></div>
 
   <script type="text/babel">
-    const { useState, useEffect } = React;
+    const { useState, useEffect, useRef } = React;
 
     const TMDB_API_KEY = '81d2e74ce1c54d587d152b68d900b8c8';
     const TMDB_BASE = 'https://api.themoviedb.org/3';
@@ -87,7 +87,6 @@
 
     function filterCredits(cast = [], crew = []) {
       const map = new Map();
-
       for (const c of cast) {
         if (c && c.id && c.order < MAX_CAST_ORDER) {
           map.set(c.id, {
@@ -147,16 +146,18 @@
     }
 
     function App() {
-      const [screen, setScreen] = useState('home'); // 'home' | 'game' | 'results' | 'leaderboard'
+      const [screen, setScreen] = useState('home'); // 'home' | 'game' | 'results' | 'leaderboard' | 'create' | 'profile'
       const [currentView, setCurrentView] = useState('film'); // 'film' | 'person'
       const [todayPuzzle, setTodayPuzzle] = useState(null);
+      const [communityPuzzles, setCommunityPuzzles] = useState([]);
       const [loading, setLoading] = useState(true);
       const [loadingStep, setLoadingStep] = useState(false);
       const [searchQuery, setSearchQuery] = useState('');
-      const [showHowToPlay, setShowHowToPlay] = useState(false);
-      const [handle] = useState(getOrCreateHandle);
+      const [handle, setHandle] = useState(getOrCreateHandle);
 
       // Game state
+      const [customPuzzleId, setCustomPuzzleId] = useState(null);
+      const [customCreator, setCustomCreator] = useState(null);
       const [startFilm, setStartFilm] = useState(null);
       const [targetFilm, setTargetFilm] = useState(null);
       const [currentMedia, setCurrentMedia] = useState(null);
@@ -174,6 +175,26 @@
       const [leaderboard, setLeaderboard] = useState([]);
       const [copied, setCopied] = useState(false);
 
+      // Profile View State
+      const [profileUsername, setProfileUsername] = useState(handle);
+      const [profileData, setProfileData] = useState(null);
+      const [isEditingProfile, setIsEditingProfile] = useState(false);
+      const [editUsernameInput, setEditUsernameInput] = useState('');
+      const [editBioInput, setEditBioInput] = useState('');
+      const [usernameCheck, setUsernameCheck] = useState({ checked: true, available: true, msg: '' });
+
+      // Create Studio State
+      const [createStartMovie, setCreateStartMovie] = useState(null);
+      const [createTargetMovie, setCreateTargetMovie] = useState(null);
+      const [createTitle, setCreateTitle] = useState('');
+      const [startSearchQuery, setStartSearchQuery] = useState('');
+      const [startSearchResults, setStartSearchResults] = useState([]);
+      const [targetSearchQuery, setTargetSearchQuery] = useState('');
+      const [targetSearchResults, setTargetSearchResults] = useState([]);
+      const [createdPuzzleResult, setCreatedPuzzleResult] = useState(null);
+      const [isPublishing, setIsPublishing] = useState(false);
+      const [createError, setCreateError] = useState('');
+
       // Timer ticker
       useEffect(() => {
         let interval = null;
@@ -185,61 +206,150 @@
         return () => clearInterval(interval);
       }, [screen, startTime, endTime]);
 
-      // Load initial daily puzzle
+      // Load initial daily puzzle & check for URL params e.g. ?custom=...
       useEffect(() => {
-        async function loadPuzzle() {
+        async function init() {
           try {
-            let pDate = '2026-08-21';
-            let sId = 155; // The Dark Knight
-            let tId = 27205; // Inception
+            const urlParams = new URLSearchParams(window.location.search);
+            const customParam = urlParams.get('custom');
 
-            try {
-              const res = await fetch(`${SUPABASE_URL}/rest/v1/daily_puzzles?select=*&order=date.desc&limit=1`, {
-                headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` }
-              });
-              const data = await res.json();
-              if (data && data[0]) {
-                pDate = data[0].date;
-                sId = data[0].start_film_id;
-                tId = data[0].end_film_id;
-              }
-            } catch (e) {
-              console.warn('Using fallback puzzle pair');
+            if (customParam) {
+              await loadCustomPuzzle(customParam);
+            } else {
+              await loadDailyPuzzle();
             }
-
-            const [sDetails, tDetails] = await Promise.all([
-              fetch(`${TMDB_BASE}/movie/${sId}?api_key=${TMDB_API_KEY}`).then(r => r.json()),
-              fetch(`${TMDB_BASE}/movie/${tId}?api_key=${TMDB_API_KEY}`).then(r => r.json()),
-            ]);
-
-            const puzzleObj = {
-              date: pDate,
-              startFilm: {
-                tmdb_id: sDetails.id,
-                title: sDetails.title,
-                year: sDetails.release_date ? parseInt(sDetails.release_date.split('-')[0]) : null,
-                poster_path: sDetails.poster_path,
-              },
-              endFilm: {
-                tmdb_id: tDetails.id,
-                title: tDetails.title,
-                year: tDetails.release_date ? parseInt(tDetails.release_date.split('-')[0]) : null,
-                poster_path: tDetails.poster_path,
-              },
-            };
-
-            setTodayPuzzle(puzzleObj);
-            setStartFilm(puzzleObj.startFilm);
-            setTargetFilm(puzzleObj.endFilm);
-            setLoading(false);
-          } catch (err) {
-            console.error('Error loading puzzle:', err);
+            loadCommunityPuzzles();
+          } catch (e) {
+            console.error(e);
             setLoading(false);
           }
         }
-
-        loadPuzzle();
+        init();
       }, []);
+
+      async function loadDailyPuzzle() {
+        try {
+          let pDate = '2026-08-21';
+          let sId = 155; // The Dark Knight
+          let tId = 27205; // Inception
+
+          try {
+            const res = await fetch(`${SUPABASE_URL}/rest/v1/daily_puzzles?select=*&order=date.desc&limit=1`, {
+              headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` }
+            });
+            const data = await res.json();
+            if (data && data[0]) {
+              pDate = data[0].date;
+              sId = data[0].start_film_id;
+              tId = data[0].end_film_id;
+            }
+          } catch (e) {
+            console.warn('Using fallback puzzle pair');
+          }
+
+          const [sDetails, tDetails] = await Promise.all([
+            fetch(`${TMDB_BASE}/movie/${sId}?api_key=${TMDB_API_KEY}`).then(r => r.json()),
+            fetch(`${TMDB_BASE}/movie/${tId}?api_key=${TMDB_API_KEY}`).then(r => r.json()),
+          ]);
+
+          const puzzleObj = {
+            date: pDate,
+            startFilm: {
+              tmdb_id: sDetails.id,
+              title: sDetails.title,
+              year: sDetails.release_date ? parseInt(sDetails.release_date.split('-')[0]) : null,
+              poster_path: sDetails.poster_path,
+            },
+            endFilm: {
+              tmdb_id: tDetails.id,
+              title: tDetails.title,
+              year: tDetails.release_date ? parseInt(tDetails.release_date.split('-')[0]) : null,
+              poster_path: tDetails.poster_path,
+            },
+          };
+
+          setTodayPuzzle(puzzleObj);
+          setStartFilm(puzzleObj.startFilm);
+          setTargetFilm(puzzleObj.endFilm);
+          setCustomPuzzleId(null);
+          setCustomCreator(null);
+          setLoading(false);
+        } catch (err) {
+          console.error('Error loading puzzle:', err);
+          setLoading(false);
+        }
+      }
+
+      async function loadCustomPuzzle(puzzleId) {
+        setLoading(true);
+        try {
+          const res = await fetch(`${SUPABASE_URL}/rest/v1/custom_puzzles?id=eq.${puzzleId}&select=*`, {
+            headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` }
+          });
+          const data = await res.json();
+          if (data && data[0]) {
+            const p = data[0];
+            const [sDetails, tDetails] = await Promise.all([
+              fetch(`${TMDB_BASE}/movie/${p.start_film_id}?api_key=${TMDB_API_KEY}`).then(r => r.json()),
+              fetch(`${TMDB_BASE}/movie/${p.end_film_id}?api_key=${TMDB_API_KEY}`).then(r => r.json()),
+            ]);
+
+            const sFilm = {
+              tmdb_id: sDetails.id,
+              title: sDetails.title,
+              year: sDetails.release_date ? parseInt(sDetails.release_date.split('-')[0]) : null,
+              poster_path: sDetails.poster_path,
+            };
+            const tFilm = {
+              tmdb_id: tDetails.id,
+              title: tDetails.title,
+              year: tDetails.release_date ? parseInt(tDetails.release_date.split('-')[0]) : null,
+              poster_path: tDetails.poster_path,
+            };
+
+            setStartFilm(sFilm);
+            setTargetFilm(tFilm);
+            setCustomPuzzleId(p.id);
+            setCustomCreator(p.creator_handle);
+            startSpecificGame(sFilm, tFilm, p.id, p.creator_handle);
+          }
+        } catch (e) {
+          console.error(e);
+        } finally {
+          setLoading(false);
+        }
+      }
+
+      async function loadCommunityPuzzles() {
+        try {
+          const res = await fetch(`${SUPABASE_URL}/rest/v1/custom_puzzles?select=*&order=created_at.desc&limit=6`, {
+            headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` }
+          });
+          const list = await res.json();
+          if (Array.isArray(list)) {
+            const populated = await Promise.all(
+              list.map(async (p) => {
+                try {
+                  const [sMovie, tMovie] = await Promise.all([
+                    fetch(`${TMDB_BASE}/movie/${p.start_film_id}?api_key=${TMDB_API_KEY}`).then(r => r.json()),
+                    fetch(`${TMDB_BASE}/movie/${p.end_film_id}?api_key=${TMDB_API_KEY}`).then(r => r.json()),
+                  ]);
+                  return {
+                    ...p,
+                    startFilm: { tmdb_id: sMovie.id, title: sMovie.title, poster_path: sMovie.poster_path },
+                    endFilm: { tmdb_id: tMovie.id, title: tMovie.title, poster_path: tMovie.poster_path },
+                  };
+                } catch (e) {
+                  return p;
+                }
+              })
+            );
+            setCommunityPuzzles(populated);
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
 
       async function fetchFilmDetails(filmId) {
         setLoadingStep(true);
@@ -310,14 +420,22 @@
 
       function startGame() {
         if (!startFilm || !targetFilm) return;
-        const startPath = [{ type: 'film', id: startFilm.tmdb_id, name: startFilm.title }];
+        startSpecificGame(startFilm, targetFilm, null, null);
+      }
+
+      function startSpecificGame(sFilm, tFilm, cId = null, cCreator = null) {
+        const startPath = [{ type: 'film', id: sFilm.tmdb_id, name: sFilm.title }];
+        setStartFilm(sFilm);
+        setTargetFilm(tFilm);
+        setCustomPuzzleId(cId);
+        setCustomCreator(cCreator);
         setPath(startPath);
         setClickCount(0);
         setStartTime(Date.now());
         setEndTime(null);
         setElapsedSec(0);
         setScreen('game');
-        fetchFilmDetails(startFilm.tmdb_id);
+        fetchFilmDetails(sFilm.tmdb_id);
       }
 
       async function onSelectPerson(personId, name) {
@@ -341,7 +459,23 @@
           try {
             const timeSec = Math.max(1, Math.round((end - (startTime || end)) / 1000));
             const hops = Math.floor(newPath.length / 2);
-            await fetch(`${SUPABASE_URL}/rest/v1/leaderboard_entries`, {
+
+            const table = customPuzzleId ? 'custom_leaderboard_entries' : 'leaderboard_entries';
+            const payload = customPuzzleId ? {
+              puzzle_id: customPuzzleId,
+              handle,
+              time_seconds: timeSec,
+              hop_count: hops,
+              path: newPath,
+            } : {
+              puzzle_date: todayPuzzle.date,
+              handle,
+              time_seconds: timeSec,
+              hop_count: hops,
+              path: newPath,
+            };
+
+            await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
               method: 'POST',
               headers: {
                 'apikey': SUPABASE_ANON,
@@ -349,15 +483,9 @@
                 'Content-Type': 'application/json',
                 'Prefer': 'return=representation'
               },
-              body: JSON.stringify({
-                puzzle_date: todayPuzzle.date,
-                handle,
-                time_seconds: timeSec,
-                hop_count: hops,
-                path: newPath,
-              })
+              body: JSON.stringify(payload)
             });
-            fetchLeaderboardData(todayPuzzle.date);
+            fetchLeaderboardData(customPuzzleId || todayPuzzle.date, !!customPuzzleId);
           } catch (e) {
             console.error('Failed to submit score:', e);
           }
@@ -380,9 +508,12 @@
         }
       }
 
-      async function fetchLeaderboardData(date) {
+      async function fetchLeaderboardData(param, isCustom = false) {
         try {
-          const res = await fetch(`${SUPABASE_URL}/rest/v1/leaderboard_entries?puzzle_date=eq.${date}&order=time_seconds.asc&limit=15`, {
+          const url = isCustom
+            ? `${SUPABASE_URL}/rest/v1/custom_leaderboard_entries?puzzle_id=eq.${param}&order=time_seconds.asc&limit=15`
+            : `${SUPABASE_URL}/rest/v1/leaderboard_entries?puzzle_date=eq.${param}&order=time_seconds.asc&limit=15`;
+          const res = await fetch(url, {
             headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` }
           });
           const data = await res.json();
@@ -392,12 +523,163 @@
         }
       }
 
+      async function openProfile(userHandle) {
+        setProfileUsername(userHandle);
+        setScreen('profile');
+        setLoading(true);
+
+        try {
+          // Fetch user's leaderboard solves
+          const solvesRes = await fetch(`${SUPABASE_URL}/rest/v1/leaderboard_entries?handle=eq.${userHandle}&order=submitted_at.desc`, {
+            headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` }
+          });
+          const solves = await solvesRes.json();
+
+          // Fetch user's created puzzles
+          const puzzlesRes = await fetch(`${SUPABASE_URL}/rest/v1/custom_puzzles?creator_handle=eq.${userHandle}&order=created_at.desc`, {
+            headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` }
+          });
+          const created = await puzzlesRes.json();
+
+          const totalSolves = Array.isArray(solves) ? solves.length : 0;
+          const bestTime = totalSolves > 0 ? Math.min(...solves.map(s => s.time_seconds)) : null;
+          const fewestClicks = totalSolves > 0 ? Math.min(...solves.map(s => (s.path && s.path.length ? s.path.length - 1 : s.hop_count * 2))) : null;
+
+          setProfileData({
+            username: userHandle,
+            totalSolves,
+            bestTime,
+            fewestClicks,
+            createdCount: Array.isArray(created) ? created.length : 0,
+            solves: Array.isArray(solves) ? solves.slice(0, 10) : [],
+            puzzles: Array.isArray(created) ? created : [],
+          });
+        } catch (e) {
+          console.error(e);
+        } finally {
+          setLoading(false);
+        }
+      }
+
+      async function handleSaveUsername() {
+        const u = editUsernameInput.trim().toLowerCase();
+        if (!u || !/^[a-z0-9_-]{3,24}$/.test(u)) {
+          alert('Username must be 3-24 characters containing only letters, numbers, hyphens, and underscores.');
+          return;
+        }
+
+        try {
+          const res = await fetch(`${SUPABASE_URL}/rest/v1/profiles?username=eq.${u}&select=username`, {
+            headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` }
+          });
+          const existing = await res.json();
+          if (existing && existing.length > 0 && u !== handle) {
+            alert('Username is already taken. Please choose another one.');
+            return;
+          }
+
+          // Save to profiles table
+          await fetch(`${SUPABASE_URL}/rest/v1/profiles`, {
+            method: 'POST',
+            headers: {
+              'apikey': SUPABASE_ANON,
+              'Authorization': `Bearer ${SUPABASE_ANON}`,
+              'Content-Type': 'application/json',
+              'Prefer': 'resolution=merge-duplicates'
+            },
+            body: JSON.stringify({
+              username: u,
+              display_name: u,
+              bio: editBioInput,
+              last_active_at: new Date().toISOString(),
+            })
+          });
+
+          localStorage.setItem('filmtrace-handle', u);
+          setHandle(u);
+          setIsEditingProfile(false);
+          openProfile(u);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      // Search TMDb for movies in Studio
+      async function searchTmdbMovie(query, isStart = true) {
+        if (!query || query.length < 2) {
+          if (isStart) setStartSearchResults([]);
+          else setTargetSearchResults([]);
+          return;
+        }
+
+        try {
+          const res = await fetch(`${TMDB_BASE}/search/movie?query=${encodeURIComponent(query)}&api_key=${TMDB_API_KEY}`);
+          const data = await res.json();
+          const results = (data.results || []).slice(0, 6).map(m => ({
+            id: m.id,
+            title: m.title,
+            year: m.release_date ? m.release_date.split('-')[0] : '',
+            poster_path: m.poster_path,
+          }));
+
+          if (isStart) setStartSearchResults(results);
+          else setTargetSearchResults(results);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      async function publishCustomPuzzle() {
+        setCreateError('');
+        if (!createStartMovie || !createTargetMovie) {
+          setCreateError('Please select both a Start Movie and a Target Movie.');
+          return;
+        }
+        if (createStartMovie.id === createTargetMovie.id) {
+          setCreateError('Start Movie and Target Movie cannot be the same!');
+          return;
+        }
+
+        setIsPublishing(true);
+        try {
+          const puzzleTitle = createTitle.trim() || `${createStartMovie.title} → ${createTargetMovie.title}`;
+          const res = await fetch(`${SUPABASE_URL}/rest/v1/custom_puzzles`, {
+            method: 'POST',
+            headers: {
+              'apikey': SUPABASE_ANON,
+              'Authorization': `Bearer ${SUPABASE_ANON}`,
+              'Content-Type': 'application/json',
+              'Prefer': 'return=representation'
+            },
+            body: JSON.stringify({
+              creator_handle: handle,
+              start_film_id: createStartMovie.id,
+              end_film_id: createTargetMovie.id,
+              title: puzzleTitle,
+            })
+          });
+          const created = await res.json();
+          if (created && created[0]) {
+            const pId = created[0].id;
+            const fullUrl = `${window.location.origin}${window.location.pathname}?custom=${pId}`;
+            setCreatedPuzzleResult({ id: pId, url: fullUrl });
+            loadCommunityPuzzles();
+          }
+        } catch (e) {
+          console.error(e);
+          setCreateError('Failed to publish puzzle.');
+        } finally {
+          setIsPublishing(false);
+        }
+      }
+
       function copyShare() {
         const mins = Math.floor(elapsedSec / 60);
         const secs = Math.floor(elapsedSec % 60);
         const timeStr = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
         const emojiPath = path.map(p => (p.type === 'film' ? '🎬' : '👤')).join(' > ');
-        const text = `FILMTRACE\n${timeStr} * ${clickCount} clicks\n${emojiPath}\nhttps://filmtrace.app`;
+        const customTag = customCreator ? ` (by @${customCreator})` : '';
+        const text = `FILMTRACE${customTag}\n${timeStr} * ${clickCount} clicks\n${emojiPath}\n${window.location.href}`;
 
         navigator.clipboard.writeText(text).then(() => {
           setCopied(true);
@@ -406,7 +688,6 @@
       }
 
       const q = searchQuery.toLowerCase().trim();
-
       const castList = filmCredits.filter(c => c.role === 'cast');
       const crewList = filmCredits.filter(c => c.role === 'crew' || c.job);
 
@@ -436,7 +717,7 @@
           {/* Header */}
           <header className="border-b border-border bg-bg-primary/95 backdrop-blur sticky top-0 z-50">
             <div className="max-w-5xl mx-auto px-4 min-h-[56px] flex items-center justify-between flex-wrap gap-2">
-              <div onClick={() => setScreen('home')} className="flex items-center gap-2 cursor-pointer group">
+              <div onClick={() => { setScreen('home'); loadDailyPuzzle(); }} className="flex items-center gap-2 cursor-pointer group">
                 <svg width="30" height="30" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <defs>
                     <linearGradient id="ft-nav-grad" x1="4" y1="4" x2="28" y2="28" gradientUnits="userSpaceOnUse">
@@ -461,25 +742,36 @@
                 </span>
               </div>
 
-              <nav className="flex items-center gap-3 sm:gap-4 text-xs font-semibold">
+              <nav className="flex items-center gap-2 sm:gap-3 text-xs font-semibold">
                 <button
-                  onClick={() => setScreen('home')}
-                  className={`px-3 py-1 transition-colors cursor-pointer ${screen === 'home' || screen === 'game' || screen === 'results' ? 'text-white' : 'text-text-secondary hover:text-white'}`}
+                  onClick={() => { setScreen('home'); loadDailyPuzzle(); }}
+                  className={`px-2.5 py-1 transition-colors cursor-pointer ${screen === 'home' || screen === 'game' || screen === 'results' ? 'text-white' : 'text-text-secondary hover:text-white'}`}
                 >
                   Daily Puzzle
                 </button>
                 <button
+                  onClick={() => setScreen('create')}
+                  className={`px-2.5 py-1 transition-colors cursor-pointer ${screen === 'create' ? 'text-white' : 'text-text-secondary hover:text-white'}`}
+                >
+                  Create Puzzle
+                </button>
+                <button
                   onClick={() => {
                     setScreen('leaderboard');
-                    if (todayPuzzle) fetchLeaderboardData(todayPuzzle.date);
+                    if (todayPuzzle) fetchLeaderboardData(todayPuzzle.date, false);
                   }}
-                  className={`px-3 py-1 transition-colors cursor-pointer ${screen === 'leaderboard' ? 'text-white' : 'text-text-secondary hover:text-white'}`}
+                  className={`px-2.5 py-1 transition-colors cursor-pointer ${screen === 'leaderboard' ? 'text-white' : 'text-text-secondary hover:text-white'}`}
                 >
                   Leaderboard
                 </button>
-                <span className="px-3 py-1 text-text-muted flex items-center gap-1.5 cursor-default">
-                  Create Puzzle <span className="text-[9px] bg-bg-secondary border border-border px-1.5 py-0.5 rounded font-mono">SOON</span>
-                </span>
+
+                <button
+                  onClick={() => openProfile(handle)}
+                  className={`flex items-center gap-1.5 bg-bg-secondary hover:bg-bg-hover text-white border px-2.5 py-1 rounded-[4px] font-mono text-[11px] transition-colors cursor-pointer ml-1 ${screen === 'profile' ? 'border-accent text-accent' : 'border-border'}`}
+                >
+                  <span className="w-2 h-2 rounded-full bg-accent"></span>
+                  <span>@{handle}</span>
+                </button>
               </nav>
             </div>
           </header>
@@ -489,14 +781,14 @@
 
             {/* SCREEN: HOME */}
             {screen === 'home' && (
-              <div className="flex flex-col items-center justify-center min-h-[70vh] gap-8 text-center py-6">
+              <div className="flex flex-col items-center justify-center min-h-[70vh] gap-10 text-center py-4">
                 {loading ? (
                   <div className="flex flex-col items-center gap-3">
                     <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin"></div>
                     <p className="text-xs uppercase tracking-widest text-text-secondary">Loading Today's Challenge...</p>
                   </div>
                 ) : todayPuzzle && (
-                  <div className="flex flex-col items-center gap-8 w-full max-w-2xl">
+                  <div className="flex flex-col items-center gap-10 w-full max-w-2xl">
                     {/* Header Title Section */}
                     <div className="flex flex-col items-center gap-3 max-w-xl">
                       <h1 className="text-4xl sm:text-6xl font-black text-white tracking-tight leading-tight">
@@ -578,6 +870,75 @@
                       </div>
                     </div>
 
+                    {/* Community Puzzles Showcase */}
+                    {communityPuzzles.length > 0 && (
+                      <div className="flex flex-col gap-4 w-full text-left">
+                        <div className="flex items-center justify-between border-b border-border pb-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-base">🧩</span>
+                            <h2 className="text-sm sm:text-base font-bold uppercase tracking-wider text-white">
+                              Community Puzzles
+                            </h2>
+                          </div>
+                          <button onClick={() => setScreen('create')} className="text-xs text-accent hover:underline font-semibold cursor-pointer">
+                            + Create Your Own
+                          </button>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                          {communityPuzzles.map((cp) => (
+                            <div key={cp.id} className="bg-bg-card border border-border p-4 rounded-[4px] flex flex-col gap-3 justify-between shadow-md">
+                              <div className="flex items-center gap-3 min-w-0">
+                                <div className="w-10 h-14 relative rounded overflow-hidden bg-bg-secondary border border-border flex-shrink-0">
+                                  {cp.startFilm?.poster_path ? (
+                                    <img src={posterUrl(cp.startFilm.poster_path, 'w92')} alt={cp.startFilm.title} className="w-full h-full object-cover" />
+                                  ) : <div className="w-full h-full flex items-center justify-center text-xs">🎬</div>}
+                                </div>
+                                <span className="text-xs font-light text-accent">➔</span>
+                                <div className="w-10 h-14 relative rounded overflow-hidden bg-bg-secondary border-2 border-accent flex-shrink-0">
+                                  {cp.endFilm?.poster_path ? (
+                                    <img src={posterUrl(cp.endFilm.poster_path, 'w92')} alt={cp.endFilm.title} className="w-full h-full object-cover" />
+                                  ) : <div className="w-full h-full flex items-center justify-center text-xs">🎬</div>}
+                                </div>
+                                <div className="flex flex-col min-w-0">
+                                  <span className="font-bold text-xs text-white truncate">
+                                    {cp.title || `${cp.startFilm?.title} → ${cp.endFilm?.title}`}
+                                  </span>
+                                  {cp.creator_handle && (
+                                    <span className="text-[10px] text-text-secondary font-mono">
+                                      by @{cp.creator_handle}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+
+                              <button
+                                onClick={() => loadCustomPuzzle(cp.id)}
+                                className="w-full py-1.5 bg-bg-secondary hover:bg-accent hover:text-bg-primary text-text-primary text-[11px] font-bold uppercase tracking-wider rounded text-center border border-border transition-colors cursor-pointer"
+                              >
+                                Play Puzzle &rarr;
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Create Studio CTA Banner */}
+                    <div className="bg-gradient-to-r from-[#1c2228] via-[#202830] to-[#1c2228] border border-border p-6 rounded-[4px] w-full flex flex-col sm:flex-row items-center justify-between gap-4 text-left shadow-lg">
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-[#40bcf4]">Freeform Studio</span>
+                        <h3 className="text-base font-black text-white">Have a tricky movie connection?</h3>
+                        <p className="text-xs text-text-secondary">Create a custom puzzle with any 2 films and challenge your friends.</p>
+                      </div>
+                      <button
+                        onClick={() => setScreen('create')}
+                        className="px-5 py-2.5 bg-accent hover:bg-accent-dim text-bg-primary text-xs font-bold uppercase tracking-wider rounded transition-colors whitespace-nowrap shadow-[0_0_12px_rgba(0,224,84,0.3)] cursor-pointer"
+                      >
+                        Create Puzzle &rarr;
+                      </button>
+                    </div>
+
                     {/* INLINE "HOW TO PLAY" COMPLETE GUIDE */}
                     <div className="flex flex-col gap-6 bg-bg-card p-6 sm:p-8 rounded-[4px] border border-border w-full text-left shadow-xl">
                       <div className="flex items-center gap-2 border-b border-border pb-3">
@@ -657,21 +1018,368 @@
               </div>
             )}
 
+            {/* SCREEN: CREATE PUZZLE */}
+            {screen === 'create' && (
+              <div className="flex flex-col items-center gap-8 max-w-2xl mx-auto w-full py-4 text-center">
+                <div className="flex flex-col items-center gap-2">
+                  <span className="text-xs font-bold uppercase tracking-widest text-accent bg-accent/10 px-3 py-1 rounded border border-accent/20">
+                    Studio
+                  </span>
+                  <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
+                    Create a Puzzle
+                  </h1>
+                  <p className="text-xs sm:text-sm text-text-secondary max-w-md">
+                    Pick any two movies to forge your own connection trail and challenge the community.
+                  </p>
+                </div>
+
+                {createdPuzzleResult ? (
+                  <div className="flex flex-col items-center gap-6 bg-bg-card border-2 border-accent p-6 sm:p-8 rounded-[4px] w-full shadow-2xl text-left">
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">🎉</span>
+                      <div>
+                        <h2 className="text-lg font-black text-white">Puzzle Created!</h2>
+                        <p className="text-xs text-text-secondary">Your custom challenge is live.</p>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-2 w-full">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-text-secondary">Shareable Link</span>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          readOnly
+                          value={createdPuzzleResult.url}
+                          className="flex-1 bg-bg-secondary border border-border text-white text-xs px-3 py-2.5 rounded font-mono select-all focus:outline-none"
+                        />
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(createdPuzzleResult.url);
+                            setCopied(true);
+                            setTimeout(() => setCopied(false), 2000);
+                          }}
+                          className="px-4 py-2.5 bg-accent text-bg-primary text-xs font-bold uppercase tracking-wider rounded hover:bg-accent-dim transition-colors cursor-pointer"
+                        >
+                          {copied ? '✓ Copied' : 'Copy Link'}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 w-full pt-2">
+                      <button
+                        onClick={() => loadCustomPuzzle(createdPuzzleResult.id)}
+                        className="flex-1 py-3 bg-white text-bg-primary text-xs font-bold uppercase tracking-wider rounded hover:bg-white/90 transition-colors text-center cursor-pointer"
+                      >
+                        Play Puzzle Now &rarr;
+                      </button>
+                      <button
+                        onClick={() => {
+                          setCreatedPuzzleResult(null);
+                          setCreateStartMovie(null);
+                          setCreateTargetMovie(null);
+                          setCreateTitle('');
+                        }}
+                        className="px-4 py-3 bg-transparent text-text-secondary hover:text-white border border-border rounded text-xs font-semibold transition-colors cursor-pointer"
+                      >
+                        Create Another
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-6 bg-bg-card border border-border p-6 sm:p-8 rounded-[4px] w-full shadow-2xl text-left">
+                    <div className="flex items-center justify-between border-b border-border pb-3">
+                      <span className="text-xs text-text-secondary">
+                        Creator Handle: <strong className="text-white font-mono">@{handle}</strong>
+                      </span>
+                      <button onClick={() => openProfile(handle)} className="text-xs text-accent hover:underline font-semibold cursor-pointer">
+                        My Profile &rarr;
+                      </button>
+                    </div>
+
+                    {createError && (
+                      <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-xs p-3 rounded font-medium">
+                        {createError}
+                      </div>
+                    )}
+
+                    {/* Movie Pickers */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
+                      {/* Start Film */}
+                      <div className="flex flex-col gap-3 relative">
+                        <label className="text-xs font-bold uppercase tracking-wider text-text-secondary flex items-center justify-between">
+                          <span>1. Start Movie</span>
+                          {createStartMovie && (
+                            <button onClick={() => { setCreateStartMovie(null); setStartSearchQuery(''); }} className="text-[11px] text-accent hover:underline cursor-pointer">Change</button>
+                          )}
+                        </label>
+                        {createStartMovie ? (
+                          <div className="flex items-center gap-3 bg-bg-secondary p-3 rounded border border-border">
+                            <div className="w-12 h-16 relative rounded overflow-hidden bg-bg-card border border-border flex-shrink-0">
+                              {createStartMovie.poster_path && <img src={posterUrl(createStartMovie.poster_path, 'w92')} alt={createStartMovie.title} className="w-full h-full object-cover" />}
+                            </div>
+                            <div className="flex flex-col min-w-0">
+                              <span className="font-bold text-xs text-white truncate">{createStartMovie.title}</span>
+                              <span className="text-[11px] text-text-secondary">{createStartMovie.year}</span>
+                            </div>
+                          </div>
+                        ) : (
+                          <div>
+                            <input
+                              type="text"
+                              placeholder="Search start movie..."
+                              value={startSearchQuery}
+                              onChange={(e) => {
+                                setStartSearchQuery(e.target.value);
+                                searchTmdbMovie(e.target.value, true);
+                              }}
+                              className="w-full bg-bg-secondary border border-border text-white text-xs px-3.5 py-2.5 rounded focus:outline-none focus:border-accent"
+                            />
+                            {startSearchResults.length > 0 && (
+                              <div className="mt-1.5 bg-bg-secondary border border-border rounded shadow-2xl max-h-48 overflow-y-auto">
+                                {startSearchResults.map(m => (
+                                  <div
+                                    key={`sm-${m.id}`}
+                                    onClick={() => {
+                                      setCreateStartMovie(m);
+                                      setStartSearchResults([]);
+                                    }}
+                                    className="flex items-center gap-2.5 p-2 hover:bg-bg-hover cursor-pointer border-b border-border/40 last:border-0"
+                                  >
+                                    <span className="text-xs text-white font-medium truncate">{m.title}</span>
+                                    <span className="text-[10px] text-text-secondary ml-auto">{m.year}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Target Film */}
+                      <div className="flex flex-col gap-3 relative">
+                        <label className="text-xs font-bold uppercase tracking-wider text-accent flex items-center justify-between">
+                          <span>2. Target Movie</span>
+                          {createTargetMovie && (
+                            <button onClick={() => { setCreateTargetMovie(null); setTargetSearchQuery(''); }} className="text-[11px] text-accent hover:underline cursor-pointer">Change</button>
+                          )}
+                        </label>
+                        {createTargetMovie ? (
+                          <div className="flex items-center gap-3 bg-bg-secondary p-3 rounded border-2 border-accent">
+                            <div className="w-12 h-16 relative rounded overflow-hidden bg-bg-card border border-accent flex-shrink-0">
+                              {createTargetMovie.poster_path && <img src={posterUrl(createTargetMovie.poster_path, 'w92')} alt={createTargetMovie.title} className="w-full h-full object-cover" />}
+                            </div>
+                            <div className="flex flex-col min-w-0">
+                              <span className="font-bold text-xs text-white truncate">{createTargetMovie.title}</span>
+                              <span className="text-[11px] text-text-secondary">{createTargetMovie.year}</span>
+                            </div>
+                          </div>
+                        ) : (
+                          <div>
+                            <input
+                              type="text"
+                              placeholder="Search target movie..."
+                              value={targetSearchQuery}
+                              onChange={(e) => {
+                                setTargetSearchQuery(e.target.value);
+                                searchTmdbMovie(e.target.value, false);
+                              }}
+                              className="w-full bg-bg-secondary border border-border text-white text-xs px-3.5 py-2.5 rounded focus:outline-none focus:border-accent"
+                            />
+                            {targetSearchResults.length > 0 && (
+                              <div className="mt-1.5 bg-bg-secondary border border-border rounded shadow-2xl max-h-48 overflow-y-auto">
+                                {targetSearchResults.map(m => (
+                                  <div
+                                    key={`tm-${m.id}`}
+                                    onClick={() => {
+                                      setCreateTargetMovie(m);
+                                      setTargetSearchResults([]);
+                                    }}
+                                    className="flex items-center gap-2.5 p-2 hover:bg-bg-hover cursor-pointer border-b border-border/40 last:border-0"
+                                  >
+                                    <span className="text-xs text-white font-medium truncate">{m.title}</span>
+                                    <span className="text-[10px] text-text-secondary ml-auto">{m.year}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-[11px] font-bold uppercase tracking-wider text-text-secondary">Puzzle Title (Optional)</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Nolan Cinematic Trail"
+                        value={createTitle}
+                        onChange={(e) => setCreateTitle(e.target.value)}
+                        className="bg-bg-secondary border border-border text-white text-xs px-3.5 py-2 rounded focus:outline-none focus:border-accent"
+                      />
+                    </div>
+
+                    <button
+                      onClick={publishCustomPuzzle}
+                      disabled={!createStartMovie || !createTargetMovie || isPublishing}
+                      className={`w-full py-3.5 rounded-[4px] font-black text-xs uppercase tracking-wider transition-all cursor-pointer ${
+                        createStartMovie && createTargetMovie && !isPublishing
+                          ? 'bg-accent text-bg-primary hover:bg-accent-dim shadow-[0_0_16px_rgba(0,224,84,0.35)]'
+                          : 'bg-bg-secondary text-text-muted border border-border cursor-not-allowed'
+                      }`}
+                    >
+                      {isPublishing ? 'Publishing Puzzle...' : 'Create & Share Puzzle 🚀'}
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* SCREEN: PROFILE */}
+            {screen === 'profile' && (
+              <div className="flex flex-col gap-8 max-w-3xl mx-auto w-full py-4 text-left">
+                {profileData ? (
+                  <>
+                    <div className="bg-bg-card border border-border p-6 sm:p-8 rounded-[4px] shadow-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+                      <div className="flex items-center gap-4">
+                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#00e054] via-[#ff8000] to-[#40bcf4] flex items-center justify-center text-2xl font-black text-bg-primary shadow-lg flex-shrink-0">
+                          {profileData.username.charAt(0).toUpperCase()}
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <h1 className="text-xl sm:text-2xl font-black text-white leading-tight">
+                            @{profileData.username}
+                          </h1>
+                          <span className="text-xs text-text-secondary">Filmtrace Cinephile</span>
+                        </div>
+                      </div>
+
+                      {profileData.username === handle && (
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => {
+                              setEditUsernameInput(handle);
+                              setEditBioInput('');
+                              setIsEditingProfile(true);
+                            }}
+                            className="px-4 py-2 bg-bg-secondary hover:bg-bg-hover text-white text-xs font-bold border border-border rounded transition-colors cursor-pointer"
+                          >
+                            Edit Username
+                          </button>
+                          <button
+                            onClick={() => setScreen('create')}
+                            className="px-4 py-2 bg-accent hover:bg-accent-dim text-bg-primary text-xs font-bold uppercase tracking-wider rounded transition-colors cursor-pointer"
+                          >
+                            + Create Puzzle
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Stats Grid */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      <div className="bg-bg-card border border-border p-4 rounded-[4px]">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary block">Total Solves</span>
+                        <span className="font-mono text-2xl font-black text-white mt-1 block">{profileData.totalSolves}</span>
+                      </div>
+                      <div className="bg-bg-card border border-border p-4 rounded-[4px]">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary block">Best Time</span>
+                        <span className="font-mono text-2xl font-bold text-accent mt-1 block">
+                          {profileData.bestTime !== null ? `${Math.floor(profileData.bestTime / 60)}:${String(profileData.bestTime % 60).padStart(2, '0')}` : '—'}
+                        </span>
+                      </div>
+                      <div className="bg-bg-card border border-border p-4 rounded-[4px]">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary block">Fewest Clicks</span>
+                        <span className="font-mono text-2xl font-black text-white mt-1 block">
+                          {profileData.fewestClicks !== null ? profileData.fewestClicks : '—'}
+                        </span>
+                      </div>
+                      <div className="bg-bg-card border border-border p-4 rounded-[4px]">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary block">Created Puzzles</span>
+                        <span className="font-mono text-2xl font-black text-[#40bcf4] mt-1 block">{profileData.createdCount}</span>
+                      </div>
+                    </div>
+
+                    {/* Created Puzzles */}
+                    <div className="flex flex-col gap-3">
+                      <h2 className="text-base font-bold uppercase tracking-wider text-white border-b border-border pb-2">
+                        Created Puzzles ({profileData.puzzles.length})
+                      </h2>
+                      {profileData.puzzles.length > 0 ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          {profileData.puzzles.map(p => (
+                            <div key={p.id} className="bg-bg-card border border-border p-4 rounded flex flex-col gap-3">
+                              <span className="font-bold text-sm text-white">{p.title || 'Custom Challenge'}</span>
+                              <button
+                                onClick={() => loadCustomPuzzle(p.id)}
+                                className="w-full py-1.5 bg-accent text-bg-primary text-xs font-bold uppercase tracking-wider rounded cursor-pointer hover:bg-accent-dim"
+                              >
+                                Play Puzzle &rarr;
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="bg-bg-card border border-border p-6 rounded text-center text-text-muted text-xs">
+                          No custom puzzles created yet.
+                        </div>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center py-12 text-xs text-text-muted">Loading profile...</div>
+                )}
+
+                {/* Edit Handle Modal */}
+                {isEditingProfile && (
+                  <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-bg-card border border-border rounded-[4px] p-6 max-w-sm w-full flex flex-col gap-4 shadow-2xl">
+                      <div className="flex items-center justify-between border-b border-border pb-2">
+                        <h2 className="text-sm font-bold text-white">Choose Unique Username</h2>
+                        <button onClick={() => setIsEditingProfile(false)} className="text-text-muted hover:text-white">✕</button>
+                      </div>
+
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-[10px] font-bold uppercase tracking-wider text-text-secondary">Username</label>
+                        <div className="relative">
+                          <span className="absolute left-3 top-2 text-xs text-text-muted font-mono">@</span>
+                          <input
+                            type="text"
+                            value={editUsernameInput}
+                            onChange={(e) => setEditUsernameInput(e.target.value)}
+                            className="w-full bg-bg-secondary border border-border text-white text-xs pl-7 pr-3 py-2 rounded focus:outline-none focus:border-accent font-mono"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
+                        <button onClick={() => setIsEditingProfile(false)} className="px-3 py-1.5 text-xs text-text-secondary">Cancel</button>
+                        <button onClick={handleSaveUsername} className="px-4 py-1.5 bg-accent text-bg-primary font-bold text-xs rounded hover:bg-accent-dim cursor-pointer">Save Username</button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* SCREEN: GAME */}
             {screen === 'game' && targetFilm && (
               <div className="flex flex-col gap-6">
                 {/* Sticky Status HUD */}
                 <div className="flex flex-col gap-3.5 bg-bg-card p-4 sm:p-5 rounded-[4px] border border-border sticky top-16 z-30 shadow-2xl backdrop-blur-md">
                   <div className="flex items-center justify-between gap-4 flex-wrap sm:flex-nowrap">
-                    {/* Goal Film (100% larger thumbnail + clean GOAL label) */}
+                    {/* Goal Film */}
                     <div className="flex items-center gap-4">
                       <div className="relative rounded-[4px] overflow-hidden flex-shrink-0 bg-bg-secondary border border-border shadow-md w-[84px] h-[126px]">
                         <img src={posterUrl(targetFilm.poster_path, 'w185')} alt={targetFilm.title} className="w-full h-full object-cover" />
                       </div>
                       <div className="flex flex-col text-left gap-1">
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary block">
-                          GOAL
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary block">
+                            GOAL
+                          </span>
+                          {customCreator && (
+                            <span className="text-[10px] text-accent font-mono">by @{customCreator}</span>
+                          )}
+                        </div>
                         <span className="font-bold text-white text-base sm:text-lg leading-tight max-w-[200px] truncate">
                           {targetFilm.title}
                         </span>
@@ -679,7 +1387,7 @@
                       </div>
                     </div>
 
-                    {/* Right Metrics: 100% more distance (gap-14 sm:gap-20) + White timer */}
+                    {/* Metrics */}
                     <div className="flex items-center gap-14 sm:gap-20">
                       <div className="text-right">
                         <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary block">CLICKS</span>
@@ -733,7 +1441,6 @@
                 {/* VIEW: FILM SCREEN */}
                 {currentView === 'film' && currentMedia && (
                   <>
-                    {/* Movie Synopsis Showcase (40% smaller cover thumbnail) */}
                     <div className="bg-bg-card border border-border rounded-[4px] p-4 sm:p-5 flex flex-col sm:flex-row gap-4 sm:gap-6 text-left shadow-lg">
                       <div className="relative w-20 h-[116px] sm:w-[84px] sm:h-[126px] rounded-[4px] overflow-hidden bg-bg-secondary border border-white/10 flex-shrink-0 self-center sm:self-start">
                         <img src={posterUrl(currentMedia.poster_path, 'w342')} alt={currentMedia.title} className="w-full h-full object-cover" />
@@ -893,63 +1600,44 @@
                                 </div>
                               </div>
                             )}
-
-                            {filteredCast.length === 0 && filteredCrew.length === 0 && (
-                              <p className="text-xs text-text-muted py-8 text-center">
-                                No cast or crew found matching &ldquo;{searchQuery}&rdquo;
-                              </p>
-                            )}
                           </>
                         )}
 
                         {filmTab === 'cast' && (
-                          filteredCast.length > 0 ? (
-                            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
-                              {filteredCast.map(c => (
-                                <div key={`cast-tab-${c.id}`} onClick={() => onSelectPerson(c.id, c.name)} className="group flex flex-col gap-1.5 transition-all select-none cursor-pointer w-[110px]">
-                                  <div className="relative w-full h-[165px] rounded-[4px] overflow-hidden bg-bg-card border border-white/10 group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)] transition-all duration-200">
-                                    {c.profile_path ? <img src={profileUrl(c.profile_path, 'w185')} alt={c.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-3xl">👤</div>}
-                                  </div>
-                                  <span className="font-medium text-text-primary text-xs line-clamp-1 leading-tight">{c.name}</span>
-                                  <span className="text-[11px] text-text-secondary line-clamp-1">{c.character}</span>
+                          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
+                            {filteredCast.map(c => (
+                              <div key={`cast-tab-${c.id}`} onClick={() => onSelectPerson(c.id, c.name)} className="group flex flex-col gap-1.5 transition-all select-none cursor-pointer w-[110px]">
+                                <div className="relative w-full h-[165px] rounded-[4px] overflow-hidden bg-bg-card border border-white/10 group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)] transition-all duration-200">
+                                  {c.profile_path ? <img src={profileUrl(c.profile_path, 'w185')} alt={c.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-3xl">👤</div>}
                                 </div>
-                              ))}
-                            </div>
-                          ) : (
-                            <p className="text-xs text-text-muted py-8 text-center">
-                              No cast members found matching &ldquo;{searchQuery}&rdquo;
-                            </p>
-                          )
+                                <span className="font-medium text-text-primary text-xs line-clamp-1 leading-tight">{c.name}</span>
+                                <span className="text-[11px] text-text-secondary line-clamp-1">{c.character}</span>
+                              </div>
+                            ))}
+                          </div>
                         )}
 
                         {filmTab === 'crew' && (
-                          filteredCrew.length > 0 ? (
-                            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
-                              {filteredCrew.map(c => (
-                                <div key={`crew-tab-${c.id}`} onClick={() => onSelectPerson(c.id, c.name)} className="group flex flex-col gap-1.5 transition-all select-none cursor-pointer w-[110px]">
-                                  <div className="relative w-full h-[165px] rounded-[4px] overflow-hidden bg-bg-card border border-white/10 group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)] transition-all duration-200">
-                                    {c.profile_path ? <img src={profileUrl(c.profile_path, 'w185')} alt={c.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-3xl">👤</div>}
-                                  </div>
-                                  <span className="font-medium text-text-primary text-xs line-clamp-1 leading-tight">{c.name}</span>
-                                  <span className="text-[11px] text-text-secondary line-clamp-2 leading-tight">{c.job}</span>
+                          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
+                            {filteredCrew.map(c => (
+                              <div key={`crew-tab-${c.id}`} onClick={() => onSelectPerson(c.id, c.name)} className="group flex flex-col gap-1.5 transition-all select-none cursor-pointer w-[110px]">
+                                <div className="relative w-full h-[165px] rounded-[4px] overflow-hidden bg-bg-card border border-white/10 group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)] transition-all duration-200">
+                                  {c.profile_path ? <img src={profileUrl(c.profile_path, 'w185')} alt={c.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-3xl">👤</div>}
                                 </div>
-                              ))}
-                            </div>
-                          ) : (
-                            <p className="text-xs text-text-muted py-8 text-center">
-                              No crew members found matching &ldquo;{searchQuery}&rdquo;
-                            </p>
-                          )
+                                <span className="font-medium text-text-primary text-xs line-clamp-1 leading-tight">{c.name}</span>
+                                <span className="text-[11px] text-text-secondary line-clamp-2 leading-tight">{c.job}</span>
+                              </div>
+                            ))}
+                          </div>
                         )}
                       </div>
                     )}
                   </>
                 )}
 
-                {/* VIEW: PERSON SCREEN (Full page for Person when clicked) */}
+                {/* VIEW: PERSON SCREEN */}
                 {currentView === 'person' && currentPerson && (
                   <>
-                    {/* Person Bio Showcase Banner */}
                     <div className="bg-bg-card border border-border rounded-[4px] p-4 sm:p-5 flex flex-col sm:flex-row gap-4 sm:gap-6 text-left shadow-lg">
                       <div className="relative w-20 h-[116px] sm:w-[84px] sm:h-[126px] rounded-[4px] overflow-hidden bg-bg-secondary border border-white/10 flex-shrink-0 self-center sm:self-start">
                         {currentPerson.profile_path ? (
@@ -977,14 +1665,14 @@
                       </div>
                     </div>
 
-                    {/* Sub-Header & Tabs with Search */}
+                    {/* Sub-Header & Tabs */}
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-border pb-3 px-1">
                       <span className="text-base sm:text-lg font-extrabold text-white tracking-tight">
                         Choose next title
                       </span>
 
                       <div className="flex items-center gap-2 flex-wrap">
-                        {/* Search Input for titles */}
+                        {/* Search Input */}
                         <div className="relative flex items-center">
                           <input
                             type="text"
@@ -1037,50 +1725,37 @@
                         <span className="text-xs text-text-secondary uppercase tracking-widest">Loading...</span>
                       </div>
                     ) : (
-                      <>
+                      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
                         {(personTab === 'all'
                           ? filteredPersonAll
                           : personTab === 'movies'
                           ? filteredPersonMovies
                           : filteredPersonTv
-                        ).length > 0 ? (
-                          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
-                            {(personTab === 'all'
-                              ? filteredPersonAll
-                              : personTab === 'movies'
-                              ? filteredPersonMovies
-                              : filteredPersonTv
-                            ).map(f => (
-                              <div
-                                key={`person-film-${f.id}`}
-                                onClick={() => onSelectFilm(f.id, f.title)}
-                                className="group flex flex-col gap-1.5 transition-all select-none cursor-pointer w-[110px]"
-                              >
-                                <div className={`relative w-full h-[165px] rounded-[4px] overflow-hidden bg-bg-card border transition-all duration-200 ${f.id === targetFilm.tmdb_id ? 'border-accent shadow-[0_0_16px_rgba(0,224,84,0.4)]' : 'border-white/10 group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)]'}`}>
-                                  {f.poster_path ? (
-                                    <img src={posterUrl(f.poster_path, 'w185')} alt={f.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                                  ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-3xl">🎬</div>
-                                  )}
-                                  {f.id === targetFilm.tmdb_id && (
-                                    <div className="absolute top-1.5 right-1.5 bg-accent text-bg-primary text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded shadow">
-                                      GOAL
-                                    </div>
-                                  )}
+                        ).map(f => (
+                          <div
+                            key={`person-film-${f.id}`}
+                            onClick={() => onSelectFilm(f.id, f.title)}
+                            className="group flex flex-col gap-1.5 transition-all select-none cursor-pointer w-[110px]"
+                          >
+                            <div className={`relative w-full h-[165px] rounded-[4px] overflow-hidden bg-bg-card border transition-all duration-200 ${f.id === targetFilm.tmdb_id ? 'border-accent shadow-[0_0_16px_rgba(0,224,84,0.4)]' : 'border-white/10 group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)]'}`}>
+                              {f.poster_path ? (
+                                <img src={posterUrl(f.poster_path, 'w185')} alt={f.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center text-3xl">🎬</div>
+                              )}
+                              {f.id === targetFilm.tmdb_id && (
+                                <div className="absolute top-1.5 right-1.5 bg-accent text-bg-primary text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded shadow">
+                                  GOAL
                                 </div>
-                                <div className="flex flex-col text-left">
-                                  <span className="font-medium text-text-primary text-xs line-clamp-1 group-hover:text-accent transition-colors leading-tight">{f.title}</span>
-                                  <span className="text-[11px] text-text-secondary line-clamp-1 mt-0.5">{f.release_date ? f.release_date.split('-')[0] : ''}</span>
-                                </div>
-                              </div>
-                            ))}
+                              )}
+                            </div>
+                            <div className="flex flex-col text-left">
+                              <span className="font-medium text-text-primary text-xs line-clamp-1 group-hover:text-accent transition-colors leading-tight">{f.title}</span>
+                              <span className="text-[11px] text-text-secondary line-clamp-1 mt-0.5">{f.release_date ? f.release_date.split('-')[0] : ''}</span>
+                            </div>
                           </div>
-                        ) : (
-                          <p className="text-xs text-text-muted py-8 text-center">
-                            No titles found matching &ldquo;{searchQuery}&rdquo;
-                          </p>
-                        )}
-                      </>
+                        ))}
+                      </div>
                     )}
                   </>
                 )}
@@ -1092,7 +1767,7 @@
               <div className="flex flex-col items-center gap-7 py-6 w-full animate-in fade-in duration-500">
                 <div className="flex flex-col items-center gap-3 text-center">
                   <span className="text-xs font-bold uppercase tracking-widest text-accent">
-                    Chain Complete
+                    {customPuzzleId ? 'Custom Chain Complete' : 'Daily Chain Complete'}
                   </span>
 
                   <div className="flex items-center gap-3.5 my-1">
@@ -1100,7 +1775,7 @@
                       <img src={posterUrl(startFilm.poster_path, 'w185')} alt={startFilm.title} className="w-full h-full object-cover" />
                     </div>
                     <span className="text-2xl text-text-muted font-light">&rarr;</span>
-                    <div className="w-16 h-24 rounded-[4px] overflow-hidden bg-bg-secondary border border-border relative">
+                    <div className="w-16 h-24 rounded-[4px] overflow-hidden bg-bg-secondary border-2 border-accent relative">
                       <img src={posterUrl(targetFilm.poster_path, 'w185')} alt={targetFilm.title} className="w-full h-full object-cover" />
                     </div>
                   </div>
@@ -1140,7 +1815,7 @@
                 <div className="flex flex-col gap-3 bg-bg-secondary border border-border rounded-[4px] p-5 w-full max-w-md">
                   <div className="flex flex-col text-left gap-0.5">
                     <span className="text-sm font-extrabold text-white">Leaderboard</span>
-                    <span className="text-[11px] text-text-muted">Today's fastest chains</span>
+                    <span className="text-[11px] text-text-muted">{customPuzzleId ? 'Fastest solvers for this puzzle' : "Today's fastest chains"}</span>
                   </div>
 
                   <table className="w-full border-collapse text-xs">
@@ -1183,7 +1858,7 @@
                       ) : (
                         <tr>
                           <td colSpan={4} className="py-4 text-center text-text-muted">
-                            Great run! Be the first on today's leaderboard.
+                            Great run! You're the first on this leaderboard.
                           </td>
                         </tr>
                       )}
@@ -1195,7 +1870,7 @@
                 <div className="flex flex-col gap-2 w-full max-w-md text-left">
                   <span className="text-[10px] font-semibold uppercase tracking-wider text-text-muted">Share</span>
                   <pre className="bg-bg-secondary border border-border rounded-[4px] p-3 text-xs text-text-secondary font-mono whitespace-pre-wrap">
-                    {`FILMTRACE\n${Math.floor(elapsedSec / 60)}:${String(Math.floor(elapsedSec % 60)).padStart(2, '0')} * ${clickCount} clicks\n${path.map(p => (p.type === 'film' ? '🎬' : '👤')).join(' > ')}\nhttps://filmtrace.app`}
+                    {`FILMTRACE\n${Math.floor(elapsedSec / 60)}:${String(Math.floor(elapsedSec % 60)).padStart(2, '0')} * ${clickCount} clicks\n${path.map(p => (p.type === 'film' ? '🎬' : '👤')).join(' > ')}\n${window.location.href}`}
                   </pre>
                   <button
                     onClick={copyShare}
@@ -1205,12 +1880,20 @@
                   </button>
                 </div>
 
-                <button
-                  onClick={() => setScreen('home')}
-                  className="px-8 py-2.5 bg-transparent text-text-secondary text-xs font-semibold border border-border rounded-[4px] hover:text-white hover:border-text-secondary transition-all cursor-pointer"
-                >
-                  &larr; Back to Home
-                </button>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => { setScreen('home'); loadDailyPuzzle(); }}
+                    className="px-6 py-2.5 bg-transparent text-text-secondary text-xs font-semibold border border-border rounded-[4px] hover:text-white hover:border-text-secondary transition-all cursor-pointer"
+                  >
+                    &larr; Daily Puzzle
+                  </button>
+                  <button
+                    onClick={() => setScreen('create')}
+                    className="px-6 py-2.5 bg-accent text-bg-primary text-xs font-bold uppercase tracking-wider rounded-[4px] hover:bg-accent-dim transition-all cursor-pointer"
+                  >
+                    + Create Puzzle
+                  </button>
+                </div>
               </div>
             )}
 
@@ -1270,64 +1953,11 @@
                 </div>
 
                 <button
-                  onClick={startGame}
+                  onClick={() => { setScreen('home'); loadDailyPuzzle(); }}
                   className="mt-6 w-full max-w-[260px] py-3 bg-accent text-bg-primary text-xs font-bold uppercase tracking-wider rounded-[4px] hover:bg-accent-dim transition-all shadow-[0_0_16px_rgba(0,224,84,0.3)] cursor-pointer"
                 >
                   Play Today's Puzzle
                 </button>
-              </div>
-            )}
-
-            {/* How To Play Modal */}
-            {showHowToPlay && (
-              <div
-                onClick={() => setShowHowToPlay(false)}
-                className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-              >
-                <div
-                  onClick={(e) => e.stopPropagation()}
-                  className="bg-bg-card border border-border rounded-[4px] p-6 sm:p-8 max-w-lg w-full text-left flex flex-col gap-5 shadow-2xl"
-                >
-                  <div className="flex items-center justify-between border-b border-border pb-3">
-                    <h2 className="text-lg font-black text-white">How to Play Filmtrace</h2>
-                    <button
-                      onClick={() => setShowHowToPlay(false)}
-                      className="text-text-muted hover:text-white text-base cursor-pointer"
-                    >
-                      ✕
-                    </button>
-                  </div>
-
-                  <div className="flex flex-col gap-4 text-xs sm:text-sm text-text-secondary leading-relaxed">
-                    <p>
-                      <strong className="text-white">Objective:</strong> Navigate from the <span className="text-white font-semibold">Start Movie</span> to the <span className="text-accent font-semibold">Target Movie</span> by clicking through shared actors and filmmakers.
-                    </p>
-
-                    <div className="bg-bg-secondary p-3.5 rounded-[4px] border border-border flex flex-col gap-2">
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-accent">The Golden Rule</span>
-                      <p className="text-xs text-white">
-                        You must alternate between <strong>Films</strong> and <strong>People</strong>:
-                      </p>
-                      <div className="flex items-center gap-1.5 font-mono text-[11px] text-text-secondary flex-wrap">
-                        <span>🎬 Film</span> &rarr; <span>👤 Person</span> &rarr; <span>🎬 Film</span> &rarr; <span>👤 Person</span> &rarr; <span>🎯 Target</span>
-                      </div>
-                    </div>
-
-                    <ul className="list-disc pl-5 space-y-2">
-                      <li>Click any actor, director, or crew member in the cast/crew list.</li>
-                      <li>Browse their filmography and select a film that brings you closer to the target.</li>
-                      <li>Use the <strong>Search</strong> option in the tab bar to quickly find specific names or titles.</li>
-                      <li>Click any earlier film in the <strong>Breadcrumb trail</strong> at the top to rewind if you hit a dead end.</li>
-                    </ul>
-                  </div>
-
-                  <button
-                    onClick={() => setShowHowToPlay(false)}
-                    className="w-full py-2.5 bg-accent text-bg-primary text-xs font-bold uppercase tracking-wider rounded-[4px] hover:bg-accent-dim transition-colors cursor-pointer mt-1"
-                  >
-                    Got It &middot; Let's Play
-                  </button>
-                </div>
               </div>
             )}
 

@@ -1,9 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import Link from 'next/link';
 import './globals.css';
-
-import Logo from '@/components/Logo';
+import Navbar from '@/components/Navbar';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -21,28 +19,7 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body className={`${inter.className} min-h-screen flex flex-col bg-bg-primary text-text-primary antialiased`}>
         {/* Top Header Navigation */}
-        <header className="border-b border-border bg-bg-primary/95 backdrop-blur-md sticky top-0 z-50">
-          <div className="max-w-5xl mx-auto px-4 min-h-[56px] flex items-center justify-between flex-wrap gap-2">
-            <Link href="/" className="flex items-center gap-2 group">
-              <Logo variant="connected-frames" size={30} />
-              <span className="font-black tracking-tight text-lg text-white group-hover:text-accent transition-colors">
-                FILMTRACE
-              </span>
-            </Link>
-
-            <nav className="flex items-center gap-3 sm:gap-4 text-xs font-semibold">
-              <Link href="/" className="px-3 py-1 text-text-secondary hover:text-white transition-colors">
-                Daily Puzzle
-              </Link>
-              <Link href="/leaderboard" className="px-3 py-1 text-text-secondary hover:text-white transition-colors">
-                Leaderboard
-              </Link>
-              <span className="px-3 py-1 text-text-muted flex items-center gap-1.5 cursor-default">
-                Create Puzzle <span className="text-[9px] bg-bg-secondary border border-border px-1.5 py-0.5 rounded font-mono">SOON</span>
-              </span>
-            </nav>
-          </div>
-        </header>
+        <Navbar />
 
         {/* Main Content */}
         <div className="flex-1 w-full max-w-5xl mx-auto px-4 py-6 box-border">
