@@ -49,12 +49,10 @@ export default function Navbar() {
           {handle && (
             <Link
               href={`/profile/${handle}`}
-              className="flex items-center gap-2 py-1 pl-2 pr-2.5 rounded-full bg-[#1e262f] hover:bg-[#2c3440] text-text-secondary hover:text-white border border-[#2c3440] transition-colors ml-1"
+              title={`Profile (@${handle})`}
+              className="w-8 h-8 rounded-full bg-[#1c242c] hover:bg-[#28323e] text-text-secondary hover:text-white border border-[#28323e] flex items-center justify-center transition-colors ml-1"
             >
-              <div className="w-5 h-5 rounded-full bg-[#2c3440] text-accent flex items-center justify-center text-[10px] font-bold">
-                <User className="w-3 h-3" />
-              </div>
-              <span className="font-mono text-[11px] text-white">@{handle}</span>
+              <User className="w-4 h-4 text-accent" />
             </Link>
           )}
         </nav>

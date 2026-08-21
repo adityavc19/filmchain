@@ -875,15 +875,13 @@
                   <span>Leaderboard</span>
                 </button>
 
-                {/* Profile Pill */}
+                {/* Profile Button */}
                 <button
                   onClick={() => openProfile(handle)}
-                  className={`flex items-center gap-2 py-1 pl-2 pr-2.5 rounded-full bg-[#1c242c] hover:bg-[#2c3744] text-text-secondary hover:text-white border border-[#28323e] transition-colors cursor-pointer ml-1 ${screen === 'profile' ? 'border-accent text-white' : ''}`}
+                  title={`Profile (@${handle})`}
+                  className={`w-8 h-8 rounded-full bg-[#1c242c] hover:bg-[#2c3744] text-text-secondary hover:text-white border border-[#28323e] flex items-center justify-center transition-colors cursor-pointer ml-1 ${screen === 'profile' ? 'border-accent text-white' : ''}`}
                 >
-                  <div className="w-5 h-5 rounded-full bg-[#222b35] text-accent flex items-center justify-center text-[10px]">
-                    <Icons.User />
-                  </div>
-                  <span className="font-mono text-[11px] text-white">@{handle}</span>
+                  <span className="text-accent"><Icons.User /></span>
                 </button>
               </nav>
             </div>
