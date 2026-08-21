@@ -12,7 +12,9 @@ import {
   Compass, 
   Users, 
   Clock,
-  User
+  User,
+  Target,
+  Zap
 } from 'lucide-react';
 import { posterUrl } from '@/lib/tmdb';
 
@@ -111,7 +113,7 @@ export default function Home() {
               className="flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-[4px] bg-white hover:bg-[#e6e6e6] text-[#0e1114] font-black text-sm uppercase tracking-wider transition-all shadow-md cursor-pointer"
             >
               <Clapperboard className="w-4 h-4" />
-              <span>Play Today&apos;s Puzzle</span>
+              <span>Play Today&apos;s Challenge</span>
             </button>
           </div>
 
@@ -241,7 +243,7 @@ export default function Home() {
         </section>
       )}
 
-      {/* 3. CREATE PUZZLE STUDIO CALLOUT */}
+      {/* 3. CREATE STUDIO CALLOUT */}
       <section className="w-full">
         <div className="bg-[#1c242c] border border-[#28323e] p-5 sm:p-6 rounded-[4px] w-full flex flex-col sm:flex-row items-center justify-between gap-5 shadow">
           <div className="flex flex-col gap-1">
@@ -252,7 +254,7 @@ export default function Home() {
               Have a tricky film connection in mind?
             </h3>
             <p className="text-xs text-text-secondary max-w-lg">
-              Pick any two movies to generate your own playable puzzle and custom leaderboard.
+              Pick any two movies to generate your own playable challenge and custom leaderboard.
             </p>
           </div>
           <Link
@@ -326,19 +328,19 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Mission Instructions */}
-            <div className="flex flex-col gap-2 text-xs text-text-secondary bg-[#0e1114] p-3.5 rounded border border-[#28323e] leading-relaxed">
-              <div className="flex items-start gap-2">
-                <span className="text-white font-bold">1.</span>
+            {/* Mission Instructions (Icon-based bullets, no dividers) */}
+            <div className="flex flex-col gap-3 text-xs text-text-secondary bg-[#0e1114] p-4 rounded border border-[#28323e] leading-relaxed">
+              <div className="flex items-start gap-2.5">
+                <Target className="w-4 h-4 text-white flex-shrink-0 mt-0.5" />
                 <span>Connect <strong className="text-white">{puzzle.startFilm.title}</strong> to <strong className="text-white">{puzzle.endFilm.title}</strong>.</span>
               </div>
-              <div className="flex items-start gap-2">
-                <span className="text-[#40bcf4] font-bold">2.</span>
+              <div className="flex items-start gap-2.5">
+                <Zap className="w-4 h-4 text-[#40bcf4] flex-shrink-0 mt-0.5" />
                 <span>Compete by doing it in the fastest time and with the fewest clicks.</span>
               </div>
-              <div className="flex items-start gap-2 text-text-muted text-[11px] pt-1 border-t border-[#28323e]/50">
-                <span className="text-text-muted font-bold">3.</span>
-                <span>Timer begins when you click <strong>START GAME</strong>.</span>
+              <div className="flex items-start gap-2.5">
+                <Clock className="w-4 h-4 text-text-secondary flex-shrink-0 mt-0.5" />
+                <span>Timer begins when you click <strong className="text-white">START GAME</strong>.</span>
               </div>
             </div>
 
@@ -431,19 +433,19 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Mission Instructions */}
-            <div className="flex flex-col gap-2 text-xs text-text-secondary bg-[#0e1114] p-3.5 rounded border border-[#28323e] leading-relaxed">
-              <div className="flex items-start gap-2">
-                <span className="text-white font-bold">1.</span>
+            {/* Mission Instructions (Icon-based bullets, no dividers) */}
+            <div className="flex flex-col gap-3 text-xs text-text-secondary bg-[#0e1114] p-4 rounded border border-[#28323e] leading-relaxed">
+              <div className="flex items-start gap-2.5">
+                <Target className="w-4 h-4 text-white flex-shrink-0 mt-0.5" />
                 <span>Connect <strong className="text-white">{selectedCommunityPuzzle.startFilm?.title}</strong> to <strong className="text-white">{selectedCommunityPuzzle.endFilm?.title}</strong>.</span>
               </div>
-              <div className="flex items-start gap-2">
-                <span className="text-[#40bcf4] font-bold">2.</span>
+              <div className="flex items-start gap-2.5">
+                <Zap className="w-4 h-4 text-[#40bcf4] flex-shrink-0 mt-0.5" />
                 <span>Compete by doing it in the fastest time and with the fewest clicks.</span>
               </div>
-              <div className="flex items-start gap-2 text-text-muted text-[11px] pt-1 border-t border-[#28323e]/50">
-                <span className="text-text-muted font-bold">3.</span>
-                <span>Timer begins when you click <strong>START GAME</strong>.</span>
+              <div className="flex items-start gap-2.5">
+                <Clock className="w-4 h-4 text-text-secondary flex-shrink-0 mt-0.5" />
+                <span>Timer begins when you click <strong className="text-white">START GAME</strong>.</span>
               </div>
             </div>
 
