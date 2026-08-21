@@ -295,7 +295,7 @@ export default function Home() {
               <div className="flex items-center gap-2">
                 <Clapperboard className="w-5 h-5 text-accent" />
                 <h2 className="text-base font-bold text-white uppercase tracking-wider">
-                  Daily Challenge Brief
+                  Today&apos;s Challenge
                 </h2>
               </div>
               <button 
@@ -327,10 +327,10 @@ export default function Home() {
                 <span className="text-[9px] font-mono uppercase font-bold text-text-muted">Connect</span>
               </div>
 
-              {/* Target Movie */}
+              {/* End Movie */}
               <div className="flex flex-col items-center gap-1.5">
                 <span className="text-[10px] font-bold uppercase tracking-widest text-accent bg-[#222b35] px-2 py-0.5 rounded border border-[#28323e]">
-                  TARGET
+                  END
                 </span>
                 <div className="w-16 h-24 relative rounded overflow-hidden bg-[#222b35] border border-[#28323e]">
                   {puzzle.endFilm.poster_path ? (
@@ -343,13 +343,19 @@ export default function Home() {
             </div>
 
             {/* Mission Instructions */}
-            <div className="flex flex-col gap-1.5 text-xs text-text-secondary bg-[#0e1114] p-3 rounded border border-[#28323e] leading-relaxed">
-              <p>
-                🎯 Connect <strong className="text-white">{puzzle.startFilm.title}</strong> to <strong className="text-accent">{puzzle.endFilm.title}</strong> in the fewest clicks and fastest time.
-              </p>
-              <p className="text-[11px] text-text-muted">
-                ⏱️ Official timer begins when you click <strong>START GAME</strong>.
-              </p>
+            <div className="flex flex-col gap-2 text-xs text-text-secondary bg-[#0e1114] p-3.5 rounded border border-[#28323e] leading-relaxed">
+              <div className="flex items-start gap-2">
+                <span className="text-accent font-bold">1.</span>
+                <span>Connect <strong className="text-white">{puzzle.startFilm.title}</strong> to <strong className="text-accent">{puzzle.endFilm.title}</strong>.</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-[#40bcf4] font-bold">2.</span>
+                <span>Compete by doing it in the fastest time and with the fewest clicks.</span>
+              </div>
+              <div className="flex items-start gap-2 text-text-muted text-[11px] pt-1 border-t border-[#28323e]/50">
+                <span className="text-text-muted font-bold">3.</span>
+                <span>Timer begins when you click <strong>START GAME</strong>.</span>
+              </div>
             </div>
 
             {/* Launch Action */}
