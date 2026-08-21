@@ -72,7 +72,7 @@
     const TMDB_API_KEY = '81d2e74ce1c54d587d152b68d900b8c8';
     const TMDB_BASE = 'https://api.themoviedb.org/3';
     const SUPABASE_URL = 'https://erajnosmxvgcpjfxotpc.supabase.co';
-    const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVyYWpub3NteHZnY3BqZnhvdHBjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAwMTc2NTcsImV4cCI6MjA1NTU5MzY1N30.2g60X2r-vB-wW2oX2M_Y_Y769jW6hOq8VpMhY14tG4s';
+    const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVyYWpub3NteHZnY3BqZnhvdHBjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcyNjg0MjAsImV4cCI6MjEwMjg0NDQyMH0.bSvCkVsfyuXDw293uRqTrLcsNA3GtBmYzjYNo_OO8_U';
 
     function posterUrl(path, size = 'w342') {
       return path ? `https://image.tmdb.org/t/p/${size}${path}` : '';
@@ -181,7 +181,6 @@
       const [isEditingProfile, setIsEditingProfile] = useState(false);
       const [editUsernameInput, setEditUsernameInput] = useState('');
       const [editBioInput, setEditBioInput] = useState('');
-      const [usernameCheck, setUsernameCheck] = useState({ checked: true, available: true, msg: '' });
 
       // Create Studio State
       const [createStartMovie, setCreateStartMovie] = useState(null);
@@ -206,14 +205,20 @@
         return () => clearInterval(interval);
       }, [screen, startTime, endTime]);
 
-      // Load initial daily puzzle & check for URL params e.g. ?custom=...
+      // Load initial daily puzzle & check for URL params
       useEffect(() => {
         async function init() {
           try {
             const urlParams = new URLSearchParams(window.location.search);
             const customParam = urlParams.get('custom');
+            const startParam = urlParams.get('start');
+            const targetParam = urlParams.get('target') || urlParams.get('end');
+            const creatorParam = urlParams.get('by') || urlParams.get('creator');
+            const titleParam = urlParams.get('title');
 
-            if (customParam) {
+            if (startParam && targetParam) {
+              await loadCustomPuzzlePair(parseInt(startParam, 10), parseInt(targetParam, 10), creatorParam, titleParam);
+            } else if (customParam) {
               await loadCustomPuzzle(customParam);
             } else {
               await loadDailyPuzzle();
@@ -280,38 +285,58 @@
         }
       }
 
+      async function loadCustomPuzzlePair(startId, targetId, creator = null, title = null) {
+        setLoading(true);
+        try {
+          const [sDetails, tDetails] = await Promise.all([
+            fetch(`${TMDB_BASE}/movie/${startId}?api_key=${TMDB_API_KEY}`).then(r => r.json()),
+            fetch(`${TMDB_BASE}/movie/${targetId}?api_key=${TMDB_API_KEY}`).then(r => r.json()),
+          ]);
+
+          const sFilm = {
+            tmdb_id: sDetails.id,
+            title: sDetails.title,
+            year: sDetails.release_date ? parseInt(sDetails.release_date.split('-')[0]) : null,
+            poster_path: sDetails.poster_path,
+          };
+          const tFilm = {
+            tmdb_id: tDetails.id,
+            title: tDetails.title,
+            year: tDetails.release_date ? parseInt(tDetails.release_date.split('-')[0]) : null,
+            poster_path: tDetails.poster_path,
+          };
+
+          setStartFilm(sFilm);
+          setTargetFilm(tFilm);
+          const pKey = `custom_${startId}_${targetId}`;
+          setCustomPuzzleId(pKey);
+          setCustomCreator(creator);
+          startSpecificGame(sFilm, tFilm, pKey, creator);
+        } catch (e) {
+          console.error('Error loading custom puzzle pair:', e);
+        } finally {
+          setLoading(false);
+        }
+      }
+
       async function loadCustomPuzzle(puzzleId) {
         setLoading(true);
         try {
+          // Check local storage first
+          const localComm = JSON.parse(localStorage.getItem('filmtrace-comm-puzzles') || '[]');
+          const found = localComm.find(p => p.id === puzzleId);
+          if (found) {
+            await loadCustomPuzzlePair(found.start_film_id, found.end_film_id, found.creator_handle, found.title);
+            return;
+          }
+
           const res = await fetch(`${SUPABASE_URL}/rest/v1/custom_puzzles?id=eq.${puzzleId}&select=*`, {
             headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` }
           });
           const data = await res.json();
           if (data && data[0]) {
             const p = data[0];
-            const [sDetails, tDetails] = await Promise.all([
-              fetch(`${TMDB_BASE}/movie/${p.start_film_id}?api_key=${TMDB_API_KEY}`).then(r => r.json()),
-              fetch(`${TMDB_BASE}/movie/${p.end_film_id}?api_key=${TMDB_API_KEY}`).then(r => r.json()),
-            ]);
-
-            const sFilm = {
-              tmdb_id: sDetails.id,
-              title: sDetails.title,
-              year: sDetails.release_date ? parseInt(sDetails.release_date.split('-')[0]) : null,
-              poster_path: sDetails.poster_path,
-            };
-            const tFilm = {
-              tmdb_id: tDetails.id,
-              title: tDetails.title,
-              year: tDetails.release_date ? parseInt(tDetails.release_date.split('-')[0]) : null,
-              poster_path: tDetails.poster_path,
-            };
-
-            setStartFilm(sFilm);
-            setTargetFilm(tFilm);
-            setCustomPuzzleId(p.id);
-            setCustomCreator(p.creator_handle);
-            startSpecificGame(sFilm, tFilm, p.id, p.creator_handle);
+            await loadCustomPuzzlePair(p.start_film_id, p.end_film_id, p.creator_handle, p.title);
           }
         } catch (e) {
           console.error(e);
@@ -322,30 +347,59 @@
 
       async function loadCommunityPuzzles() {
         try {
-          const res = await fetch(`${SUPABASE_URL}/rest/v1/custom_puzzles?select=*&order=created_at.desc&limit=6`, {
-            headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` }
-          });
-          const list = await res.json();
-          if (Array.isArray(list)) {
-            const populated = await Promise.all(
-              list.map(async (p) => {
-                try {
-                  const [sMovie, tMovie] = await Promise.all([
-                    fetch(`${TMDB_BASE}/movie/${p.start_film_id}?api_key=${TMDB_API_KEY}`).then(r => r.json()),
-                    fetch(`${TMDB_BASE}/movie/${p.end_film_id}?api_key=${TMDB_API_KEY}`).then(r => r.json()),
-                  ]);
-                  return {
-                    ...p,
-                    startFilm: { tmdb_id: sMovie.id, title: sMovie.title, poster_path: sMovie.poster_path },
-                    endFilm: { tmdb_id: tMovie.id, title: tMovie.title, poster_path: tMovie.poster_path },
-                  };
-                } catch (e) {
-                  return p;
-                }
-              })
-            );
-            setCommunityPuzzles(populated);
+          let list = [];
+          try {
+            const res = await fetch(`${SUPABASE_URL}/rest/v1/custom_puzzles?select=*&order=created_at.desc&limit=6`, {
+              headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` }
+            });
+            const data = await res.json();
+            if (Array.isArray(data)) list = data;
+          } catch (e) {}
+
+          const localComm = JSON.parse(localStorage.getItem('filmtrace-comm-puzzles') || '[]');
+          const merged = [...localComm, ...list.filter(r => !localComm.some(l => l.id === r.id))];
+
+          if (merged.length === 0) {
+            merged.push({
+              id: 'curated_1',
+              start_film_id: 157336, // Interstellar
+              end_film_id: 872585, // Oppenheimer
+              title: 'Interstellar → Oppenheimer',
+              creator_handle: 'nolan_fan',
+            }, {
+              id: 'curated_2',
+              start_film_id: 680, // Pulp Fiction
+              end_film_id: 24, // Kill Bill: Vol. 1
+              title: 'Pulp Fiction → Kill Bill',
+              creator_handle: 'tarantino_buff',
+            }, {
+              id: 'curated_3',
+              start_film_id: 11, // Star Wars
+              end_film_id: 27205, // Inception
+              title: 'Star Wars → Inception',
+              creator_handle: 'space_cadet',
+            });
           }
+
+          const populated = await Promise.all(
+            merged.slice(0, 6).map(async (p) => {
+              try {
+                if (p.startFilm && p.endFilm) return p;
+                const [sMovie, tMovie] = await Promise.all([
+                  fetch(`${TMDB_BASE}/movie/${p.start_film_id}?api_key=${TMDB_API_KEY}`).then(r => r.json()),
+                  fetch(`${TMDB_BASE}/movie/${p.end_film_id}?api_key=${TMDB_API_KEY}`).then(r => r.json()),
+                ]);
+                return {
+                  ...p,
+                  startFilm: { tmdb_id: sMovie.id, title: sMovie.title, poster_path: sMovie.poster_path },
+                  endFilm: { tmdb_id: tMovie.id, title: tMovie.title, poster_path: tMovie.poster_path },
+                };
+              } catch (e) {
+                return p;
+              }
+            })
+          );
+          setCommunityPuzzles(populated.filter(p => p.startFilm && p.endFilm));
         } catch (e) {
           console.error(e);
         }
@@ -460,22 +514,21 @@
             const timeSec = Math.max(1, Math.round((end - (startTime || end)) / 1000));
             const hops = Math.floor(newPath.length / 2);
 
-            const table = customPuzzleId ? 'custom_leaderboard_entries' : 'leaderboard_entries';
-            const payload = customPuzzleId ? {
-              puzzle_id: customPuzzleId,
+            // Record in local solve history
+            const mySolves = JSON.parse(localStorage.getItem('filmtrace-my-solves') || '[]');
+            mySolves.unshift({
+              id: 's_' + Date.now(),
+              puzzle_date: customPuzzleId || (todayPuzzle ? todayPuzzle.date : new Date().toISOString().split('T')[0]),
               handle,
               time_seconds: timeSec,
               hop_count: hops,
               path: newPath,
-            } : {
-              puzzle_date: todayPuzzle.date,
-              handle,
-              time_seconds: timeSec,
-              hop_count: hops,
-              path: newPath,
-            };
+              submitted_at: new Date().toISOString(),
+            });
+            localStorage.setItem('filmtrace-my-solves', JSON.stringify(mySolves.slice(0, 50)));
 
-            await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+            // Submit to Supabase leaderboard
+            await fetch(`${SUPABASE_URL}/rest/v1/leaderboard_entries`, {
               method: 'POST',
               headers: {
                 'apikey': SUPABASE_ANON,
@@ -483,9 +536,15 @@
                 'Content-Type': 'application/json',
                 'Prefer': 'return=representation'
               },
-              body: JSON.stringify(payload)
+              body: JSON.stringify({
+                puzzle_date: todayPuzzle ? todayPuzzle.date : '2026-08-21',
+                handle,
+                time_seconds: timeSec,
+                hop_count: hops,
+                path: newPath,
+              })
             });
-            fetchLeaderboardData(customPuzzleId || todayPuzzle.date, !!customPuzzleId);
+            fetchLeaderboardData(todayPuzzle ? todayPuzzle.date : '2026-08-21');
           } catch (e) {
             console.error('Failed to submit score:', e);
           }
@@ -508,16 +567,14 @@
         }
       }
 
-      async function fetchLeaderboardData(param, isCustom = false) {
+      async function fetchLeaderboardData(param) {
         try {
-          const url = isCustom
-            ? `${SUPABASE_URL}/rest/v1/custom_leaderboard_entries?puzzle_id=eq.${param}&order=time_seconds.asc&limit=15`
-            : `${SUPABASE_URL}/rest/v1/leaderboard_entries?puzzle_date=eq.${param}&order=time_seconds.asc&limit=15`;
+          const url = `${SUPABASE_URL}/rest/v1/leaderboard_entries?puzzle_date=eq.${param}&order=time_seconds.asc&limit=15`;
           const res = await fetch(url, {
             headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` }
           });
           const data = await res.json();
-          setLeaderboard(data || []);
+          setLeaderboard(Array.isArray(data) ? data : []);
         } catch (e) {
           console.error(e);
         }
@@ -529,30 +586,38 @@
         setLoading(true);
 
         try {
-          // Fetch user's leaderboard solves
-          const solvesRes = await fetch(`${SUPABASE_URL}/rest/v1/leaderboard_entries?handle=eq.${userHandle}&order=submitted_at.desc`, {
-            headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` }
-          });
-          const solves = await solvesRes.json();
+          let localPuzzles = [];
+          if (userHandle === handle) {
+            localPuzzles = JSON.parse(localStorage.getItem('filmtrace-my-puzzles') || '[]');
+          }
 
-          // Fetch user's created puzzles
-          const puzzlesRes = await fetch(`${SUPABASE_URL}/rest/v1/custom_puzzles?creator_handle=eq.${userHandle}&order=created_at.desc`, {
-            headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` }
-          });
-          const created = await puzzlesRes.json();
+          let localSolves = [];
+          if (userHandle === handle) {
+            localSolves = JSON.parse(localStorage.getItem('filmtrace-my-solves') || '[]');
+          }
 
-          const totalSolves = Array.isArray(solves) ? solves.length : 0;
-          const bestTime = totalSolves > 0 ? Math.min(...solves.map(s => s.time_seconds)) : null;
-          const fewestClicks = totalSolves > 0 ? Math.min(...solves.map(s => (s.path && s.path.length ? s.path.length - 1 : s.hop_count * 2))) : null;
+          let remoteSolves = [];
+          try {
+            const solvesRes = await fetch(`${SUPABASE_URL}/rest/v1/leaderboard_entries?handle=eq.${userHandle}&order=submitted_at.desc`, {
+              headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` }
+            });
+            remoteSolves = await solvesRes.json();
+            if (!Array.isArray(remoteSolves)) remoteSolves = [];
+          } catch (e) {}
+
+          const allSolves = [...localSolves, ...remoteSolves.filter(r => !localSolves.some(l => l.id === r.id))];
+          const totalSolves = allSolves.length;
+          const bestTime = totalSolves > 0 ? Math.min(...allSolves.map(s => s.time_seconds)) : null;
+          const fewestClicks = totalSolves > 0 ? Math.min(...allSolves.map(s => (s.path && s.path.length ? s.path.length - 1 : s.hop_count * 2))) : null;
 
           setProfileData({
             username: userHandle,
             totalSolves,
             bestTime,
             fewestClicks,
-            createdCount: Array.isArray(created) ? created.length : 0,
-            solves: Array.isArray(solves) ? solves.slice(0, 10) : [],
-            puzzles: Array.isArray(created) ? created : [],
+            createdCount: localPuzzles.length,
+            solves: allSolves.slice(0, 10),
+            puzzles: localPuzzles,
           });
         } catch (e) {
           console.error(e);
@@ -569,32 +634,6 @@
         }
 
         try {
-          const res = await fetch(`${SUPABASE_URL}/rest/v1/profiles?username=eq.${u}&select=username`, {
-            headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` }
-          });
-          const existing = await res.json();
-          if (existing && existing.length > 0 && u !== handle) {
-            alert('Username is already taken. Please choose another one.');
-            return;
-          }
-
-          // Save to profiles table
-          await fetch(`${SUPABASE_URL}/rest/v1/profiles`, {
-            method: 'POST',
-            headers: {
-              'apikey': SUPABASE_ANON,
-              'Authorization': `Bearer ${SUPABASE_ANON}`,
-              'Content-Type': 'application/json',
-              'Prefer': 'resolution=merge-duplicates'
-            },
-            body: JSON.stringify({
-              username: u,
-              display_name: u,
-              bio: editBioInput,
-              last_active_at: new Date().toISOString(),
-            })
-          });
-
           localStorage.setItem('filmtrace-handle', u);
           setHandle(u);
           setIsEditingProfile(false);
@@ -615,7 +654,7 @@
         try {
           const res = await fetch(`${TMDB_BASE}/search/movie?query=${encodeURIComponent(query)}&api_key=${TMDB_API_KEY}`);
           const data = await res.json();
-          const results = (data.results || []).slice(0, 6).map(m => ({
+          const results = (data.results || []).slice(0, 8).map(m => ({
             id: m.id,
             title: m.title,
             year: m.release_date ? m.release_date.split('-')[0] : '',
@@ -643,31 +682,58 @@
         setIsPublishing(true);
         try {
           const puzzleTitle = createTitle.trim() || `${createStartMovie.title} → ${createTargetMovie.title}`;
-          const res = await fetch(`${SUPABASE_URL}/rest/v1/custom_puzzles`, {
-            method: 'POST',
-            headers: {
-              'apikey': SUPABASE_ANON,
-              'Authorization': `Bearer ${SUPABASE_ANON}`,
-              'Content-Type': 'application/json',
-              'Prefer': 'return=representation'
-            },
-            body: JSON.stringify({
-              creator_handle: handle,
-              start_film_id: createStartMovie.id,
-              end_film_id: createTargetMovie.id,
-              title: puzzleTitle,
-            })
-          });
-          const created = await res.json();
-          if (created && created[0]) {
-            const pId = created[0].id;
-            const fullUrl = `${window.location.origin}${window.location.pathname}?custom=${pId}`;
-            setCreatedPuzzleResult({ id: pId, url: fullUrl });
-            loadCommunityPuzzles();
+          const puzzleId = 'cp_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+          const origin = window.location.origin + window.location.pathname;
+          const fullUrl = `${origin}?start=${createStartMovie.id}&target=${createTargetMovie.id}&by=${encodeURIComponent(handle)}&title=${encodeURIComponent(puzzleTitle)}`;
+
+          const newEntry = {
+            id: puzzleId,
+            url: fullUrl,
+            title: puzzleTitle,
+            creator_handle: handle,
+            start_film_id: createStartMovie.id,
+            end_film_id: createTargetMovie.id,
+            startFilm: createStartMovie,
+            endFilm: createTargetMovie,
+            created_at: new Date().toISOString(),
+          };
+
+          // Save to local profile created list
+          const myPuzzles = JSON.parse(localStorage.getItem('filmtrace-my-puzzles') || '[]');
+          myPuzzles.unshift(newEntry);
+          localStorage.setItem('filmtrace-my-puzzles', JSON.stringify(myPuzzles.slice(0, 50)));
+
+          // Save to local community list
+          const comm = JSON.parse(localStorage.getItem('filmtrace-comm-puzzles') || '[]');
+          comm.unshift(newEntry);
+          localStorage.setItem('filmtrace-comm-puzzles', JSON.stringify(comm.slice(0, 50)));
+
+          // Also attempt remote save
+          try {
+            await fetch(`${SUPABASE_URL}/rest/v1/custom_puzzles`, {
+              method: 'POST',
+              headers: {
+                'apikey': SUPABASE_ANON,
+                'Authorization': `Bearer ${SUPABASE_ANON}`,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=representation'
+              },
+              body: JSON.stringify({
+                creator_handle: handle,
+                start_film_id: createStartMovie.id,
+                end_film_id: createTargetMovie.id,
+                title: puzzleTitle,
+              })
+            });
+          } catch (e) {
+            console.warn('Supabase remote save:', e);
           }
-        } catch (e) {
-          console.error(e);
-          setCreateError('Failed to publish puzzle.');
+
+          setCreatedPuzzleResult(newEntry);
+          loadCommunityPuzzles();
+        } catch (err) {
+          console.error('Publish error:', err);
+          setCreateError('Error creating puzzle: ' + (err.message || err));
         } finally {
           setIsPublishing(false);
         }
@@ -750,7 +816,11 @@
                   Daily Puzzle
                 </button>
                 <button
-                  onClick={() => setScreen('create')}
+                  onClick={() => {
+                    setCreatedPuzzleResult(null);
+                    setCreateError('');
+                    setScreen('create');
+                  }}
                   className={`px-2.5 py-1 transition-colors cursor-pointer ${screen === 'create' ? 'text-white' : 'text-text-secondary hover:text-white'}`}
                 >
                   Create Puzzle
@@ -758,7 +828,7 @@
                 <button
                   onClick={() => {
                     setScreen('leaderboard');
-                    if (todayPuzzle) fetchLeaderboardData(todayPuzzle.date, false);
+                    if (todayPuzzle) fetchLeaderboardData(todayPuzzle.date);
                   }}
                   className={`px-2.5 py-1 transition-colors cursor-pointer ${screen === 'leaderboard' ? 'text-white' : 'text-text-secondary hover:text-white'}`}
                 >
@@ -880,7 +950,7 @@
                               Community Puzzles
                             </h2>
                           </div>
-                          <button onClick={() => setScreen('create')} className="text-xs text-accent hover:underline font-semibold cursor-pointer">
+                          <button onClick={() => { setCreatedPuzzleResult(null); setScreen('create'); }} className="text-xs text-accent hover:underline font-semibold cursor-pointer">
                             + Create Your Own
                           </button>
                         </div>
@@ -913,7 +983,7 @@
                               </div>
 
                               <button
-                                onClick={() => loadCustomPuzzle(cp.id)}
+                                onClick={() => loadCustomPuzzlePair(cp.start_film_id, cp.end_film_id, cp.creator_handle, cp.title)}
                                 className="w-full py-1.5 bg-bg-secondary hover:bg-accent hover:text-bg-primary text-text-primary text-[11px] font-bold uppercase tracking-wider rounded text-center border border-border transition-colors cursor-pointer"
                               >
                                 Play Puzzle &rarr;
@@ -932,7 +1002,7 @@
                         <p className="text-xs text-text-secondary">Create a custom puzzle with any 2 films and challenge your friends.</p>
                       </div>
                       <button
-                        onClick={() => setScreen('create')}
+                        onClick={() => { setCreatedPuzzleResult(null); setScreen('create'); }}
                         className="px-5 py-2.5 bg-accent hover:bg-accent-dim text-bg-primary text-xs font-bold uppercase tracking-wider rounded transition-colors whitespace-nowrap shadow-[0_0_12px_rgba(0,224,84,0.3)] cursor-pointer"
                       >
                         Create Puzzle &rarr;
@@ -948,7 +1018,6 @@
                         </h2>
                       </div>
 
-                      {/* Objective */}
                       <div className="flex flex-col gap-2 bg-bg-secondary p-4 rounded-[4px] border border-border">
                         <span className="text-[10px] font-bold uppercase tracking-widest text-accent">The Goal</span>
                         <p className="text-xs sm:text-sm text-text-primary leading-relaxed font-medium">
@@ -956,7 +1025,6 @@
                         </p>
                       </div>
 
-                      {/* 3 Step Walkthrough Cards */}
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 w-full">
                         <div className="bg-bg-secondary/80 p-3.5 rounded-[4px] border border-border flex flex-col gap-2">
                           <div className="flex items-center gap-2">
@@ -989,7 +1057,6 @@
                         </div>
                       </div>
 
-                      {/* Pro Tips & Rules List */}
                       <div className="flex flex-col gap-2.5 pt-2 border-t border-border/70 text-xs text-text-secondary leading-relaxed">
                         <div className="flex items-start gap-2.5">
                           <span className="text-accent font-bold mt-0.5">⚡</span>
@@ -1039,7 +1106,32 @@
                       <span className="text-2xl">🎉</span>
                       <div>
                         <h2 className="text-lg font-black text-white">Puzzle Created!</h2>
-                        <p className="text-xs text-text-secondary">Your custom challenge is live.</p>
+                        <p className="text-xs text-text-secondary">Your custom challenge is live and ready to play.</p>
+                      </div>
+                    </div>
+
+                    {/* Movie Pair Preview */}
+                    <div className="flex items-center justify-center gap-6 w-full py-4 bg-bg-secondary/70 rounded border border-border">
+                      <div className="flex flex-col items-center gap-1.5">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">Start</span>
+                        <div className="w-14 h-20 relative rounded overflow-hidden bg-bg-card border border-border">
+                          {createdPuzzleResult.startFilm?.poster_path && (
+                            <img src={posterUrl(createdPuzzleResult.startFilm.poster_path, 'w185')} alt={createdPuzzleResult.startFilm.title} className="w-full h-full object-cover" />
+                          )}
+                        </div>
+                        <span className="text-xs font-bold text-white max-w-[100px] truncate">{createdPuzzleResult.startFilm?.title}</span>
+                      </div>
+
+                      <span className="text-xl text-accent font-light">⟷</span>
+
+                      <div className="flex flex-col items-center gap-1.5">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-accent">Target</span>
+                        <div className="w-14 h-20 relative rounded overflow-hidden bg-bg-card border-2 border-accent">
+                          {createdPuzzleResult.endFilm?.poster_path && (
+                            <img src={posterUrl(createdPuzzleResult.endFilm.poster_path, 'w185')} alt={createdPuzzleResult.endFilm.title} className="w-full h-full object-cover" />
+                          )}
+                        </div>
+                        <span className="text-xs font-bold text-white max-w-[100px] truncate">{createdPuzzleResult.endFilm?.title}</span>
                       </div>
                     </div>
 
@@ -1067,8 +1159,8 @@
 
                     <div className="flex items-center gap-3 w-full pt-2">
                       <button
-                        onClick={() => loadCustomPuzzle(createdPuzzleResult.id)}
-                        className="flex-1 py-3 bg-white text-bg-primary text-xs font-bold uppercase tracking-wider rounded hover:bg-white/90 transition-colors text-center cursor-pointer"
+                        onClick={() => loadCustomPuzzlePair(createdPuzzleResult.start_film_id, createdPuzzleResult.end_film_id, createdPuzzleResult.creator_handle, createdPuzzleResult.title)}
+                        className="flex-1 py-3 bg-white text-bg-primary text-xs font-bold uppercase tracking-wider rounded hover:bg-white/90 transition-colors text-center cursor-pointer font-bold"
                       >
                         Play Puzzle Now &rarr;
                       </button>
@@ -1145,6 +1237,9 @@
                                     }}
                                     className="flex items-center gap-2.5 p-2 hover:bg-bg-hover cursor-pointer border-b border-border/40 last:border-0"
                                   >
+                                    <div className="w-7 h-10 bg-bg-card rounded overflow-hidden flex-shrink-0">
+                                      {m.poster_path && <img src={posterUrl(m.poster_path, 'w92')} alt={m.title} className="w-full h-full object-cover" />}
+                                    </div>
                                     <span className="text-xs text-white font-medium truncate">{m.title}</span>
                                     <span className="text-[10px] text-text-secondary ml-auto">{m.year}</span>
                                   </div>
@@ -1196,6 +1291,9 @@
                                     }}
                                     className="flex items-center gap-2.5 p-2 hover:bg-bg-hover cursor-pointer border-b border-border/40 last:border-0"
                                   >
+                                    <div className="w-7 h-10 bg-bg-card rounded overflow-hidden flex-shrink-0">
+                                      {m.poster_path && <img src={posterUrl(m.poster_path, 'w92')} alt={m.title} className="w-full h-full object-cover" />}
+                                    </div>
                                     <span className="text-xs text-white font-medium truncate">{m.title}</span>
                                     <span className="text-[10px] text-text-secondary ml-auto">{m.year}</span>
                                   </div>
@@ -1211,7 +1309,7 @@
                       <label className="text-[11px] font-bold uppercase tracking-wider text-text-secondary">Puzzle Title (Optional)</label>
                       <input
                         type="text"
-                        placeholder="e.g. Nolan Cinematic Trail"
+                        placeholder={createStartMovie && createTargetMovie ? `${createStartMovie.title} → ${createTargetMovie.title}` : 'e.g. Nolan Cinematic Trail'}
                         value={createTitle}
                         onChange={(e) => setCreateTitle(e.target.value)}
                         className="bg-bg-secondary border border-border text-white text-xs px-3.5 py-2 rounded focus:outline-none focus:border-accent"
@@ -1265,7 +1363,7 @@
                             Edit Username
                           </button>
                           <button
-                            onClick={() => setScreen('create')}
+                            onClick={() => { setCreatedPuzzleResult(null); setScreen('create'); }}
                             className="px-4 py-2 bg-accent hover:bg-accent-dim text-bg-primary text-xs font-bold uppercase tracking-wider rounded transition-colors cursor-pointer"
                           >
                             + Create Puzzle
@@ -1300,26 +1398,58 @@
 
                     {/* Created Puzzles */}
                     <div className="flex flex-col gap-3">
-                      <h2 className="text-base font-bold uppercase tracking-wider text-white border-b border-border pb-2">
-                        Created Puzzles ({profileData.puzzles.length})
-                      </h2>
+                      <div className="flex items-center justify-between border-b border-border pb-2">
+                        <h2 className="text-base font-bold uppercase tracking-wider text-white">
+                          Created Puzzles ({profileData.puzzles.length})
+                        </h2>
+                        {profileData.username === handle && (
+                          <button onClick={() => { setCreatedPuzzleResult(null); setScreen('create'); }} className="text-xs text-accent hover:underline font-semibold cursor-pointer">
+                            + Create New
+                          </button>
+                        )}
+                      </div>
+
                       {profileData.puzzles.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           {profileData.puzzles.map(p => (
-                            <div key={p.id} className="bg-bg-card border border-border p-4 rounded flex flex-col gap-3">
-                              <span className="font-bold text-sm text-white">{p.title || 'Custom Challenge'}</span>
-                              <button
-                                onClick={() => loadCustomPuzzle(p.id)}
-                                className="w-full py-1.5 bg-accent text-bg-primary text-xs font-bold uppercase tracking-wider rounded cursor-pointer hover:bg-accent-dim"
-                              >
-                                Play Puzzle &rarr;
-                              </button>
+                            <div key={p.id} className="bg-bg-card border border-border p-4 rounded flex flex-col gap-3 justify-between">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-14 bg-bg-secondary rounded overflow-hidden border border-border flex-shrink-0">
+                                  {p.startFilm?.poster_path && <img src={posterUrl(p.startFilm.poster_path, 'w92')} alt="" className="w-full h-full object-cover" />}
+                                </div>
+                                <span className="text-xs text-accent">➔</span>
+                                <div className="w-10 h-14 bg-bg-secondary rounded overflow-hidden border-2 border-accent flex-shrink-0">
+                                  {p.endFilm?.poster_path && <img src={posterUrl(p.endFilm.poster_path, 'w92')} alt="" className="w-full h-full object-cover" />}
+                                </div>
+                                <div className="flex flex-col min-w-0">
+                                  <span className="font-bold text-xs text-white truncate">{p.title || 'Custom Challenge'}</span>
+                                  <span className="text-[10px] text-text-muted">{new Date(p.created_at).toLocaleDateString()}</span>
+                                </div>
+                              </div>
+
+                              <div className="flex items-center gap-2 pt-2 border-t border-border/50">
+                                <button
+                                  onClick={() => loadCustomPuzzlePair(p.start_film_id, p.end_film_id, p.creator_handle, p.title)}
+                                  className="flex-1 py-1.5 bg-accent text-bg-primary text-xs font-bold uppercase tracking-wider rounded cursor-pointer hover:bg-accent-dim"
+                                >
+                                  Play Puzzle &rarr;
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(p.url || `${window.location.origin}${window.location.pathname}?start=${p.start_film_id}&target=${p.end_film_id}&by=${encodeURIComponent(p.creator_handle || handle)}`);
+                                    alert('Link copied to clipboard!');
+                                  }}
+                                  className="px-3 py-1.5 bg-bg-secondary border border-border text-text-secondary hover:text-white text-xs rounded cursor-pointer"
+                                >
+                                  Share
+                                </button>
+                              </div>
                             </div>
                           ))}
                         </div>
                       ) : (
                         <div className="bg-bg-card border border-border p-6 rounded text-center text-text-muted text-xs">
-                          No custom puzzles created yet.
+                          No custom puzzles created yet. <button onClick={() => { setCreatedPuzzleResult(null); setScreen('create'); }} className="text-accent underline font-semibold ml-1 cursor-pointer">Create the first one!</button>
                         </div>
                       )}
                     </div>
@@ -1574,7 +1704,7 @@
                             {filteredCrew.length > 0 && (
                               <div className="flex flex-col gap-3 mt-2">
                                 <div className="flex items-center gap-2 border-b border-border/60 pb-1.5">
-                                  <span className="text-xs font-bold uppercase tracking-wider text-text-primary">Crew (Director, Producer, Writer)</span>
+                                  <span className="text-xs font-bold uppercase tracking-wider text-text-primary">Crew</span>
                                   <span className="text-[11px] text-text-muted">({filteredCrew.length})</span>
                                 </div>
                                 <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
@@ -1888,7 +2018,7 @@
                     &larr; Daily Puzzle
                   </button>
                   <button
-                    onClick={() => setScreen('create')}
+                    onClick={() => { setCreatedPuzzleResult(null); setScreen('create'); }}
                     className="px-6 py-2.5 bg-accent text-bg-primary text-xs font-bold uppercase tracking-wider rounded-[4px] hover:bg-accent-dim transition-all cursor-pointer"
                   >
                     + Create Puzzle
