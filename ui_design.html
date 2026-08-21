@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FilmChain — UI Design Preview</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Inter Font & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'bg-primary': '#14181c',
+            'bg-secondary': '#1c2228',
+            'bg-card': '#202830',
+            'bg-hover': '#2c3440',
+            'accent': '#00e054',
+            'accent-dim': '#00b042',
+            'accent-orange': '#ff8000',
+            'accent-blue': '#40bcf4',
+            'text-primary': '#ffffff',
+            'text-secondary': '#9ab0e0',
+            'text-muted': '#678',
+            'border': '#2c3440',
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #14181c;
+      color: #ffffff;
+      font-family: 'Inter', sans-serif;
+    }
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-accent selection:text-bg-primary">
+
+  <!-- Top Navigation Bar -->
+  <header class="border-b border-border bg-bg-primary/95 backdrop-blur sticky top-0 z-40">
+    <div class="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
+      <a href="#" class="flex items-center gap-2 group">
+        <div class="flex items-center gap-1">
+          <span class="w-2.5 h-2.5 rounded-full bg-[#00e054]"></span>
+          <span class="w-2.5 h-2.5 rounded-full bg-[#ff8000]"></span>
+          <span class="w-2.5 h-2.5 rounded-full bg-[#40bcf4]"></span>
+        </div>
+        <span class="font-black tracking-tight text-lg text-text-primary group-hover:text-accent transition-colors">
+          FILMCHAIN
+        </span>
+      </a>
+
+      <nav class="flex items-center gap-3">
+        <a href="#" class="px-3 py-1 text-xs font-semibold text-text-secondary hover:text-white transition-colors">
+          Daily Puzzle
+        </a>
+        <a href="#" class="px-3 py-1 text-xs font-semibold text-text-secondary hover:text-white transition-colors">
+          Freeform
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Game Container -->
+  <main class="flex-1 max-w-5xl mx-auto w-full px-4 py-6 flex flex-col gap-6">
+
+    <!-- Sticky Game Status HUD -->
+    <div class="flex flex-col gap-3.5 bg-bg-card p-4 sm:p-5 rounded-[4px] border border-border sticky top-16 z-30 shadow-2xl backdrop-blur-md">
+      <div class="flex items-center justify-between gap-4 flex-wrap sm:flex-nowrap">
+        
+        <!-- Target Goal Film -->
+        <div class="flex items-center gap-3.5">
+          <div class="relative rounded-[4px] overflow-hidden flex-shrink-0 bg-bg-secondary border border-border shadow-md w-[72px] h-[108px]">
+            <img
+              src="https://image.tmdb.org/t/p/w185/8IB2e4r4oVhHn97huYePUKLKf9E.jpg"
+              alt="Inception"
+              class="w-full h-full object-cover"
+            />
+          </div>
+          <div class="flex flex-col text-left gap-1">
+            <div class="flex items-center">
+              <span class="text-[10px] font-medium text-text-secondary bg-bg-secondary px-2 py-0.5 rounded border border-border">
+                Goal
+              </span>
+            </div>
+            <span class="font-bold text-white text-base sm:text-lg leading-tight">
+              Inception
+            </span>
+            <span class="text-text-secondary text-xs">2010</span>
+          </div>
+        </div>
+
+        <!-- Right Side Metrics: Clicks & Timer (No Outer Container) -->
+        <div class="flex items-center gap-6 sm:gap-8">
+          <!-- Clicks Counter -->
+          <div class="text-right">
+            <span class="text-[10px] font-bold uppercase tracking-widest text-text-secondary block">CLICKS</span>
+            <span class="font-mono text-2xl sm:text-3xl font-black text-white leading-tight">
+              0
+            </span>
+          </div>
+
+          <!-- Running Stopwatch Timer -->
+          <div class="text-right">
+            <span class="text-[10px] font-bold uppercase tracking-widest text-text-secondary block">TIME</span>
+            <div class="font-mono text-2xl sm:text-3xl font-bold text-accent tracking-wider tabular-nums select-none drop-shadow-[0_0_8px_rgba(0,224,84,0.3)]">
+              00:42<span class="text-lg sm:text-xl text-accent-dim">.85</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trail Breadcrumb [ #1 Movie › #2 Actor › ... ] -->
+      <div class="pt-2 border-t border-border/70">
+        <div class="w-full overflow-x-auto pb-1 hide-scrollbar">
+          <div class="flex items-center gap-1.5 whitespace-nowrap min-w-max text-xs">
+            
+            <!-- Present Active Movie (Green Outline & Green Text, No Fill) -->
+            <div class="flex items-center gap-1.5">
+              <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-[4px] border border-accent text-accent font-semibold bg-transparent transition-all">
+                <span class="text-[11px] opacity-70 font-mono">#1</span>
+                <span>🎬</span>
+                <span class="max-w-[150px] truncate" title="The Dark Knight">The Dark Knight</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Current Movie Showcase Banner (Poster, Title, Year, Runtime, Tags, Synopsis) -->
+    <div class="bg-bg-card border border-border rounded-[4px] p-4 sm:p-5 flex flex-col sm:flex-row gap-4 sm:gap-6 text-left shadow-lg">
+      <!-- Poster -->
+      <div class="relative w-28 h-40 sm:w-32 sm:h-48 rounded-[4px] overflow-hidden bg-bg-secondary border border-white/10 flex-shrink-0 self-center sm:self-start">
+        <img
+          src="https://image.tmdb.org/t/p/w342/qJ2tW6WMUDux911r6m7haRef0WH.jpg"
+          alt="The Dark Knight"
+          class="w-full h-full object-cover"
+        />
+      </div>
+
+      <!-- Metadata & Plot Overview -->
+      <div class="flex flex-col gap-2 min-w-0 justify-center">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="text-xs font-semibold text-text-secondary">2008</span>
+          <span class="text-xs text-text-muted">· 152 min</span>
+        </div>
+
+        <h1 class="text-xl sm:text-2xl font-black text-white leading-tight">
+          The Dark Knight
+        </h1>
+
+        <p class="text-xs sm:text-sm italic text-text-secondary font-medium">
+          &ldquo;Some men just want to watch the world burn.&rdquo;
+        </p>
+
+        <!-- Genre Tags -->
+        <div class="flex items-center gap-1.5 flex-wrap my-0.5">
+          <span class="text-[10px] uppercase font-medium bg-bg-secondary text-text-secondary px-2 py-0.5 rounded border border-border">Action</span>
+          <span class="text-[10px] uppercase font-medium bg-bg-secondary text-text-secondary px-2 py-0.5 rounded border border-border">Crime</span>
+          <span class="text-[10px] uppercase font-medium bg-bg-secondary text-text-secondary px-2 py-0.5 rounded border border-border">Thriller</span>
+        </div>
+
+        <!-- Synopsis -->
+        <p class="text-xs sm:text-sm text-text-primary/90 leading-relaxed line-clamp-3 sm:line-clamp-4 mt-1">
+          Batman raises the stakes in his war on crime. With the help of Lt. Jim Gordon and District Attorney Harvey Dent, Batman sets out to dismantle the remaining criminal organizations that plague the streets. The partnership proves to be effective, but they soon find themselves prey to a reign of chaos unleashed by a rising criminal mastermind known to the terrified citizens of Gotham as the Joker.
+        </p>
+      </div>
+    </div>
+
+    <!-- Filter Bar: Subtitle & Sub-Tabs -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-3 px-1">
+      <div class="flex items-center gap-2">
+        <span class="text-xs text-text-secondary font-medium">
+          Choose next person
+        </span>
+      </div>
+
+      <!-- Sub-Tabs: Cast vs Crew -->
+      <div class="flex items-center gap-1 bg-bg-secondary p-1 rounded-[4px] border border-border self-start sm:self-auto" id="tab-container">
+        <button class="tab-btn px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer bg-accent text-bg-primary font-bold" data-target="all">
+          All (15)
+        </button>
+        <button class="tab-btn px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer text-text-secondary hover:text-text-primary" data-target="cast">
+          Cast (12)
+        </button>
+        <button class="tab-btn px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer text-text-secondary hover:text-text-primary" data-target="crew">
+          Crew (3)
+        </button>
+      </div>
+    </div>
+
+    <!-- Cast & Crew 6-Column Grid (Portrait 2:3 Cards) -->
+    <div class="flex flex-col gap-6" id="grid-all">
+      <!-- Cast Section -->
+      <div class="flex flex-col gap-3">
+        <div class="flex items-center gap-2 border-b border-border/60 pb-1.5">
+          <span class="text-xs font-bold uppercase tracking-wider text-text-primary">Cast / Actors</span>
+          <span class="text-[11px] text-text-muted">(12)</span>
+        </div>
+
+        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
+          
+          <!-- Christian Bale -->
+          <div class="group flex flex-col gap-1.5 transition-all select-none cursor-pointer w-[110px]">
+            <div class="relative w-full h-[165px] rounded-[4px] overflow-hidden bg-bg-card border border-white/10 group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)] transition-all duration-200">
+              <img src="https://image.tmdb.org/t/p/w185/7Pxez9J8fuPd2Mn9kex13YALrCQ.jpg" alt="Christian Bale" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+              <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-2 text-center pointer-events-none">
+                <span class="text-white text-xs font-semibold drop-shadow">Select</span>
+              </div>
+            </div>
+            <div class="flex flex-col text-left">
+              <span class="font-medium text-text-primary text-xs line-clamp-1 group-hover:text-accent transition-colors leading-tight">Christian Bale</span>
+              <span class="text-[11px] text-text-secondary line-clamp-1 mt-0.5">Bruce Wayne</span>
+            </div>
+          </div>
+
+          <!-- Heath Ledger -->
+          <div class="group flex flex-col gap-1.5 transition-all select-none cursor-pointer w-[110px]">
+            <div class="relative w-full h-[165px] rounded-[4px] overflow-hidden bg-bg-card border border-white/10 group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)] transition-all duration-200">
+              <img src="https://image.tmdb.org/t/p/w185/AdWKVqyWpkYSfKE5Gb2qn8JzHni.jpg" alt="Heath Ledger" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+              <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-2 text-center pointer-events-none">
+                <span class="text-white text-xs font-semibold drop-shadow">Select</span>
+              </div>
+            </div>
+            <div class="flex flex-col text-left">
+              <span class="font-medium text-text-primary text-xs line-clamp-1 group-hover:text-accent transition-colors leading-tight">Heath Ledger</span>
+              <span class="text-[11px] text-text-secondary line-clamp-1 mt-0.5">Joker</span>
+            </div>
+          </div>
+
+          <!-- Aaron Eckhart -->
+          <div class="group flex flex-col gap-1.5 transition-all select-none cursor-pointer w-[110px]">
+            <div class="relative w-full h-[165px] rounded-[4px] overflow-hidden bg-bg-card border border-white/10 group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)] transition-all duration-200">
+              <img src="https://image.tmdb.org/t/p/w185/u5JjnRMr9zKEVvOP7k3F6gdcwT6.jpg" alt="Aaron Eckhart" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+              <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-2 text-center pointer-events-none">
+                <span class="text-white text-xs font-semibold drop-shadow">Select</span>
+              </div>
+            </div>
+            <div class="flex flex-col text-left">
+              <span class="font-medium text-text-primary text-xs line-clamp-1 group-hover:text-accent transition-colors leading-tight">Aaron Eckhart</span>
+              <span class="text-[11px] text-text-secondary line-clamp-1 mt-0.5">Harvey Dent</span>
+            </div>
+          </div>
+
+          <!-- Michael Caine -->
+          <div class="group flex flex-col gap-1.5 transition-all select-none cursor-pointer w-[110px]">
+            <div class="relative w-full h-[165px] rounded-[4px] overflow-hidden bg-bg-card border border-white/10 group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)] transition-all duration-200">
+              <img src="https://image.tmdb.org/t/p/w185/bVZRMlpjTAO2pJK6v90buFgVbSW.jpg" alt="Michael Caine" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+              <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-2 text-center pointer-events-none">
+                <span class="text-white text-xs font-semibold drop-shadow">Select</span>
+              </div>
+            </div>
+            <div class="flex flex-col text-left">
+              <span class="font-medium text-text-primary text-xs line-clamp-1 group-hover:text-accent transition-colors leading-tight">Michael Caine</span>
+              <span class="text-[11px] text-text-secondary line-clamp-1 mt-0.5">Alfred</span>
+            </div>
+          </div>
+
+          <!-- Gary Oldman -->
+          <div class="group flex flex-col gap-1.5 transition-all select-none cursor-pointer w-[110px]">
+            <div class="relative w-full h-[165px] rounded-[4px] overflow-hidden bg-bg-card border border-white/10 group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)] transition-all duration-200">
+              <img src="https://image.tmdb.org/t/p/w185/yhaSM5habNNI1Tf4ALRwRk3VvSZ.jpg" alt="Gary Oldman" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+              <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-2 text-center pointer-events-none">
+                <span class="text-white text-xs font-semibold drop-shadow">Select</span>
+              </div>
+            </div>
+            <div class="flex flex-col text-left">
+              <span class="font-medium text-text-primary text-xs line-clamp-1 group-hover:text-accent transition-colors leading-tight">Gary Oldman</span>
+              <span class="text-[11px] text-text-secondary line-clamp-1 mt-0.5">Gordon</span>
+            </div>
+          </div>
+
+          <!-- Cillian Murphy -->
+          <div class="group flex flex-col gap-1.5 transition-all select-none cursor-pointer w-[110px]">
+            <div class="relative w-full h-[165px] rounded-[4px] overflow-hidden bg-bg-card border border-white/10 group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)] transition-all duration-200">
+              <img src="https://image.tmdb.org/t/p/w185/2lKs67r7FI4bPu0AXxMUJZxmUXn.jpg" alt="Cillian Murphy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+              <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-2 text-center pointer-events-none">
+                <span class="text-white text-xs font-semibold drop-shadow">Select</span>
+              </div>
+            </div>
+            <div class="flex flex-col text-left">
+              <span class="font-medium text-text-primary text-xs line-clamp-1 group-hover:text-accent transition-colors leading-tight">Cillian Murphy</span>
+              <span class="text-[11px] text-text-secondary line-clamp-1 mt-0.5">Scarecrow</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Crew Section with Aggregated Roles -->
+      <div class="flex flex-col gap-3 mt-2">
+        <div class="flex items-center gap-2 border-b border-border/60 pb-1.5">
+          <span class="text-xs font-bold uppercase tracking-wider text-text-primary">Crew (Director, Producer, Writer)</span>
+          <span class="text-[11px] text-text-muted">(3)</span>
+        </div>
+
+        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
+          
+          <!-- Christopher Nolan (Aggregated Multi-Role Card) -->
+          <div class="group flex flex-col gap-1.5 transition-all select-none cursor-pointer w-[110px]">
+            <div class="relative w-full h-[165px] rounded-[4px] overflow-hidden bg-bg-card border border-white/10 group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)] transition-all duration-200">
+              <img src="https://image.tmdb.org/t/p/w185/xuAIuYSmsUzKlUMBFGVZaWsY3DZ.jpg" alt="Christopher Nolan" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+              <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-2 text-center pointer-events-none">
+                <span class="text-white text-xs font-semibold drop-shadow">Select</span>
+              </div>
+            </div>
+            <div class="flex flex-col text-left">
+              <span class="font-medium text-text-primary text-xs line-clamp-1 group-hover:text-accent transition-colors leading-tight">Christopher Nolan</span>
+              <span class="text-[11px] text-text-secondary line-clamp-2 leading-tight mt-0.5" title="Director, Screenplay, Story, Producer">
+                Director, Screenplay, Story, Producer
+              </span>
+            </div>
+          </div>
+
+          <!-- Jonathan Nolan -->
+          <div class="group flex flex-col gap-1.5 transition-all select-none cursor-pointer w-[110px]">
+            <div class="relative w-full h-[165px] rounded-[4px] overflow-hidden bg-bg-card border border-white/10 group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)] transition-all duration-200">
+              <img src="https://image.tmdb.org/t/p/w185/qgTOwfg2B4C0ZFGAP4EnRZ7domo.jpg" alt="Jonathan Nolan" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+              <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-2 text-center pointer-events-none">
+                <span class="text-white text-xs font-semibold drop-shadow">Select</span>
+              </div>
+            </div>
+            <div class="flex flex-col text-left">
+              <span class="font-medium text-text-primary text-xs line-clamp-1 group-hover:text-accent transition-colors leading-tight">Jonathan Nolan</span>
+              <span class="text-[11px] text-text-secondary line-clamp-1 mt-0.5">Screenplay</span>
+            </div>
+          </div>
+
+          <!-- Charles Roven -->
+          <div class="group flex flex-col gap-1.5 transition-all select-none cursor-pointer w-[110px]">
+            <div class="relative w-full h-[165px] rounded-[4px] overflow-hidden bg-bg-card border border-white/10 group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)] transition-all duration-200">
+              <img src="https://image.tmdb.org/t/p/w185/5fxOnoI6jKicdLBtbeumKxxV9Jp.jpg" alt="Charles Roven" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+              <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-2 text-center pointer-events-none">
+                <span class="text-white text-xs font-semibold drop-shadow">Select</span>
+              </div>
+            </div>
+            <div class="flex flex-col text-left">
+              <span class="font-medium text-text-primary text-xs line-clamp-1 group-hover:text-accent transition-colors leading-tight">Charles Roven</span>
+              <span class="text-[11px] text-text-secondary line-clamp-1 mt-0.5">Producer</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Interactive Demo Script -->
+  <script>
+    // Tab switching interaction demo
+    const buttons = document.querySelectorAll('.tab-btn');
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        buttons.forEach(b => {
+          b.className = 'tab-btn px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer text-text-secondary hover:text-text-primary';
+        });
+        btn.className = 'tab-btn px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer bg-accent text-bg-primary font-bold';
+      });
+    });
+  </script>
+</body>
+</html>
