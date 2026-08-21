@@ -23,9 +23,9 @@ export default function Leaderboard({ entries, currentHandle }: LeaderboardProps
             const isCurrent = entry.handle === currentHandle;
 
             let rankBadge = "text-text-muted";
-            if (rank === 1) rankBadge = "text-[#00e054] font-bold";
-            else if (rank === 2) rankBadge = "text-[#40bcf4] font-bold";
-            else if (rank === 3) rankBadge = "text-[#ff8000] font-bold";
+            if (rank === 1) rankBadge = "text-[#f5c518] font-bold";
+            else if (rank === 2) rankBadge = "text-[#c0c0c0] font-bold";
+            else if (rank === 3) rankBadge = "text-[#cd7f32] font-bold";
 
             const minutes = Math.floor(entry.time_seconds / 60);
             const seconds = (entry.time_seconds % 60).toFixed(1);
@@ -34,7 +34,7 @@ export default function Leaderboard({ entries, currentHandle }: LeaderboardProps
               <tr
                 key={entry.id || index}
                 className={`hover:bg-bg-hover transition-colors ${
-                  isCurrent ? 'bg-accent/10' : ''
+                  isCurrent ? 'bg-white/10' : ''
                 }`}
               >
                 <td className={`py-3 px-4 text-center font-mono ${rankBadge}`}>
@@ -43,13 +43,13 @@ export default function Leaderboard({ entries, currentHandle }: LeaderboardProps
                 <td className="py-3 px-4">
                   <span
                     className={`font-semibold ${
-                      isCurrent ? 'text-accent' : 'text-text-primary'
+                      isCurrent ? 'text-white' : 'text-text-primary'
                     }`}
                   >
                     {entry.handle}
                   </span>
                   {isCurrent && (
-                    <span className="ml-2 text-[9px] uppercase font-bold text-accent bg-accent/10 px-1.5 py-0.5 rounded">
+                    <span className="ml-2 text-[9px] uppercase font-bold text-white bg-white/10 px-1.5 py-0.5 rounded border border-white/20">
                       You
                     </span>
                   )}

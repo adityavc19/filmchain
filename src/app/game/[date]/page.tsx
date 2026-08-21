@@ -862,18 +862,18 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
                 {leaderboard.length > 0 ? (
                   leaderboard.slice(0, 10).map((entry, idx) => {
                     const isYou = entry.handle === handle;
-                    const rankColors: Record<number, string> = { 1: '#00e054', 2: '#40bcf4', 3: '#ff8000' };
+                    const rankColors: Record<number, string> = { 1: '#f5c518', 2: '#c0c0c0', 3: '#cd7f32' };
                     const rankColor = rankColors[idx + 1] || '#667788';
                     const mins = Math.floor(entry.time_seconds / 60);
                     const secs = entry.time_seconds % 60;
 
                     return (
-                      <tr key={entry.id || idx} className={`border-b border-border/50 ${isYou ? 'bg-accent/10' : ''}`}>
+                      <tr key={entry.id || idx} className={`border-b border-border/50 ${isYou ? 'bg-white/10' : ''}`}>
                         <td className="py-2 px-1.5 text-center font-mono font-bold" style={{ color: rankColor }}>
                           {idx + 1}
                         </td>
                         <td className="py-2 px-1.5 text-left font-medium">
-                          <span className={isYou ? 'text-accent font-bold' : 'text-white'}>
+                          <span className={isYou ? 'text-white font-bold' : 'text-text-primary'}>
                             {entry.handle} {isYou ? '(You)' : ''}
                           </span>
                         </td>
@@ -897,28 +897,22 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
             </table>
           </div>
 
-          {/* Share Section */}
-          <div className="flex flex-col gap-2 w-full max-w-md text-left">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-text-muted">
-              Share
-            </span>
-            <pre className="bg-bg-secondary border border-border rounded-[4px] p-3 text-xs text-text-secondary font-mono whitespace-pre-wrap">
-              {`FILMTRACE\n${Math.floor(Math.max(1, Math.round(((state.endTime || 0) - (state.startTime || 0)) / 1000)) / 60)}:${String(Math.max(1, Math.round(((state.endTime || 0) - (state.startTime || 0)) / 1000)) % 60).padStart(2, '0')} * ${state.clickCount} clicks\n${state.path.map(p => (p.type === 'film' ? '🎬' : '👤')).join(' > ')}\nhttps://filmtrace.app`}
-            </pre>
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full max-w-md mt-1">
             <button
               onClick={copyShareResult}
-              className="w-full py-2 bg-transparent text-accent text-xs font-bold uppercase tracking-wider border border-accent rounded-[4px] hover:bg-accent/10 transition-colors cursor-pointer"
+              className="w-full sm:flex-1 py-3 px-5 bg-white text-[#0e1114] hover:bg-white/90 text-xs font-bold uppercase tracking-wider rounded-[4px] flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg active:scale-95"
             >
-              {copied ? 'Copied!' : 'Copy Result'}
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg>
+              <span>{copied ? 'Copied to Clipboard!' : 'Share'}</span>
             </button>
+            <Link
+              href="/"
+              className="w-full sm:w-auto py-3 px-6 bg-transparent text-text-secondary text-xs font-semibold border border-border rounded-[4px] hover:text-white hover:border-text-secondary transition-all text-center"
+            >
+              &larr; Home
+            </Link>
           </div>
-
-          <Link
-            href="/"
-            className="px-8 py-2.5 bg-transparent text-text-secondary text-xs font-semibold border border-border rounded-[4px] hover:text-white hover:border-text-secondary transition-all"
-          >
-            &larr; Back to Home
-          </Link>
         </div>
       )}
     </div>

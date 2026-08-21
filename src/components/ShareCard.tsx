@@ -39,20 +39,12 @@ export default function ShareCard({ date, time, hopCount, path }: ShareCardProps
   };
 
   return (
-    <div className="flex flex-col items-center gap-4 p-5 bg-bg-card rounded-[4px] border border-border w-full shadow-lg">
-      <div className="w-full text-left">
-        <span className="text-[11px] font-bold uppercase tracking-wider text-accent block mb-2">Share Score</span>
-        <pre className="bg-bg-secondary p-3.5 rounded-[4px] border border-border text-xs text-text-secondary font-mono whitespace-pre-wrap leading-relaxed select-all">
-          {generateText()}
-        </pre>
-      </div>
-
-      <button
-        onClick={handleCopy}
-        className="w-full py-2.5 bg-accent text-bg-primary text-xs font-bold uppercase tracking-wider rounded-[4px] hover:bg-accent-dim transition-all shadow-[0_0_12px_rgba(0,224,84,0.3)] cursor-pointer"
-      >
-        {copied ? '✓ Copied to Clipboard!' : 'Copy Result'}
-      </button>
-    </div>
+    <button
+      onClick={handleCopy}
+      className="w-full py-3 px-5 bg-white text-[#0e1114] hover:bg-white/90 text-xs font-bold uppercase tracking-wider rounded-[4px] flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg active:scale-95"
+    >
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg>
+      <span>{copied ? 'Copied to Clipboard!' : 'Share'}</span>
+    </button>
   );
 }

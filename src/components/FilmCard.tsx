@@ -31,11 +31,7 @@ export default function FilmCard({
     >
       {/* Poster Container with exact 2:3 movie poster aspect ratio */}
       <div
-        className={`relative w-full aspect-[2/3] rounded-[4px] overflow-hidden bg-bg-card border transition-all duration-200 ${
-          isTarget
-            ? 'border-accent ring-2 ring-accent/50 shadow-[0_0_16px_rgba(0,224,84,0.4)]'
-            : 'border-white/10 group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)]'
-        }`}
+        className="relative w-full aspect-[2/3] rounded-[4px] overflow-hidden bg-bg-card border border-white/10 group-hover:border-white group-hover:shadow-[0_0_12px_rgba(255,255,255,0.15)] transition-all duration-200"
       >
         {posterPath ? (
           <Image
@@ -49,13 +45,6 @@ export default function FilmCard({
           <div className="w-full h-full flex flex-col items-center justify-center p-3 text-center bg-bg-secondary text-text-muted text-xs">
             <span className="text-2xl mb-1 opacity-50">🎬</span>
             <span className="line-clamp-2">{title}</span>
-          </div>
-        )}
-
-        {/* Target Badge */}
-        {isTarget && (
-          <div className="absolute top-1.5 right-1.5 bg-accent text-bg-primary text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded shadow">
-            TARGET
           </div>
         )}
 

@@ -531,27 +531,23 @@ export default function CustomGamePage({ params }: { params: Promise<{ id: strin
             </div>
           </div>
 
-          {/* Share Box */}
-          <div className="flex flex-col gap-2 w-full max-w-md text-left">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-text-muted">Share Result</span>
-            <pre className="bg-bg-secondary border border-border rounded p-3 text-xs text-text-secondary font-mono whitespace-pre-wrap">
-              {`FILMTRACE (Custom: ${puzzleTitle})\n${Math.floor(Math.max(1, Math.round(((endTime || 0) - (startTime || 0)) / 1000)) / 60)}:${String(Math.max(1, Math.round(((endTime || 0) - (startTime || 0)) / 1000)) % 60).padStart(2, '0')} * ${clickCount} clicks\n${path.map(p => (p.type === 'film' ? '🎬' : '👤')).join(' > ')}\n${typeof window !== 'undefined' ? window.location.href : ''}`}
-            </pre>
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full max-w-md mt-1">
             <button
               onClick={copyShare}
-              className="w-full py-2 bg-transparent text-accent text-xs font-bold uppercase tracking-wider border border-accent rounded hover:bg-accent/10 transition-colors cursor-pointer"
+              className="w-full sm:flex-1 py-3 px-5 bg-white text-[#0e1114] hover:bg-white/90 text-xs font-bold uppercase tracking-wider rounded-[4px] flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg active:scale-95"
             >
-              {copied ? '✓ Copied Result!' : 'Copy Result'}
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg>
+              <span>{copied ? 'Copied to Clipboard!' : 'Share'}</span>
             </button>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Link href="/" className="px-6 py-2.5 bg-transparent text-text-secondary text-xs font-semibold border border-border rounded hover:text-white transition-all">
-              &larr; Daily Puzzle
-            </Link>
-            <Link href="/create" className="px-6 py-2.5 bg-accent text-bg-primary text-xs font-bold uppercase tracking-wider rounded hover:bg-accent-dim transition-all">
-              + Create Puzzle
-            </Link>
+            <div className="flex items-center gap-3 w-full sm:w-auto">
+              <Link href="/" className="flex-1 sm:flex-initial py-3 px-5 bg-transparent text-text-secondary text-xs font-semibold border border-border rounded hover:text-white transition-all text-center">
+                &larr; Home
+              </Link>
+              <Link href="/create" className="flex-1 sm:flex-initial py-3 px-5 bg-[#1c242c] text-white text-xs font-semibold border border-border rounded hover:border-white transition-all text-center">
+                + Create
+              </Link>
+            </div>
           </div>
         </div>
       )}
