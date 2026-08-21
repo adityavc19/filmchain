@@ -130,7 +130,7 @@ export default function Home() {
               {/* Widget Header */}
               <div className="flex items-center justify-between text-[11px] font-mono uppercase text-text-muted border-b border-[#28323e] pb-2">
                 <span>HOW IT WORKS</span>
-                <span className="text-text-secondary">CHAIN OF LINKS</span>
+                <Clock className="w-3.5 h-3.5 text-text-secondary" />
               </div>
 
               {/* Clean Icon Flow (Film -> Actor -> Film -> ... -> End) */}
