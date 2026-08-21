@@ -6,8 +6,40 @@ import Navbar from '@/components/Navbar';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Filmtrace — Connect the dots between films',
-  description: 'Connect movies through shared actors, directors, and crew.',
+  title: 'Filmtrace — Two films. How do you connect them?',
+  description: 'Connect movies through shared actors, directors, and crew. Play daily challenges and compete on the live leaderboard.',
+  metadataBase: new URL('https://filmtrace.surge.sh'),
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+    shortcut: '/favicon.ico',
+  },
+  openGraph: {
+    type: 'website',
+    url: 'https://filmtrace.surge.sh',
+    title: 'Filmtrace — Two films. How do you connect them?',
+    description: 'Connect movies through shared actors, directors, and crew. Play daily challenges and compete on the live leaderboard.',
+    siteName: 'Filmtrace',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Filmtrace — Two films. How do you connect them?',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Filmtrace — Two films. How do you connect them?',
+    description: 'Connect movies through shared actors, directors, and crew. Play daily challenges and compete on the live leaderboard.',
+    images: ['/og-image.png'],
+  },
 };
 
 export default function RootLayout({
