@@ -23,34 +23,23 @@ export default function PersonCard({
   // If both acting character and crew jobs exist, combine them
   const subtitle = role && job ? `${role} · ${job}` : (job || role);
 
-  const widthMap = {
-    sm: 110,
-    md: 150,
-    lg: 190,
-  };
-
-  const width = widthMap[size];
-  const height = Math.round(width * 1.5);
-
   return (
     <div
       onClick={onClick}
-      className={`group flex flex-col gap-1.5 transition-all select-none ${
+      className={`group flex flex-col gap-1.5 transition-all select-none w-full ${
         onClick ? 'cursor-pointer' : 'cursor-default'
       }`}
-      style={{ width }}
     >
       {/* Portrait Container */}
       <div
-        className="relative w-full rounded-[4px] overflow-hidden bg-bg-card border border-white/10 group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)] transition-all duration-200"
-        style={{ height }}
+        className="relative w-full aspect-[2/3] rounded-[4px] overflow-hidden bg-bg-card border border-white/10 group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)] transition-all duration-200"
       >
         {profilePath ? (
           <Image
             src={profileUrl(profilePath, 'w185')}
             alt={name}
             fill
-            sizes={`${width}px`}
+            sizes="(max-width: 640px) 33vw, (max-width: 1024px) 20vw, 15vw"
             className="object-cover group-hover:scale-105 transition-transform duration-300"
           />
         ) : (

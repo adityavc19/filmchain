@@ -22,38 +22,27 @@ export default function FilmCard({
   character,
   isTarget,
 }: FilmCardProps) {
-  const widthMap = {
-    sm: 110,
-    md: 150,
-    lg: 190,
-  };
-
-  const width = widthMap[size];
-  const height = Math.round(width * 1.5);
-
   return (
     <div
       onClick={onClick}
-      className={`group flex flex-col gap-1.5 transition-all select-none ${
+      className={`group flex flex-col gap-1.5 transition-all select-none w-full ${
         onClick ? 'cursor-pointer' : 'cursor-default'
       }`}
-      style={{ width }}
     >
-      {/* Poster Container */}
+      {/* Poster Container with exact 2:3 movie poster aspect ratio */}
       <div
-        className={`relative w-full rounded-[4px] overflow-hidden bg-bg-card border transition-all duration-200 ${
+        className={`relative w-full aspect-[2/3] rounded-[4px] overflow-hidden bg-bg-card border transition-all duration-200 ${
           isTarget
             ? 'border-accent ring-2 ring-accent/50 shadow-[0_0_16px_rgba(0,224,84,0.4)]'
             : 'border-white/10 group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)]'
         }`}
-        style={{ height }}
       >
         {posterPath ? (
           <Image
             src={posterUrl(posterPath, size === 'lg' ? 'w500' : 'w342')}
             alt={title}
             fill
-            sizes={`${width}px`}
+            sizes="(max-width: 640px) 33vw, (max-width: 1024px) 20vw, 15vw"
             className="object-cover group-hover:scale-105 transition-transform duration-300"
           />
         ) : (

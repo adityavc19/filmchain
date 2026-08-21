@@ -84,7 +84,7 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
   const [personTvShows, setPersonTvShows] = useState<TmdbFilm[]>([]);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntryRow[]>([]);
   const [filmTab, setFilmTab] = useState<FilmFilterTab>('all');
-  const [personTab, setPersonTab] = useState<PersonFilterTab>('all');
+  const [personTab, setPersonTab] = useState<PersonFilterTab>('movies');
   const [copied, setCopied] = useState(false);
 
   const fetchFilmCredits = async (id: number): Promise<TmdbFilmCredit[]> => {
@@ -148,7 +148,7 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
         place_of_birth: data.place_of_birth,
       });
       setState(s => ({ ...s, currentView: 'person', currentId: id }));
-      setPersonTab('all');
+      setPersonTab('movies');
     } catch (err) {
       console.error('Error fetching person credits:', err);
     } finally {

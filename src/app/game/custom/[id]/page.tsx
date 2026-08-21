@@ -73,7 +73,7 @@ export default function CustomGamePage({ params }: { params: Promise<{ id: strin
   const [personTvShows, setPersonTvShows] = useState<TmdbFilm[]>([]);
   const [leaderboard, setLeaderboard] = useState<CustomLeaderboardEntry[]>([]);
   const [filmTab, setFilmTab] = useState<'all' | 'cast' | 'crew'>('all');
-  const [personTab, setPersonTab] = useState<'all' | 'movies' | 'tv'>('all');
+  const [personTab, setPersonTab] = useState<'all' | 'movies' | 'tv'>('movies');
   const [copied, setCopied] = useState(false);
 
   const fetchFilmCredits = async (filmId: number) => {
@@ -121,7 +121,7 @@ export default function CustomGamePage({ params }: { params: Promise<{ id: strin
         place_of_birth: data.place_of_birth,
       });
       setCurrentView('person');
-      setPersonTab('all');
+      setPersonTab('movies');
     } catch (err) {
       console.error(err);
     } finally {
