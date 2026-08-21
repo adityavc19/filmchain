@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     siteName: 'Filmtrace',
     images: [
       {
-        url: '/og-image.png',
+        url: 'https://filmtrace.surge.sh/og-image-v2.png',
         width: 1200,
         height: 630,
         alt: 'Filmtrace — Two films. How do you connect them?',
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Filmtrace — Two films. How do you connect them?',
     description: 'Trace the shortest path between two films traversing through the cast & crew. Play daily cinephile challenges and climb the live leaderboard.',
-    images: ['/og-image.png'],
+    images: ['https://filmtrace.surge.sh/og-image-v2.png'],
   },
 };
 
