@@ -18,6 +18,9 @@
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   
+  <!-- Canvas Confetti for Celebration -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
   <!-- Babel Standalone for in-browser JSX -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
@@ -586,6 +589,43 @@
         await fetchPersonDetails(personId);
       }
 
+      function triggerCelebration() {
+        if (typeof confetti === 'function') {
+          // Center burst
+          confetti({
+            particleCount: 80,
+            spread: 80,
+            origin: { y: 0.6 },
+            zIndex: 9999,
+            colors: ['#ffffff', '#f5c518', '#40bcf4', '#ff8000', '#00e054']
+          });
+
+          // Dynamic side cannons for 1.5 seconds
+          const end = Date.now() + 1500;
+          const timer = setInterval(() => {
+            if (Date.now() > end) {
+              return clearInterval(timer);
+            }
+            confetti({
+              particleCount: 25,
+              angle: 60,
+              spread: 55,
+              origin: { x: 0, y: 0.65 },
+              zIndex: 9999,
+              colors: ['#ffffff', '#f5c518', '#40bcf4', '#ff8000', '#00e054']
+            });
+            confetti({
+              particleCount: 25,
+              angle: 120,
+              spread: 55,
+              origin: { x: 1, y: 0.65 },
+              zIndex: 9999,
+              colors: ['#ffffff', '#f5c518', '#40bcf4', '#ff8000', '#00e054']
+            });
+          }, 200);
+        }
+      }
+
       async function onSelectFilm(filmId, title) {
         const newPath = [...path, { type: 'film', id: filmId, name: title }];
         const newClicks = clickCount + 1;
@@ -596,6 +636,7 @@
           setEndTime(end);
           setPath(newPath);
           setScreen('results');
+          triggerCelebration();
 
           try {
             const timeSec = Math.max(1, Math.round((end - (startTime || end)) / 1000));

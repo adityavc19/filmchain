@@ -10,6 +10,43 @@ import Timer from '@/components/Timer';
 import Breadcrumb from '@/components/Breadcrumb';
 import FilmCard from '@/components/FilmCard';
 import PersonCard from '@/components/PersonCard';
+import confetti from 'canvas-confetti';
+
+function triggerCelebration() {
+  if (typeof window === 'undefined') return;
+  // Center blast
+  confetti({
+    particleCount: 80,
+    spread: 80,
+    origin: { y: 0.6 },
+    zIndex: 9999,
+    colors: ['#ffffff', '#f5c518', '#40bcf4', '#ff8000', '#00e054']
+  });
+
+  // Dynamic side cannons for 1.5 seconds
+  const end = Date.now() + 1500;
+  const timer = setInterval(() => {
+    if (Date.now() > end) {
+      return clearInterval(timer);
+    }
+    confetti({
+      particleCount: 25,
+      angle: 60,
+      spread: 55,
+      origin: { x: 0, y: 0.65 },
+      zIndex: 9999,
+      colors: ['#ffffff', '#f5c518', '#40bcf4', '#ff8000', '#00e054']
+    });
+    confetti({
+      particleCount: 25,
+      angle: 120,
+      spread: 55,
+      origin: { x: 1, y: 0.65 },
+      zIndex: 9999,
+      colors: ['#ffffff', '#f5c518', '#40bcf4', '#ff8000', '#00e054']
+    });
+  }, 200);
+}
 
 interface FilmInfo {
   tmdb_id: number;
@@ -174,6 +211,8 @@ export default function CustomGamePage({ params }: { params: Promise<{ id: strin
       setEndTime(end);
       setPath(newPath);
       setPhase('won');
+
+      triggerCelebration();
 
       const elapsed = Math.max(1, Math.round((end - (startTime || end)) / 1000));
       const hops = Math.floor(newPath.length / 2);
