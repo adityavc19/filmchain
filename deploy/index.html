@@ -928,16 +928,9 @@
 
                     {/* Daily Teaser Strip with Dynamic Count */}
                     {todayPuzzle && (
-                      <div className="flex items-center gap-3 pt-1 text-xs text-text-muted">
-                        <span className="flex items-center gap-1.5 text-text-secondary font-mono">
-                          <span className="text-accent"><Icons.Clock /></span>
-                          Daily Challenge #{todayPuzzle.date}
-                        </span>
-                        <span>&middot;</span>
-                        <span className="flex items-center gap-1.5 text-text-secondary">
-                          <span className="text-[#40bcf4]"><Icons.Users /></span>
-                          {52 + (todayPuzzle.playerCount || 0)} games played today
-                        </span>
+                      <div className="flex items-center gap-1.5 pt-1 text-xs text-text-secondary">
+                        <span className="text-[#40bcf4]"><Icons.Users /></span>
+                        <span>{52 + (todayPuzzle.playerCount || 0)} games played today</span>
                       </div>
                     )}
                   </div>

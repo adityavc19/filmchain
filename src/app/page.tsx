@@ -108,16 +108,9 @@ export default function Home() {
 
           {/* Daily Teaser Strip with Dynamic Count */}
           {puzzle && (
-            <div className="flex items-center gap-3 pt-1 text-xs text-text-muted">
-              <span className="flex items-center gap-1.5 text-text-secondary font-mono">
-                <Clock className="w-3.5 h-3.5 text-accent" />
-                Daily Challenge #{puzzle.date}
-              </span>
-              <span>&middot;</span>
-              <span className="flex items-center gap-1.5 text-text-secondary">
-                <Users className="w-3.5 h-3.5 text-[#40bcf4]" />
-                {52 + (puzzle.playerCount || 0)} games played today
-              </span>
+            <div className="flex items-center gap-1.5 pt-1 text-xs text-text-secondary">
+              <Users className="w-3.5 h-3.5 text-[#40bcf4]" />
+              <span>{52 + (puzzle.playerCount || 0)} games played today</span>
             </div>
           )}
         </div>
