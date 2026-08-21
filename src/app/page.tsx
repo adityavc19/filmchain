@@ -58,8 +58,8 @@ export default function Home() {
               </span>
             </div>
 
-            <h1 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight">
-              {puzzle.startFilm.title} <span className="text-text-muted font-light">&rarr;</span> {puzzle.endFilm.title}
+            <h1 className="text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-tight">
+              FILMTRACE
             </h1>
 
             <p className="text-sm sm:text-base text-text-secondary max-w-md leading-relaxed font-medium">
