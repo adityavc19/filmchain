@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'Filmtrace — Two films. How do you connect them?',
-  description: 'Connect movies through shared actors, directors, and crew. Play daily challenges and compete on the live leaderboard.',
+  description: 'Trace the shortest path between two films traversing through the cast & crew. Play daily cinephile challenges and climb the live leaderboard.',
   metadataBase: new URL('https://filmtrace.surge.sh'),
   icons: {
     icon: [
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     type: 'website',
     url: 'https://filmtrace.surge.sh',
     title: 'Filmtrace — Two films. How do you connect them?',
-    description: 'Connect movies through shared actors, directors, and crew. Play daily challenges and compete on the live leaderboard.',
+    description: 'Trace the shortest path between two films traversing through the cast & crew. Play daily cinephile challenges and climb the live leaderboard.',
     siteName: 'Filmtrace',
     images: [
       {
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Filmtrace — Two films. How do you connect them?',
-    description: 'Connect movies through shared actors, directors, and crew. Play daily challenges and compete on the live leaderboard.',
+    description: 'Trace the shortest path between two films traversing through the cast & crew. Play daily cinephile challenges and climb the live leaderboard.',
     images: ['/og-image.png'],
   },
 };
