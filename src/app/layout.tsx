@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter, Newsreader } from 'next/font/google';
 import './globals.css';
 import Navbar from '@/components/Navbar';
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
+const newsreader = Newsreader({ subsets: ['latin'], style: ['normal', 'italic'], variable: '--font-newsreader' });
 
 export const metadata: Metadata = {
   title: 'Filmtrace — Two films. One trail. How fast can you connect them?',
@@ -17,7 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
-      <body className={`${inter.className} min-h-screen flex flex-col bg-bg-primary text-text-primary antialiased`}>
+      <body className={`${inter.className} ${newsreader.variable} min-h-screen flex flex-col bg-bg-primary text-text-primary antialiased`}>
         {/* Top Header Navigation */}
         <Navbar />
 
