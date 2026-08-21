@@ -14,7 +14,8 @@ import {
   Clock,
   User,
   Target,
-  Zap
+  Zap,
+  Trophy
 } from 'lucide-react';
 import { posterUrl } from '@/lib/tmdb';
 
@@ -259,63 +260,89 @@ export default function Home() {
             )}
           </div>
 
-          {/* Right Column: Clean Minimalist Icon-Based "How It Works" Visual (30% larger cover images) */}
+          {/* Right Column: Enhanced Cinematic "How It Works" Visual */}
           <div className="lg:col-span-6 flex items-center justify-center">
-            <div className="w-full bg-[#1c242c] border border-[#28323e] rounded-[6px] p-6 sm:p-8 shadow-xl">
-              <div className="flex flex-col gap-6">
+            <div className="w-full bg-[#1c242c] border border-[#2e3a47] rounded-[8px] p-6 sm:p-7 shadow-2xl flex flex-col gap-5">
+              
+              {/* Widget Header */}
+              <div className="flex flex-col gap-1 border-b border-[#28323e] pb-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Compass className="w-4 h-4 text-[#40bcf4]" />
+                    <span className="text-xs font-black uppercase tracking-wider text-white">How To Connect</span>
+                  </div>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-[#00e054] bg-[#00e054]/10 border border-[#00e054]/30 px-2 py-0.5 rounded">
+                    Interactive Goal
+                  </span>
+                </div>
+                <p className="text-xs text-text-secondary">
+                  Hop from film to cast/crew and trace the connection trail.
+                </p>
+              </div>
+
+              {/* Clean 4-Node Flow with uncropped 2:3 aspect ratio posters */}
+              <div className="flex items-center justify-between gap-1.5 sm:gap-2.5 py-1">
                 
-                {/* Widget Header */}
-                <div className="flex items-center justify-between text-[11px] font-mono uppercase text-text-muted border-b border-[#28323e] pb-2.5">
-                  <span>HOW IT WORKS</span>
-                  <Clock className="w-3.5 h-3.5 text-text-secondary" />
+                {/* 1. Start Film (Dil Chahta Hai - Uncropped 2:3) */}
+                <div className="flex flex-col items-center gap-1.5 w-[22%] sm:w-26">
+                  <div className="w-full aspect-[2/3] rounded-[6px] bg-[#222b35] border border-[#3b4856] overflow-hidden shadow-md relative">
+                    <Image src="/dil_chahta_hai.jpg" alt="Dil Chahta Hai" fill className="object-cover object-top" />
+                  </div>
+                  <span className="text-[11px] font-bold text-white text-center truncate max-w-full leading-tight">Dil Chahta Hai</span>
+                  <span className="text-[9px] font-bold uppercase tracking-wider text-[#40bcf4] bg-[#40bcf4]/10 border border-[#40bcf4]/30 px-1.5 py-0.5 rounded">
+                    Start
+                  </span>
                 </div>
 
-                {/* Clean Icon Flow (30% larger cover images: Dil Chahta Hai -> Cast -> Film -> Oppenheimer) */}
-                <div className="flex items-center justify-center gap-2 sm:gap-3.5 py-2">
-                  {/* 1. Start Film (Dil Chahta Hai) */}
-                  <div className="flex flex-col items-center gap-2 w-20 sm:w-24">
-                    <div className="w-20 h-28 sm:w-24 sm:h-34 rounded-[4px] bg-[#222b35] border border-[#28323e] overflow-hidden shadow-md relative">
-                      <Image src="https://image.tmdb.org/t/p/w185/c6Cicaf2FFmfcInfsbPTxMLk5CS.jpg" alt="Dil Chahta Hai" fill className="object-cover" />
-                    </div>
-                    <span className="text-[11px] font-bold text-white text-center truncate max-w-full">Dil Chahta Hai</span>
-                    <span className="text-[9px] uppercase font-bold text-text-secondary">Start</span>
+                <span className="text-text-muted text-xs sm:text-sm font-bold opacity-60">➔</span>
+
+                {/* 2. Actor / Crew (Hop 1) */}
+                <div className="flex flex-col items-center gap-1.5 w-[18%] sm:w-22">
+                  <div className="w-full aspect-[2/3] rounded-[6px] bg-gradient-to-b from-[#222b35] to-[#182028] border border-[#2e3a47] flex flex-col items-center justify-center text-white shadow-sm gap-2 p-1.5">
+                    <Users className="w-6 h-6 sm:w-7 sm:h-7 opacity-75 text-text-secondary" />
+                    <span className="text-[9px] font-bold uppercase tracking-wider text-text-secondary text-center leading-tight">Cast / Crew</span>
                   </div>
+                  <span className="text-[9px] font-medium text-text-muted">Hop 1</span>
+                </div>
 
-                  <span className="text-text-muted text-xs sm:text-sm">&rarr;</span>
+                <span className="text-text-muted text-xs sm:text-sm font-bold opacity-60">➔</span>
 
-                  {/* 2. Actor / Crew (Unnamed) */}
-                  <div className="flex flex-col items-center gap-2 w-16 sm:w-20">
-                    <div className="w-16 h-28 sm:w-20 sm:h-34 rounded-[4px] bg-[#222b35] border border-[#28323e] flex flex-col items-center justify-center text-white shadow-sm gap-2">
-                      <Users className="w-6 h-6 sm:w-7 sm:h-7 opacity-75 text-text-secondary" />
-                      <span className="text-[9px] font-mono uppercase text-text-muted">Cast</span>
-                    </div>
-                    <span className="text-[10px] font-medium text-text-secondary text-center">Cast / Crew</span>
+                {/* 3. Next Film (Hop 2) */}
+                <div className="flex flex-col items-center gap-1.5 w-[18%] sm:w-22">
+                  <div className="w-full aspect-[2/3] rounded-[6px] bg-gradient-to-b from-[#222b35] to-[#182028] border border-[#2e3a47] flex flex-col items-center justify-center text-white shadow-sm gap-2 p-1.5">
+                    <Film className="w-6 h-6 sm:w-7 sm:h-7 opacity-75 text-text-secondary" />
+                    <span className="text-[9px] font-bold uppercase tracking-wider text-text-secondary text-center leading-tight">Next Film</span>
                   </div>
+                  <span className="text-[9px] font-medium text-text-muted">Hop 2</span>
+                </div>
 
-                  <span className="text-text-muted text-xs sm:text-sm">&rarr;</span>
+                <span className="text-text-muted text-xs sm:text-sm font-mono tracking-widest opacity-60">···</span>
 
-                  {/* 3. Next Film (Unnamed) */}
-                  <div className="flex flex-col items-center gap-2 w-16 sm:w-20">
-                    <div className="w-16 h-28 sm:w-20 sm:h-34 rounded-[4px] bg-[#222b35] border border-[#28323e] flex flex-col items-center justify-center text-white shadow-sm gap-2">
-                      <Film className="w-6 h-6 sm:w-7 sm:h-7 opacity-75 text-text-secondary" />
-                      <span className="text-[9px] font-mono uppercase text-text-muted">Film</span>
-                    </div>
-                    <span className="text-[10px] font-medium text-text-secondary text-center">Film</span>
+                {/* 4. End Film (Oppenheimer - Uncropped 2:3 with Glowing Green Border) */}
+                <div className="flex flex-col items-center gap-1.5 w-[22%] sm:w-26">
+                  <div className="w-full aspect-[2/3] rounded-[6px] bg-[#222b35] border-2 border-[#00e054] overflow-hidden shadow-[0_0_18px_rgba(0,224,84,0.35)] relative">
+                    <Image src="/oppenheimer.jpg" alt="Oppenheimer" fill className="object-cover object-top" />
                   </div>
-
-                  <span className="text-text-muted text-sm font-mono tracking-widest px-0.5">&middot;&middot;&middot;</span>
-
-                  {/* 4. End Film (Oppenheimer with green outline) */}
-                  <div className="flex flex-col items-center gap-2 w-20 sm:w-24">
-                    <div className="w-20 h-28 sm:w-24 sm:h-34 rounded-[4px] bg-[#222b35] border-2 border-[#00e054] overflow-hidden shadow-[0_0_18px_rgba(0,224,84,0.35)] relative">
-                      <Image src="https://image.tmdb.org/t/p/w185/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg" alt="Oppenheimer" fill className="object-cover" />
-                    </div>
-                    <span className="text-[11px] font-bold text-[#00e054] text-center truncate max-w-full">Oppenheimer</span>
-                    <span className="text-[9px] uppercase font-bold text-[#00e054]">End</span>
-                  </div>
+                  <span className="text-[11px] font-bold text-[#00e054] text-center truncate max-w-full leading-tight">Oppenheimer</span>
+                  <span className="text-[9px] font-bold uppercase tracking-wider text-[#00e054] bg-[#00e054]/10 border border-[#00e054]/30 px-1.5 py-0.5 rounded">
+                    Goal
+                  </span>
                 </div>
 
               </div>
+
+              {/* Bottom Quick Feature Strip */}
+              <div className="pt-3 border-t border-[#28323e]/60 flex items-center justify-between text-[11px] text-text-secondary">
+                <span className="flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5 text-[#40bcf4]" />
+                  <span>Fastest time & fewest clicks win</span>
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Trophy className="w-3.5 h-3.5 text-[#ff8000]" />
+                  <span>Live daily rankings</span>
+                </span>
+              </div>
+
             </div>
           </div>
         </section>
