@@ -262,226 +262,238 @@ export default function CustomGamePage({ params }: { params: Promise<{ id: strin
   }
 
   return (
-    <div className="flex flex-col gap-6 max-w-5xl mx-auto w-full pb-16 relative">
-      {/* Sticky HUD */}
-      <div className="flex flex-col gap-3.5 bg-bg-card p-4 sm:p-5 rounded-[4px] border border-border sticky top-16 z-30 shadow-2xl backdrop-blur-md">
-        <div className="flex items-center justify-between gap-4 flex-wrap sm:flex-nowrap">
+    <div className="flex flex-col gap-5 max-w-5xl mx-auto w-full pb-16 relative">
+      {/* Compact Sticky Game Status HUD */}
+      <div className="flex flex-col gap-2.5 bg-bg-card/95 p-3 sm:p-3.5 rounded-[4px] border border-border sticky top-14 z-30 shadow-xl backdrop-blur-md">
+        <div className="flex items-start justify-between gap-4 flex-wrap sm:flex-nowrap">
           {targetFilm && (
-            <div className="flex items-center gap-4">
+            <div className="flex items-start gap-3">
               <div
-                className="relative rounded-[4px] overflow-hidden flex-shrink-0 bg-bg-secondary border border-border shadow-md"
-                style={{ width: '84px', height: '126px' }}
+                className="relative rounded overflow-hidden flex-shrink-0 bg-bg-secondary border border-border shadow-sm w-9 h-13 sm:w-10 sm:h-14"
               >
                 {targetFilm.poster_path ? (
-                  <Image src={posterUrl(targetFilm.poster_path, 'w185')} alt={targetFilm.title} fill sizes="84px" className="object-cover" />
-                ) : <div className="w-full h-full flex items-center justify-center text-xs">🎬</div>}
+                  <Image src={posterUrl(targetFilm.poster_path, 'w185')} alt={targetFilm.title} fill sizes="40px" className="object-cover" />
+                ) : <div className="w-full h-full flex items-center justify-center text-xs text-text-muted">🎬</div>}
               </div>
-              <div className="flex flex-col text-left gap-1">
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary block">GOAL</span>
+              <div className="flex flex-col text-left">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-[#00e054]">GOAL</span>
                   {creatorHandle && (
-                    <span className="text-[10px] text-accent font-mono">by @{creatorHandle}</span>
+                    <span className="text-[10px] text-text-muted font-mono">by @{creatorHandle}</span>
                   )}
                 </div>
-                <span className="font-bold text-white text-base sm:text-lg leading-tight max-w-[200px] truncate">{targetFilm.title}</span>
-                {targetFilm.year && <span className="text-text-secondary text-xs">{targetFilm.year}</span>}
+                <span className="font-bold text-white text-sm sm:text-base leading-tight max-w-[170px] sm:max-w-[260px] truncate">{targetFilm.title}</span>
+                {targetFilm.year && <span className="text-text-secondary text-[11px] font-mono">{targetFilm.year}</span>}
               </div>
             </div>
           )}
 
-          <div className="flex items-center gap-14 sm:gap-20">
-            <div className="text-right">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary block">CLICKS</span>
-              <span className="font-mono text-2xl sm:text-3xl font-black text-white leading-tight">{clickCount}</span>
+          <div className="flex items-start gap-8 sm:gap-14">
+            <div className="flex flex-col text-right">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary leading-tight">CLICKS</span>
+              <span className="font-mono text-2xl sm:text-3xl font-black text-white leading-tight mt-0.5">{clickCount}</span>
             </div>
-            <div className="text-right">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary block">TIME</span>
-              <Timer startTime={startTime} endTime={endTime} />
+            <div className="flex flex-col text-right">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary leading-tight">TIME</span>
+              <div className="mt-0.5">
+                <Timer startTime={startTime} endTime={endTime} />
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="pt-2 border-t border-border/70">
+        <div className="pt-2 border-t border-border/70 overflow-x-auto hide-scrollbar">
           <Breadcrumb path={path} onRewind={onRewindTo} />
         </div>
       </div>
 
       {phase === 'playing' ? (
-        <div className="flex flex-col gap-6">
-          {/* Film View */}
+        <div className="flex flex-col gap-5">
+          {/* VIEW: UNIFIED FILM CARD & CAST/CREW CONTAINER */}
           {currentView === 'film' && currentMedia && (
-            <>
-              <div className="bg-bg-card border border-border rounded-[4px] p-4 sm:p-5 flex flex-col sm:flex-row gap-4 sm:gap-6 text-left shadow-lg">
-                <div className="relative w-20 h-[116px] sm:w-[84px] sm:h-[126px] rounded-[4px] overflow-hidden bg-bg-secondary border border-white/10 flex-shrink-0 self-center sm:self-start">
+            <div className="bg-bg-card border border-border rounded-[6px] shadow-2xl overflow-hidden flex flex-col">
+              {/* Film Header Banner (No description paragraph, clean tags & specs) */}
+              <div className="p-4 sm:p-6 bg-gradient-to-b from-bg-secondary/50 to-bg-card border-b border-border flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5 text-left">
+                <div className="relative w-20 h-28 sm:w-24 sm:h-36 rounded-[4px] overflow-hidden bg-bg-secondary border border-border flex-shrink-0 shadow-lg">
                   {currentMedia.poster_path ? (
-                    <Image src={posterUrl(currentMedia.poster_path, 'w342')} alt={currentMedia.title} fill sizes="84px" className="object-cover" />
+                    <Image src={posterUrl(currentMedia.poster_path, 'w342')} alt={currentMedia.title} fill sizes="96px" className="object-cover" />
                   ) : <div className="w-full h-full flex items-center justify-center text-2xl">🎬</div>}
                 </div>
 
-                <div className="flex flex-col gap-1.5 min-w-0 justify-center">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    {currentMedia.year && <span className="text-xs font-semibold text-text-secondary">{currentMedia.year}</span>}
-                    {currentMedia.runtime && <span className="text-xs text-text-muted">· {currentMedia.runtime} min</span>}
+                <div className="flex flex-col gap-1.5 min-w-0 justify-center flex-1">
+                  <div className="flex items-center gap-2 text-xs text-text-secondary flex-wrap">
+                    {currentMedia.year && <span className="font-bold text-white">{currentMedia.year}</span>}
+                    {currentMedia.runtime && <span className="text-text-muted">· {currentMedia.runtime} min</span>}
+                    {currentMedia.tagline && <span className="italic text-text-muted hidden sm:inline">&ldquo;{currentMedia.tagline}&rdquo;</span>}
                   </div>
-                  <h1 className="text-xl sm:text-2xl font-black text-white leading-tight">{currentMedia.title}</h1>
-                  {currentMedia.tagline && <p className="text-xs sm:text-sm italic text-text-secondary">&ldquo;{currentMedia.tagline}&rdquo;</p>}
+                  <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">{currentMedia.title}</h1>
                   {currentMedia.genres && currentMedia.genres.length > 0 && (
-                    <div className="flex items-center gap-1.5 flex-wrap my-0.5">
+                    <div className="flex items-center gap-1.5 flex-wrap pt-1">
                       {currentMedia.genres.map(g => (
-                        <span key={g.id} className="text-[10px] uppercase font-medium bg-bg-secondary text-text-secondary px-2 py-0.5 rounded border border-border">{g.name}</span>
+                        <span key={g.id} className="text-[10px] uppercase font-bold tracking-wider bg-bg-secondary text-text-secondary px-2.5 py-0.5 rounded border border-border">{g.name}</span>
                       ))}
                     </div>
-                  )}
-                  {currentMedia.overview && (
-                    <p className="text-xs sm:text-sm text-text-primary/90 leading-relaxed line-clamp-3 sm:line-clamp-4 mt-1">{currentMedia.overview}</p>
                   )}
                 </div>
               </div>
 
-              {/* Tabs with Search */}
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-border pb-3 px-1">
-                <span className="text-base sm:text-lg font-extrabold text-white tracking-tight">Choose next person</span>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <div className="relative flex items-center">
-                    <input
-                      type="text"
-                      placeholder="Search person or role..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="bg-bg-secondary border border-border text-white text-xs rounded-[4px] pl-8 pr-7 py-1.5 focus:outline-none focus:border-accent w-48 sm:w-56 transition-all placeholder:text-text-muted"
-                    />
-                    <span className="absolute left-2.5 text-text-muted text-xs">🔍</span>
-                    {searchQuery && (
-                      <button onClick={() => setSearchQuery('')} className="absolute right-2 text-text-muted hover:text-white text-xs cursor-pointer">✕</button>
+              {/* Integrated Cast & Crew Section */}
+              <div className="p-4 sm:p-6 flex flex-col gap-5">
+                {/* Tabs with Search */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm sm:text-base font-extrabold uppercase tracking-wider text-white">Choose next person</span>
+                    <span className="text-xs text-text-muted font-mono">({filteredFilmCredits.length})</span>
+                  </div>
+                  <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                    <div className="relative flex items-center flex-1 sm:flex-none">
+                      <input
+                        type="text"
+                        placeholder="Search person or role..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="bg-bg-primary border border-border text-white text-xs rounded pl-8 pr-7 py-1.5 focus:outline-none focus:border-text-secondary w-full sm:w-52 transition-all placeholder:text-text-muted"
+                      />
+                      <span className="absolute left-2.5 text-text-muted text-xs">🔍</span>
+                      {searchQuery && (
+                        <button onClick={() => setSearchQuery('')} className="absolute right-2 text-text-muted hover:text-white text-xs cursor-pointer">✕</button>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1 bg-bg-primary p-1 rounded border border-border">
+                      <button onClick={() => setFilmTab('all')} className={`px-3 py-1 text-xs font-bold uppercase tracking-wider rounded transition-colors cursor-pointer ${filmTab === 'all' ? 'bg-white text-[#0e1114]' : 'text-text-secondary hover:text-white'}`}>All ({filteredFilmCredits.length})</button>
+                      <button onClick={() => setFilmTab('cast')} className={`px-3 py-1 text-xs font-bold uppercase tracking-wider rounded transition-colors cursor-pointer ${filmTab === 'cast' ? 'bg-white text-[#0e1114]' : 'text-text-secondary hover:text-white'}`}>Cast ({filteredCast.length})</button>
+                      <button onClick={() => setFilmTab('crew')} className={`px-3 py-1 text-xs font-bold uppercase tracking-wider rounded transition-colors cursor-pointer ${filmTab === 'crew' ? 'bg-white text-[#0e1114]' : 'text-text-secondary hover:text-white'}`}>Crew ({filteredCrew.length})</button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Cast & Crew Grids */}
+                {loadingStep ? (
+                  <div className="flex items-center justify-center py-16 gap-3">
+                    <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span className="text-xs text-text-secondary uppercase tracking-widest">Loading cast & crew...</span>
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-6">
+                    {filmTab === 'all' && (
+                      <>
+                        {filteredCast.length > 0 && (
+                          <div className="flex flex-col gap-3">
+                            <div className="flex items-center gap-2 border-b border-border/60 pb-1.5">
+                              <span className="text-xs font-bold uppercase tracking-wider text-text-primary">Cast / Actors</span>
+                              <span className="text-[11px] text-text-muted">({filteredCast.length})</span>
+                            </div>
+                            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
+                              {filteredCast.map(credit => (
+                                <PersonCard key={`cast-${credit.id}`} tmdbId={credit.id} name={credit.name} profilePath={credit.profile_path} role={credit.character} job={credit.job} onClick={() => onSelectPerson(credit.id, credit.name)} size="sm" />
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {filteredCrew.length > 0 && (
+                          <div className="flex flex-col gap-3 mt-2">
+                            <div className="flex items-center gap-2 border-b border-border/60 pb-1.5">
+                              <span className="text-xs font-bold uppercase tracking-wider text-text-primary">Crew</span>
+                              <span className="text-[11px] text-text-muted">({filteredCrew.length})</span>
+                            </div>
+                            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
+                              {filteredCrew.map(credit => (
+                                <PersonCard key={`crew-${credit.id}`} tmdbId={credit.id} name={credit.name} profilePath={credit.profile_path} job={credit.job} onClick={() => onSelectPerson(credit.id, credit.name)} size="sm" />
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    )}
+                    {filmTab === 'cast' && (
+                      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
+                        {filteredCast.map(credit => (
+                          <PersonCard key={`cast-${credit.id}`} tmdbId={credit.id} name={credit.name} profilePath={credit.profile_path} role={credit.character} job={credit.job} onClick={() => onSelectPerson(credit.id, credit.name)} size="sm" />
+                        ))}
+                      </div>
+                    )}
+                    {filmTab === 'crew' && (
+                      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
+                        {filteredCrew.map(credit => (
+                          <PersonCard key={`crew-${credit.id}`} tmdbId={credit.id} name={credit.name} profilePath={credit.profile_path} job={credit.job} onClick={() => onSelectPerson(credit.id, credit.name)} size="sm" />
+                        ))}
+                      </div>
                     )}
                   </div>
-                  <div className="flex items-center gap-1 bg-bg-secondary p-1 rounded-[4px] border border-border">
-                    <button onClick={() => setFilmTab('all')} className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${filmTab === 'all' ? 'bg-accent text-bg-primary font-bold' : 'text-text-secondary hover:text-text-primary'}`}>All ({filteredFilmCredits.length})</button>
-                    <button onClick={() => setFilmTab('cast')} className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${filmTab === 'cast' ? 'bg-accent text-bg-primary font-bold' : 'text-text-secondary hover:text-text-primary'}`}>Cast ({filteredCast.length})</button>
-                    <button onClick={() => setFilmTab('crew')} className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${filmTab === 'crew' ? 'bg-accent text-bg-primary font-bold' : 'text-text-secondary hover:text-text-primary'}`}>Crew ({filteredCrew.length})</button>
-                  </div>
-                </div>
+                )}
               </div>
-
-              {/* Cast & Crew Grids */}
-              {loadingStep ? (
-                <div className="flex items-center justify-center py-16 gap-3">
-                  <div className="w-6 h-6 border-2 border-accent border-t-transparent rounded-full animate-spin" />
-                  <span className="text-xs text-text-secondary uppercase tracking-widest">Loading...</span>
-                </div>
-              ) : (
-                <div className="flex flex-col gap-6">
-                  {filmTab === 'all' && (
-                    <>
-                      {filteredCast.length > 0 && (
-                        <div className="flex flex-col gap-3">
-                          <div className="flex items-center gap-2 border-b border-border/60 pb-1.5">
-                            <span className="text-xs font-bold uppercase tracking-wider text-text-primary">Cast / Actors</span>
-                            <span className="text-[11px] text-text-muted">({filteredCast.length})</span>
-                          </div>
-                          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
-                            {filteredCast.map(credit => (
-                              <PersonCard key={`cast-${credit.id}`} tmdbId={credit.id} name={credit.name} profilePath={credit.profile_path} role={credit.character} job={credit.job} onClick={() => onSelectPerson(credit.id, credit.name)} size="sm" />
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                      {filteredCrew.length > 0 && (
-                        <div className="flex flex-col gap-3 mt-2">
-                          <div className="flex items-center gap-2 border-b border-border/60 pb-1.5">
-                            <span className="text-xs font-bold uppercase tracking-wider text-text-primary">Crew</span>
-                            <span className="text-[11px] text-text-muted">({filteredCrew.length})</span>
-                          </div>
-                          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
-                            {filteredCrew.map(credit => (
-                              <PersonCard key={`crew-${credit.id}`} tmdbId={credit.id} name={credit.name} profilePath={credit.profile_path} job={credit.job} onClick={() => onSelectPerson(credit.id, credit.name)} size="sm" />
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </>
-                  )}
-                  {filmTab === 'cast' && (
-                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
-                      {filteredCast.map(credit => (
-                        <PersonCard key={`cast-${credit.id}`} tmdbId={credit.id} name={credit.name} profilePath={credit.profile_path} role={credit.character} job={credit.job} onClick={() => onSelectPerson(credit.id, credit.name)} size="sm" />
-                      ))}
-                    </div>
-                  )}
-                  {filmTab === 'crew' && (
-                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
-                      {filteredCrew.map(credit => (
-                        <PersonCard key={`crew-${credit.id}`} tmdbId={credit.id} name={credit.name} profilePath={credit.profile_path} job={credit.job} onClick={() => onSelectPerson(credit.id, credit.name)} size="sm" />
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-            </>
+            </div>
           )}
 
-          {/* Person View */}
+          {/* VIEW: UNIFIED PERSON CARD & FILMOGRAPHY CONTAINER */}
           {currentView === 'person' && currentPerson && (
-            <>
-              <div className="bg-bg-card border border-border rounded-[4px] p-4 sm:p-5 flex flex-col sm:flex-row gap-4 sm:gap-6 text-left shadow-lg">
-                <div className="relative w-20 h-[116px] sm:w-[84px] sm:h-[126px] rounded-[4px] overflow-hidden bg-bg-secondary border border-white/10 flex-shrink-0 self-center sm:self-start">
+            <div className="bg-bg-card border border-border rounded-[6px] shadow-2xl overflow-hidden flex flex-col">
+              <div className="p-4 sm:p-6 bg-gradient-to-b from-bg-secondary/50 to-bg-card border-b border-border flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5 text-left">
+                <div className="relative w-20 h-28 sm:w-24 sm:h-36 rounded-[4px] overflow-hidden bg-bg-secondary border border-border flex-shrink-0 shadow-lg">
                   {currentPerson.profile_path ? (
-                    <Image src={profileUrl(currentPerson.profile_path, 'w185')} alt={currentPerson.name} fill sizes="84px" className="object-cover" />
-                  ) : <div className="w-full h-full flex items-center justify-center text-2xl">👤</div>}
+                    <Image src={profileUrl(currentPerson.profile_path, 'w185')} alt={currentPerson.name} fill sizes="96px" className="object-cover" />
+                  ) : <div className="w-full h-full flex items-center justify-center text-3xl">👤</div>}
                 </div>
-                <div className="flex flex-col gap-1.5 min-w-0 justify-center">
-                  <div className="flex items-center gap-2 flex-wrap text-xs text-text-secondary">
-                    {currentPerson.known_for && <span>{currentPerson.known_for}</span>}
-                    {currentPerson.place_of_birth && <span>· {currentPerson.place_of_birth}</span>}
+                <div className="flex flex-col gap-1.5 min-w-0 justify-center flex-1">
+                  <div className="flex items-center gap-2 text-xs text-text-secondary flex-wrap">
+                    {currentPerson.known_for && <span className="font-bold text-white">{currentPerson.known_for}</span>}
+                    {currentPerson.place_of_birth && <span className="text-text-muted">· {currentPerson.place_of_birth}</span>}
                   </div>
-                  <h1 className="text-xl sm:text-2xl font-black text-white leading-tight">{currentPerson.name}</h1>
-                  {currentPerson.biography && (
-                    <p className="text-xs sm:text-sm text-text-primary/90 leading-relaxed line-clamp-3 sm:line-clamp-4 mt-1">{currentPerson.biography}</p>
-                  )}
+                  <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">{currentPerson.name}</h1>
+                  <div className="flex items-center gap-1.5 flex-wrap pt-1">
+                    <span className="text-[10px] uppercase font-bold tracking-wider bg-bg-secondary text-text-secondary px-2.5 py-0.5 rounded border border-border">
+                      Filmography
+                    </span>
+                  </div>
                 </div>
               </div>
 
               {/* Tabs with Search */}
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-border pb-3 px-1">
-                <span className="text-base sm:text-lg font-extrabold text-white tracking-tight">Choose next title</span>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <div className="relative flex items-center">
-                    <input
-                      type="text"
-                      placeholder="Search title or character..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="bg-bg-secondary border border-border text-white text-xs rounded-[4px] pl-8 pr-7 py-1.5 focus:outline-none focus:border-accent w-48 sm:w-56 transition-all placeholder:text-text-muted"
-                    />
-                    <span className="absolute left-2.5 text-text-muted text-xs">🔍</span>
-                    {searchQuery && (
-                      <button onClick={() => setSearchQuery('')} className="absolute right-2 text-text-muted hover:text-white text-xs cursor-pointer">✕</button>
-                    )}
+              <div className="p-4 sm:p-6 flex flex-col gap-5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm sm:text-base font-extrabold uppercase tracking-wider text-white">Choose next title</span>
+                    <span className="text-xs text-text-muted font-mono">({filteredPersonAll.length})</span>
                   </div>
-                  <div className="flex items-center gap-1 bg-bg-secondary p-1 rounded-[4px] border border-border">
-                    <button onClick={() => setPersonTab('all')} className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${personTab === 'all' ? 'bg-accent text-bg-primary font-bold' : 'text-text-secondary hover:text-text-primary'}`}>All ({filteredPersonAll.length})</button>
-                    <button onClick={() => setPersonTab('movies')} className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${personTab === 'movies' ? 'bg-accent text-bg-primary font-bold' : 'text-text-secondary hover:text-text-primary'}`}>Movies ({filteredPersonMovies.length})</button>
-                    {personTvShows.length > 0 && (
-                      <button onClick={() => setPersonTab('tv')} className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${personTab === 'tv' ? 'bg-accent text-bg-primary font-bold' : 'text-text-secondary hover:text-text-primary'}`}>TV ({filteredPersonTv.length})</button>
-                    )}
+                  <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                    <div className="relative flex items-center flex-1 sm:flex-none">
+                      <input
+                        type="text"
+                        placeholder="Search title or character..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="bg-bg-primary border border-border text-white text-xs rounded pl-8 pr-7 py-1.5 focus:outline-none focus:border-text-secondary w-full sm:w-52 transition-all placeholder:text-text-muted"
+                      />
+                      <span className="absolute left-2.5 text-text-muted text-xs">🔍</span>
+                      {searchQuery && (
+                        <button onClick={() => setSearchQuery('')} className="absolute right-2 text-text-muted hover:text-white text-xs cursor-pointer">✕</button>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1 bg-bg-primary p-1 rounded border border-border">
+                      <button onClick={() => setPersonTab('all')} className={`px-3 py-1 text-xs font-bold uppercase tracking-wider rounded transition-colors cursor-pointer ${personTab === 'all' ? 'bg-white text-[#0e1114]' : 'text-text-secondary hover:text-white'}`}>All ({filteredPersonAll.length})</button>
+                      <button onClick={() => setPersonTab('movies')} className={`px-3 py-1 text-xs font-bold uppercase tracking-wider rounded transition-colors cursor-pointer ${personTab === 'movies' ? 'bg-white text-[#0e1114]' : 'text-text-secondary hover:text-white'}`}>Movies ({filteredPersonMovies.length})</button>
+                      {personTvShows.length > 0 && (
+                        <button onClick={() => setPersonTab('tv')} className={`px-3 py-1 text-xs font-bold uppercase tracking-wider rounded transition-colors cursor-pointer ${personTab === 'tv' ? 'bg-white text-[#0e1114]' : 'text-text-secondary hover:text-white'}`}>TV ({filteredPersonTv.length})</button>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Filmography Grid */}
-              {loadingStep ? (
-                <div className="flex items-center justify-center py-16 gap-3">
-                  <div className="w-6 h-6 border-2 border-accent border-t-transparent rounded-full animate-spin" />
-                  <span className="text-xs text-text-secondary uppercase tracking-widest">Loading...</span>
-                </div>
-              ) : (
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
-                  {(personTab === 'all' ? filteredPersonAll : personTab === 'movies' ? filteredPersonMovies : filteredPersonTv).map(film => (
-                    <FilmCard key={`film-${film.id}`} tmdbId={film.id} title={film.title} year={film.release_date ? parseInt(film.release_date.split('-')[0]) : null} posterPath={film.poster_path} character={film.character} isTarget={film.id === targetFilm?.tmdb_id} onClick={() => onSelectFilm(film.id, film.title)} size="sm" />
-                  ))}
-                </div>
-              )}
-            </>
+                {/* Filmography Grid */}
+                {loadingStep ? (
+                  <div className="flex items-center justify-center py-16 gap-3">
+                    <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span className="text-xs text-text-secondary uppercase tracking-widest">Loading titles...</span>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
+                    {(personTab === 'all' ? filteredPersonAll : personTab === 'movies' ? filteredPersonMovies : filteredPersonTv).map(film => (
+                      <FilmCard key={`film-${film.id}`} tmdbId={film.id} title={film.title} year={film.release_date ? parseInt(film.release_date.split('-')[0]) : null} posterPath={film.poster_path} character={film.character} isTarget={film.id === targetFilm?.tmdb_id} onClick={() => onSelectFilm(film.id, film.title)} size="sm" />
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
           )}
         </div>
       ) : (
