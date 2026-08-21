@@ -24,7 +24,6 @@ export default function Home() {
   const router = useRouter();
   const [puzzle, setPuzzle] = useState<TodayPuzzle | null>(null);
   const [loading, setLoading] = useState(true);
-  const [showHowToPlay, setShowHowToPlay] = useState(false);
 
   useEffect(() => {
     fetch('/api/puzzle/today')
@@ -47,7 +46,7 @@ export default function Home() {
           <p className="text-xs uppercase tracking-widest text-text-secondary">Loading Today&apos;s Puzzle...</p>
         </div>
       ) : puzzle && puzzle.startFilm && puzzle.endFilm ? (
-        <div className="flex flex-col items-center gap-8 w-full">
+        <div className="flex flex-col items-center gap-10 w-full">
           {/* Header Title Section */}
           <div className="flex flex-col items-center gap-3 max-w-xl">
             <h1 className="text-4xl sm:text-6xl font-black text-white tracking-tight leading-tight">
@@ -57,17 +56,9 @@ export default function Home() {
             <p className="text-sm sm:text-base text-text-secondary max-w-md leading-relaxed font-medium">
               Two films. One trail. How fast can you connect them?
             </p>
-
-            {/* How to play trigger button */}
-            <button
-              onClick={() => setShowHowToPlay(true)}
-              className="flex items-center gap-1.5 text-xs text-text-muted hover:text-white transition-colors mt-1 bg-bg-secondary px-3 py-1.5 rounded-[4px] border border-border cursor-pointer"
-            >
-              <span className="text-accent font-bold">?</span> How to play
-            </button>
           </div>
 
-          {/* Connected Films Cards */}
+          {/* Connected Films Challenge Card */}
           <div className="flex flex-col items-center gap-4 bg-bg-card p-6 sm:p-8 rounded-[4px] border border-border w-full max-w-2xl shadow-2xl">
             <div className="flex items-center justify-between w-full border-b border-border/80 pb-3">
               <span className="text-[11px] font-bold uppercase tracking-wider text-text-secondary">
@@ -141,7 +132,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Visual Step-by-Step Chain Flow (Inspired by screenshot) */}
+            {/* Visual Step-by-Step Chain Flow */}
             <div className="flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap py-2 px-3 bg-bg-secondary/70 rounded-[4px] border border-border/70 text-[11px] font-mono">
               <span className="px-2 py-0.5 rounded bg-bg-card border border-border text-text-secondary font-semibold">Start</span>
               <span className="text-text-muted">&rarr;</span>
@@ -169,95 +160,84 @@ export default function Home() {
             </div>
           </div>
 
-          {/* 3-Step How It Works Explainer Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-2xl text-left">
-            <div className="bg-bg-secondary p-4 rounded-[4px] border border-border flex flex-col gap-2">
-              <div className="flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-accent/10 border border-accent/30 text-accent font-mono text-xs font-bold flex items-center justify-center">1</span>
-                <span className="font-bold text-xs uppercase tracking-wider text-white">Inspect Credits</span>
-              </div>
-              <p className="text-xs text-text-secondary leading-relaxed">
-                You start on the first movie. Check out its actors, directors, writers, and producers.
+          {/* INLINE "HOW TO PLAY" COMPLETE GUIDE */}
+          <div className="flex flex-col gap-6 bg-bg-card p-6 sm:p-8 rounded-[4px] border border-border w-full max-w-2xl text-left shadow-xl">
+            <div className="flex items-center gap-2 border-b border-border pb-3">
+              <span className="text-lg">📖</span>
+              <h2 className="text-base sm:text-lg font-black text-white uppercase tracking-wider">
+                How to Play
+              </h2>
+            </div>
+
+            {/* Objective */}
+            <div className="flex flex-col gap-2 bg-bg-secondary p-4 rounded-[4px] border border-border">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-accent">The Goal</span>
+              <p className="text-xs sm:text-sm text-text-primary leading-relaxed font-medium">
+                Connect the <strong className="text-white">Start Film</strong> to the <strong className="text-accent">Target Film</strong> through shared actors, directors, writers, and producers in the fewest clicks and fastest time!
               </p>
             </div>
 
-            <div className="bg-bg-secondary p-4 rounded-[4px] border border-border flex flex-col gap-2">
-              <div className="flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-[#ff8000]/10 border border-[#ff8000]/30 text-[#ff8000] font-mono text-xs font-bold flex items-center justify-center">2</span>
-                <span className="font-bold text-xs uppercase tracking-wider text-white">Hop Through People</span>
+            {/* 3 Step Walkthrough Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 w-full">
+              <div className="bg-bg-secondary/80 p-3.5 rounded-[4px] border border-border flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="w-5 h-5 rounded-full bg-accent/20 text-accent font-mono text-xs font-bold flex items-center justify-center">1</span>
+                  <span className="font-bold text-xs uppercase tracking-wider text-white">Pick a Person</span>
+                </div>
+                <p className="text-xs text-text-secondary leading-relaxed">
+                  Start on the first movie. Check out its actors, director, or crew and click one to open their page.
+                </p>
               </div>
-              <p className="text-xs text-text-secondary leading-relaxed">
-                Click any person to view their filmography, then select a connecting film to jump to.
-              </p>
+
+              <div className="bg-bg-secondary/80 p-3.5 rounded-[4px] border border-border flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="w-5 h-5 rounded-full bg-[#ff8000]/20 text-[#ff8000] font-mono text-xs font-bold flex items-center justify-center">2</span>
+                  <span className="font-bold text-xs uppercase tracking-wider text-white">Pick a Film</span>
+                </div>
+                <p className="text-xs text-text-secondary leading-relaxed">
+                  Browse their filmography and click another film they worked on to jump to that movie&apos;s page.
+                </p>
+              </div>
+
+              <div className="bg-bg-secondary/80 p-3.5 rounded-[4px] border border-border flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="w-5 h-5 rounded-full bg-[#40bcf4]/20 text-[#40bcf4] font-mono text-xs font-bold flex items-center justify-center">3</span>
+                  <span className="font-bold text-xs uppercase tracking-wider text-white">Hit the Target</span>
+                </div>
+                <p className="text-xs text-text-secondary leading-relaxed">
+                  Keep chaining until you select the Target Film to complete the puzzle and rank on the Leaderboard!
+                </p>
+              </div>
             </div>
 
-            <div className="bg-bg-secondary p-4 rounded-[4px] border border-border flex flex-col gap-2">
-              <div className="flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-[#40bcf4]/10 border border-[#40bcf4]/30 text-[#40bcf4] font-mono text-xs font-bold flex items-center justify-center">3</span>
-                <span className="font-bold text-xs uppercase tracking-wider text-white">Reach the Target</span>
+            {/* Pro Tips & Rules List */}
+            <div className="flex flex-col gap-2.5 pt-2 border-t border-border/70 text-xs text-text-secondary leading-relaxed">
+              <div className="flex items-start gap-2.5">
+                <span className="text-accent font-bold mt-0.5">⚡</span>
+                <p>
+                  <strong className="text-white">Golden Rule:</strong> The chain must always alternate: <code className="text-accent bg-bg-secondary px-1.5 py-0.5 rounded font-mono text-[11px]">Film &rarr; Person &rarr; Film &rarr; Person</code>.
+                </p>
               </div>
-              <p className="text-xs text-text-secondary leading-relaxed">
-                Keep following the trail until you hit the Target Movie in the fewest clicks and fastest time!
-              </p>
+
+              <div className="flex items-start gap-2.5">
+                <span className="text-[#40bcf4] font-bold mt-0.5">🔍</span>
+                <p>
+                  <strong className="text-white">Quick Search:</strong> Use the search bar inside the filter tab widget on any page to find specific actors or titles instantly without scrolling.
+                </p>
+              </div>
+
+              <div className="flex items-start gap-2.5">
+                <span className="text-[#ff8000] font-bold mt-0.5">⏪</span>
+                <p>
+                  <strong className="text-white">Rewind:</strong> Hit a dead end? Click any earlier movie in the breadcrumb trail at the top to retrace your steps anytime.
+                </p>
+              </div>
             </div>
           </div>
         </div>
       ) : (
         <div className="text-text-secondary bg-bg-card p-6 rounded-[4px] border border-border">
           Failed to load today&apos;s puzzle. Please refresh.
-        </div>
-      )}
-
-      {/* How To Play Modal */}
-      {showHowToPlay && (
-        <div
-          onClick={() => setShowHowToPlay(false)}
-          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200"
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="bg-bg-card border border-border rounded-[4px] p-6 sm:p-8 max-w-lg w-full text-left flex flex-col gap-5 shadow-2xl"
-          >
-            <div className="flex items-center justify-between border-b border-border pb-3">
-              <h2 className="text-lg font-black text-white">How to Play Filmtrace</h2>
-              <button
-                onClick={() => setShowHowToPlay(false)}
-                className="text-text-muted hover:text-white text-base cursor-pointer"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="flex flex-col gap-4 text-xs sm:text-sm text-text-secondary leading-relaxed">
-              <p>
-                <strong className="text-white">Objective:</strong> Navigate from the <span className="text-white font-semibold">Start Movie</span> to the <span className="text-accent font-semibold">Target Movie</span> by clicking through shared actors and filmmakers.
-              </p>
-
-              <div className="bg-bg-secondary p-3.5 rounded-[4px] border border-border flex flex-col gap-2">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-accent">The Golden Rule</span>
-                <p className="text-xs text-white">
-                  You must alternate between <strong>Films</strong> and <strong>People</strong>:
-                </p>
-                <div className="flex items-center gap-1.5 font-mono text-[11px] text-text-secondary flex-wrap">
-                  <span>🎬 Film</span> &rarr; <span>👤 Person</span> &rarr; <span>🎬 Film</span> &rarr; <span>👤 Person</span> &rarr; <span>🎯 Target</span>
-                </div>
-              </div>
-
-              <ul className="list-disc pl-5 space-y-2">
-                <li>Click any actor, director, or crew member in the cast/crew list.</li>
-                <li>Browse their filmography and select a film that brings you closer to the target.</li>
-                <li>Use the <strong>Search</strong> option in the tab bar to quickly find specific names or titles.</li>
-                <li>Click any earlier film in the <strong>Breadcrumb trail</strong> at the top to rewind if you hit a dead end.</li>
-              </ul>
-            </div>
-
-            <button
-              onClick={() => setShowHowToPlay(false)}
-              className="w-full py-2.5 bg-accent text-bg-primary text-xs font-bold uppercase tracking-wider rounded-[4px] hover:bg-accent-dim transition-colors cursor-pointer mt-1"
-            >
-              Got It &middot; Let&apos;s Play
-            </button>
-          </div>
         </div>
       )}
     </main>
