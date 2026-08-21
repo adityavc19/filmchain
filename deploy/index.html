@@ -2702,8 +2702,7 @@
                           <tr className="border-b border-[#28323e] text-[10px] uppercase text-text-secondary">
                             <th className="py-2.5 px-2 text-center w-10">Pos</th>
                             <th className="py-2.5 px-2 text-left">Player</th>
-                            <th className="py-2.5 px-2 text-right">Games</th>
-                            <th className="py-2.5 px-2 text-right">Tier</th>
+                            <th className="py-2.5 px-2 text-right">Games Solved</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -2712,15 +2711,6 @@
                               const isYou = player.handle === handle;
                               const rankColors = { 1: '#f5c518', 2: '#c0c0c0', 3: '#cd7f32' };
                               const rankColor = rankColors[idx + 1] || '#667788';
-
-                              const tierBadges = {
-                                'Grandmaster': 'text-[#f5c518] bg-[#f5c518]/10 border-[#f5c518]/30',
-                                'Master': 'text-[#a855f7] bg-[#a855f7]/10 border-[#a855f7]/30',
-                                'Cinephile': 'text-[#40bcf4] bg-[#40bcf4]/10 border-[#40bcf4]/30',
-                                'Buff': 'text-[#00e054] bg-[#00e054]/10 border-[#00e054]/30',
-                                'Apprentice': 'text-[#9ab0c2] bg-[#9ab0c2]/10 border-[#9ab0c2]/30'
-                              };
-                              const tierStyle = tierBadges[player.rank_title] || tierBadges['Apprentice'];
 
                               return (
                                 <tr key={player.handle || idx} className={`border-b border-[#28323e]/50 ${isYou ? 'bg-white/10' : ''}`}>
@@ -2738,17 +2728,12 @@
                                   <td className="py-2.5 px-2 text-right font-mono font-bold text-white">
                                     {player.games_played} <span className="text-[10px] font-normal text-text-secondary font-sans">plays</span>
                                   </td>
-                                  <td className="py-2.5 px-2 text-right">
-                                    <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${tierStyle}`}>
-                                      {player.rank_title}
-                                    </span>
-                                  </td>
                                 </tr>
                               );
                             })
                           ) : (
                             <tr>
-                              <td colSpan={4} className="py-8 text-center text-text-muted">
+                              <td colSpan={3} className="py-8 text-center text-text-muted">
                                 Loading standings...
                               </td>
                             </tr>
