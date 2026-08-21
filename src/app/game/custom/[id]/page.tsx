@@ -182,7 +182,13 @@ export default function CustomGamePage({ params }: { params: Promise<{ id: strin
         setLeaderboard(data.leaderboard || []);
 
         const initialPath: PathStep[] = [
-          { type: 'film', id: data.startFilm.tmdb_id, name: data.startFilm.title },
+          {
+            type: 'film',
+            id: data.startFilm.tmdb_id,
+            name: data.startFilm.title,
+            poster_path: data.startFilm.poster_path,
+            subtitle: data.startFilm.year ? String(data.startFilm.year) : 'Movie',
+          },
         ];
         setPath(initialPath);
         setClickCount(0);
@@ -194,15 +200,59 @@ export default function CustomGamePage({ params }: { params: Promise<{ id: strin
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
-  const onSelectPerson = async (personId: number, name: string) => {
-    const newPath: PathStep[] = [...path, { type: 'person', id: personId, name }];
+  const restartGame = async () => {
+    if (!startFilm) return;
+    const initialPath: PathStep[] = [
+      {
+        type: 'film',
+        id: startFilm.tmdb_id,
+        name: startFilm.title,
+        poster_path: startFilm.poster_path,
+        subtitle: startFilm.year ? String(startFilm.year) : 'Movie',
+      },
+    ];
+    setPath(initialPath);
+    setClickCount(0);
+    setCurrentView('film');
+    setCurrentMedia({
+      id: startFilm.tmdb_id,
+      title: startFilm.title,
+      year: startFilm.year,
+      poster_path: startFilm.poster_path,
+    });
+    setPhase('playing');
+    setStartTime(Date.now());
+    setEndTime(null);
+    await fetchFilmCredits(startFilm.tmdb_id);
+  };
+
+  const onSelectPerson = async (personId: number, name: string, profilePath?: string | null, roleOrJob?: string | null) => {
+    const newPath: PathStep[] = [
+      ...path,
+      {
+        type: 'person',
+        id: personId,
+        name,
+        profile_path: profilePath,
+        subtitle: roleOrJob || 'Cast / Crew',
+      },
+    ];
     setPath(newPath);
     setClickCount(c => c + 1);
     await fetchPersonCredits(personId);
   };
 
-  const onSelectFilm = async (filmId: number, title: string) => {
-    const newPath: PathStep[] = [...path, { type: 'film', id: filmId, name: title }];
+  const onSelectFilm = async (filmId: number, title: string, posterPath?: string | null, releaseYear?: string | number | null) => {
+    const newPath: PathStep[] = [
+      ...path,
+      {
+        type: 'film',
+        id: filmId,
+        name: title,
+        poster_path: posterPath,
+        subtitle: releaseYear ? String(releaseYear) : 'Movie',
+      },
+    ];
     const newClicks = clickCount + 1;
     setClickCount(newClicks);
 
@@ -418,7 +468,7 @@ export default function CustomGamePage({ params }: { params: Promise<{ id: strin
                             </div>
                             <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8 gap-2 sm:gap-3">
                               {filteredCast.map(credit => (
-                                <PersonCard key={`cast-${credit.id}`} tmdbId={credit.id} name={credit.name} profilePath={credit.profile_path} role={credit.character} job={credit.job} onClick={() => onSelectPerson(credit.id, credit.name)} size="sm" />
+                                <PersonCard key={`cast-${credit.id}`} tmdbId={credit.id} name={credit.name} profilePath={credit.profile_path} role={credit.character} job={credit.job} onClick={() => onSelectPerson(credit.id, credit.name, credit.profile_path, credit.character || 'Actor')} size="sm" />
                               ))}
                             </div>
                           </div>
@@ -431,7 +481,7 @@ export default function CustomGamePage({ params }: { params: Promise<{ id: strin
                             </div>
                             <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8 gap-2 sm:gap-3">
                               {filteredCrew.map(credit => (
-                                <PersonCard key={`crew-${credit.id}`} tmdbId={credit.id} name={credit.name} profilePath={credit.profile_path} job={credit.job} onClick={() => onSelectPerson(credit.id, credit.name)} size="sm" />
+                                <PersonCard key={`crew-${credit.id}`} tmdbId={credit.id} name={credit.name} profilePath={credit.profile_path} job={credit.job} onClick={() => onSelectPerson(credit.id, credit.name, credit.profile_path, credit.job || 'Crew')} size="sm" />
                               ))}
                             </div>
                           </div>
@@ -441,14 +491,14 @@ export default function CustomGamePage({ params }: { params: Promise<{ id: strin
                     {filmTab === 'cast' && (
                       <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8 gap-2 sm:gap-3">
                         {filteredCast.map(credit => (
-                          <PersonCard key={`cast-${credit.id}`} tmdbId={credit.id} name={credit.name} profilePath={credit.profile_path} role={credit.character} job={credit.job} onClick={() => onSelectPerson(credit.id, credit.name)} size="sm" />
+                          <PersonCard key={`cast-${credit.id}`} tmdbId={credit.id} name={credit.name} profilePath={credit.profile_path} role={credit.character} job={credit.job} onClick={() => onSelectPerson(credit.id, credit.name, credit.profile_path, credit.character || 'Actor')} size="sm" />
                         ))}
                       </div>
                     )}
                     {filmTab === 'crew' && (
                       <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8 gap-2 sm:gap-3">
                         {filteredCrew.map(credit => (
-                          <PersonCard key={`crew-${credit.id}`} tmdbId={credit.id} name={credit.name} profilePath={credit.profile_path} job={credit.job} onClick={() => onSelectPerson(credit.id, credit.name)} size="sm" />
+                          <PersonCard key={`crew-${credit.id}`} tmdbId={credit.id} name={credit.name} profilePath={credit.profile_path} job={credit.job} onClick={() => onSelectPerson(credit.id, credit.name, credit.profile_path, credit.job || 'Crew')} size="sm" />
                         ))}
                       </div>
                     )}
@@ -516,7 +566,7 @@ export default function CustomGamePage({ params }: { params: Promise<{ id: strin
                 ) : (
                   <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8 gap-2 sm:gap-3">
                     {(personTab === 'all' ? filteredPersonAll : personTab === 'movies' ? filteredPersonMovies : filteredPersonTv).map(film => (
-                      <FilmCard key={`film-${film.id}`} tmdbId={film.id} title={film.title} year={film.release_date ? parseInt(film.release_date.split('-')[0]) : null} posterPath={film.poster_path} character={film.character} isTarget={film.id === targetFilm?.tmdb_id} onClick={() => onSelectFilm(film.id, film.title)} size="sm" />
+                      <FilmCard key={`film-${film.id}`} tmdbId={film.id} title={film.title} year={film.release_date ? parseInt(film.release_date.split('-')[0]) : null} posterPath={film.poster_path} character={film.character} isTarget={film.id === targetFilm?.tmdb_id} onClick={() => onSelectFilm(film.id, film.title, film.poster_path, film.release_date ? parseInt(film.release_date.split('-')[0]) : null)} size="sm" />
                     ))}
                   </div>
                 )}
@@ -526,24 +576,35 @@ export default function CustomGamePage({ params }: { params: Promise<{ id: strin
         </div>
       ) : (
         /* Won Screen */
-        <div className="flex flex-col items-center gap-7 py-6 w-full animate-in fade-in duration-500">
+        <div className="flex flex-col items-center gap-6 py-4 w-full animate-in fade-in duration-500 max-w-lg mx-auto">
           <div className="flex flex-col items-center gap-3 text-center">
-            <span className="text-xs font-bold uppercase tracking-widest text-accent">Challenge Completed</span>
+            <span className="text-xs font-bold uppercase tracking-widest text-[#00e054] px-3 py-1 bg-[#00e054]/10 border border-[#00e054]/30 rounded-full">
+              Challenge Completed
+            </span>
             <div className="flex items-center gap-3.5 my-1">
-              <div className="w-16 h-24 rounded overflow-hidden bg-bg-secondary border border-border relative">
-                {startFilm?.poster_path && <Image src={posterUrl(startFilm.poster_path, 'w185')} alt={startFilm.title} fill className="object-cover" />}
+              <div className="w-16 h-24 rounded-[4px] overflow-hidden bg-bg-secondary border-2 border-border relative shadow-md">
+                {startFilm?.poster_path ? (
+                  <Image src={posterUrl(startFilm.poster_path, 'w185')} alt={startFilm.title} fill sizes="64px" className="object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-xs">🎬</div>
+                )}
               </div>
               <span className="text-2xl text-text-muted font-light">&rarr;</span>
-              <div className="w-16 h-24 rounded overflow-hidden bg-bg-secondary border-2 border-accent relative">
-                {targetFilm?.poster_path && <Image src={posterUrl(targetFilm.poster_path, 'w185')} alt={targetFilm.title} fill className="object-cover" />}
+              <div className="w-16 h-24 rounded-[4px] overflow-hidden bg-bg-secondary border-2 border-[#00e054]/50 relative shadow-md">
+                {targetFilm?.poster_path ? (
+                  <Image src={posterUrl(targetFilm.poster_path, 'w185')} alt={targetFilm.title} fill sizes="64px" className="object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-xs">🎬</div>
+                )}
               </div>
             </div>
-            <h2 className="text-base sm:text-lg font-semibold text-text-secondary">{startFilm?.title} to {targetFilm?.title}</h2>
+            <h2 className="text-base sm:text-lg font-bold text-white">{startFilm?.title} to {targetFilm?.title}</h2>
           </div>
 
-          <div className="flex flex-col gap-2.5 bg-bg-card border border-border rounded p-6 w-full max-w-md shadow-2xl">
+          {/* Result Stats Box */}
+          <div className="flex flex-col gap-2.5 bg-bg-card border border-border rounded-[6px] p-5 w-full shadow-2xl">
             <span className="text-[11px] font-bold uppercase tracking-widest text-text-secondary text-left">Your Result</span>
-            <div className="flex items-center justify-around py-3">
+            <div className="flex items-center justify-around py-2">
               <div className="text-center">
                 <span className="text-[11px] font-bold uppercase tracking-widest text-text-secondary block mb-1">Time</span>
                 <span className="font-mono text-3xl sm:text-4xl font-extrabold text-white">
@@ -554,25 +615,127 @@ export default function CustomGamePage({ params }: { params: Promise<{ id: strin
               <div className="w-px h-10 bg-border"></div>
               <div className="text-center">
                 <span className="text-[11px] font-bold uppercase tracking-widest text-text-secondary block mb-1">Clicks</span>
-                <span className="font-mono text-3xl sm:text-4xl font-extrabold text-accent">{clickCount}</span>
+                <span className="font-mono text-3xl sm:text-4xl font-extrabold text-[#00e054]">{clickCount}</span>
               </div>
             </div>
           </div>
 
+          {/* Quicker Path Nudge Card & Play Again Primary CTA */}
+          <div className="flex flex-col gap-3 bg-gradient-to-br from-bg-card to-bg-secondary border border-[#ff8000]/40 rounded-[6px] p-4 sm:p-5 w-full shadow-xl text-center relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-28 h-28 bg-[#ff8000]/5 rounded-full blur-2xl pointer-events-none" />
+
+            <div className="flex items-center justify-center gap-2">
+              <span className="text-base">⚡</span>
+              <h3 className="text-sm sm:text-base font-extrabold text-white">
+                Think you can find a quicker path?
+              </h3>
+            </div>
+
+            <p className="text-xs text-text-secondary leading-relaxed max-w-sm mx-auto">
+              Replay this challenge with a different route to shave seconds off your time, reduce clicks, and climb the leaderboard!
+            </p>
+
+            <button
+              onClick={restartGame}
+              className="w-full py-3 px-5 bg-[#ff8000] hover:bg-[#ff941a] text-[#0e1114] font-black text-xs uppercase tracking-wider rounded-[4px] flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg active:scale-95 mt-1"
+            >
+              <span>⚡</span>
+              <span>Play Again (Find Quicker Path)</span>
+            </button>
+          </div>
+
+          {/* Your Solved Path Timeline (Subway / Step Cards) */}
+          {path && path.length > 0 && (
+            <div className="flex flex-col gap-3 bg-bg-card border border-border rounded-[6px] p-4 sm:p-5 w-full shadow-lg">
+              <div className="flex items-center justify-between border-b border-border pb-2.5">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-white flex items-center gap-1.5">
+                    <span>🎬</span> Your Solved Trail
+                  </span>
+                  <span className="text-xs text-text-muted font-mono">({path.length} steps · {clickCount} clicks)</span>
+                </div>
+                <span className="text-[10px] font-mono text-[#00e054] uppercase font-bold">Solved</span>
+              </div>
+
+              <div className="relative flex flex-col gap-2.5 pt-1">
+                {path.map((node, idx) => {
+                  const isFirst = idx === 0;
+                  const isLast = idx === path.length - 1;
+                  const isFilm = node.type === 'film';
+                  const imgSrc = isFilm
+                    ? (node.poster_path ? posterUrl(node.poster_path, 'w185') : null)
+                    : (node.profile_path ? profileUrl(node.profile_path, 'w185') : null);
+
+                  return (
+                    <div key={`custom-path-${idx}`} className="relative flex items-center gap-3">
+                      {!isLast && (
+                        <div className="absolute left-5 top-8 bottom-[-10px] w-0.5 bg-border z-0" />
+                      )}
+
+                      <div className="flex-1 bg-bg-secondary border border-border hover:border-text-secondary/40 rounded-[6px] p-2.5 flex items-center justify-between gap-3 relative z-10 transition-all shadow-sm">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <div className="w-10 h-10 rounded-[4px] overflow-hidden bg-bg-secondary border border-border flex-shrink-0 flex items-center justify-center relative">
+                            {imgSrc ? (
+                              <Image
+                                src={imgSrc}
+                                alt={node.name}
+                                fill
+                                sizes="40px"
+                                className="object-cover"
+                              />
+                            ) : (
+                              <span className="text-base">{isFilm ? '🎬' : '👤'}</span>
+                            )}
+                          </div>
+                          <div className="flex flex-col text-left min-w-0">
+                            <span className="text-xs sm:text-sm font-bold text-white truncate max-w-[190px] sm:max-w-[250px]">
+                              {node.name}
+                            </span>
+                            <span className="text-[10px] text-text-secondary truncate capitalize">
+                              {node.subtitle || (isFilm ? 'Movie' : 'Actor / Crew')}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex-shrink-0">
+                          {isFirst && (
+                            <span className="px-2 py-0.5 bg-[#ff8000]/20 text-[#ff8000] border border-[#ff8000]/40 text-[9px] font-extrabold uppercase rounded tracking-wider">
+                              START
+                            </span>
+                          )}
+                          {isLast && (
+                            <span className="px-2 py-0.5 bg-[#00e054]/20 text-[#00e054] border border-[#00e054]/40 text-[9px] font-extrabold uppercase rounded tracking-wider">
+                              GOAL
+                            </span>
+                          )}
+                          {!isFirst && !isLast && (
+                            <span className="text-[10px] font-mono text-text-muted font-bold px-1.5 py-0.5 bg-bg-card rounded border border-border">
+                              #{idx + 1}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full max-w-md mt-1">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full mt-1">
             <button
               onClick={copyShare}
-              className="w-full sm:flex-1 py-3 px-5 bg-white text-[#0e1114] hover:bg-white/90 text-xs font-bold uppercase tracking-wider rounded-[4px] flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg active:scale-95"
+              className="w-full sm:flex-1 py-2.5 px-4 bg-white text-[#0e1114] hover:bg-white/90 text-xs font-bold uppercase tracking-wider rounded-[4px] flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md active:scale-95"
             >
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg>
-              <span>{copied ? 'Copied to Clipboard!' : 'Share'}</span>
+              <span>{copied ? 'Copied to Clipboard!' : 'Share Result'}</span>
             </button>
             <div className="flex items-center gap-3 w-full sm:w-auto">
-              <Link href="/" className="flex-1 sm:flex-initial py-3 px-5 bg-transparent text-text-secondary text-xs font-semibold border border-border rounded hover:text-white transition-all text-center">
+              <Link href="/" className="flex-1 sm:flex-initial py-2.5 px-5 bg-transparent text-text-secondary text-xs font-semibold border border-border rounded-[4px] hover:text-white transition-all text-center">
                 &larr; Home
               </Link>
-              <Link href="/create" className="flex-1 sm:flex-initial py-3 px-5 bg-[#1c242c] text-white text-xs font-semibold border border-border rounded hover:border-white transition-all text-center">
+              <Link href="/create" className="flex-1 sm:flex-initial py-2.5 px-5 bg-[#1c242c] text-white text-xs font-semibold border border-border rounded-[4px] hover:border-white transition-all text-center">
                 + Create
               </Link>
             </div>

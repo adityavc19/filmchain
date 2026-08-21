@@ -80,6 +80,9 @@ export interface PathStep {
   type: 'film' | 'person';
   id: number;
   name: string;
+  poster_path?: string | null;
+  profile_path?: string | null;
+  subtitle?: string | null;
 }
 
 // Browser-side client
