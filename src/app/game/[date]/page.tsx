@@ -374,31 +374,31 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
         <div className="flex items-start justify-between gap-4 flex-wrap sm:flex-nowrap">
           {/* Target Film Goal (Top-aligned, compact poster) */}
           {state.targetFilm && (
-            <div className="flex items-start gap-3">
+            <div className="flex items-start gap-3.5">
               <div
-                className="relative rounded overflow-hidden flex-shrink-0 bg-bg-secondary border border-border shadow-sm w-9 h-13 sm:w-10 sm:h-14"
+                className="w-16 h-24 sm:w-18 sm:h-26 relative rounded overflow-hidden flex-shrink-0 bg-bg-secondary border border-border shadow-md"
               >
                 {state.targetFilm.poster_path ? (
                   <Image
                     src={posterUrl(state.targetFilm.poster_path, 'w185')}
                     alt={state.targetFilm.title}
                     fill
-                    sizes="40px"
+                    sizes="72px"
                     className="object-cover"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-xs text-text-muted">🎬</div>
                 )}
               </div>
-              <div className="flex flex-col text-left">
+              <div className="flex flex-col text-left justify-start">
                 <span className="text-[10px] font-bold uppercase tracking-widest text-[#00e054]">
                   GOAL
                 </span>
-                <span className="font-bold text-white text-sm sm:text-base leading-tight max-w-[170px] sm:max-w-[260px] truncate">
+                <span className="font-bold text-white text-sm sm:text-base leading-tight max-w-[170px] sm:max-w-[260px] truncate mt-0.5">
                   {state.targetFilm.title}
                 </span>
                 {state.targetFilm.year && (
-                  <span className="text-text-secondary text-[11px] font-mono">{state.targetFilm.year}</span>
+                  <span className="text-text-secondary text-[11px] font-mono mt-0.5">{state.targetFilm.year}</span>
                 )}
               </div>
             </div>
@@ -435,54 +435,32 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
           {/* VIEW: UNIFIED FILM CARD & CAST/CREW CONTAINER */}
           {state.currentView === 'film' && currentMedia && (
             <div className="bg-bg-card border border-border rounded-[6px] shadow-2xl overflow-hidden flex flex-col">
-              {/* Film Header Banner (No description paragraph, clean tags & specs) */}
-              <div className="p-4 sm:p-6 bg-gradient-to-b from-bg-secondary/50 to-bg-card border-b border-border flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5 text-left">
-                <div className="relative w-20 h-28 sm:w-24 sm:h-36 rounded-[4px] overflow-hidden bg-bg-secondary border border-border flex-shrink-0 shadow-lg">
+              {/* Film Header Banner (50% shorter thumbnail, title & year only) */}
+              <div className="p-3 sm:p-4 bg-gradient-to-b from-bg-secondary/40 to-bg-card border-b border-border flex items-center gap-3.5 text-left">
+                <div className="relative w-11 h-15 sm:w-12 sm:h-18 rounded-[4px] overflow-hidden bg-bg-secondary border border-border flex-shrink-0 shadow">
                   {currentMedia.poster_path ? (
                     <Image
-                      src={posterUrl(currentMedia.poster_path, 'w342')}
+                      src={posterUrl(currentMedia.poster_path, 'w185')}
                       alt={currentMedia.title}
                       fill
-                      sizes="96px"
+                      sizes="48px"
                       className="object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-2xl">🎬</div>
+                    <div className="w-full h-full flex items-center justify-center text-xs">🎬</div>
                   )}
                 </div>
 
-                {/* Metadata & Clean Tags */}
-                <div className="flex flex-col gap-1.5 min-w-0 justify-center flex-1">
-                  <div className="flex items-center gap-2 text-xs text-text-secondary flex-wrap">
+                {/* Title and Year only */}
+                <div className="flex flex-col min-w-0 justify-center">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h1 className="text-lg sm:text-xl font-black text-white tracking-tight leading-tight truncate">
+                      {currentMedia.title}
+                    </h1>
                     {currentMedia.year && (
-                      <span className="font-bold text-white">
-                        {currentMedia.year}
-                      </span>
-                    )}
-                    {currentMedia.runtime && (
-                      <span className="text-text-muted">
-                        · {currentMedia.runtime} min
-                      </span>
-                    )}
-                    {currentMedia.tagline && (
-                      <span className="italic text-text-muted hidden sm:inline">&ldquo;{currentMedia.tagline}&rdquo;</span>
+                      <span className="text-xs font-mono text-text-secondary font-medium">({currentMedia.year})</span>
                     )}
                   </div>
-
-                  <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">
-                    {currentMedia.title}
-                  </h1>
-
-                  {/* Genre Tags */}
-                  {currentMedia.genres && currentMedia.genres.length > 0 && (
-                    <div className="flex items-center gap-1.5 flex-wrap pt-1">
-                      {currentMedia.genres.map(g => (
-                        <span key={g.id} className="text-[10px] uppercase font-bold tracking-wider bg-bg-secondary text-text-secondary px-2.5 py-0.5 rounded border border-border">
-                          {g.name}
-                        </span>
-                      ))}
-                    </div>
-                  )}
                 </div>
               </div>
 

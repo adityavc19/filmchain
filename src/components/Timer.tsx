@@ -35,13 +35,9 @@ export default function Timer({ startTime, endTime }: TimerProps) {
   return (
     <div className="font-mono text-2xl sm:text-3xl font-bold text-white tracking-wider tabular-nums select-none">
       {startTime ? (
-        <>
-          {minutes.toString().padStart(2, '0')}:
-          {seconds.toString().padStart(2, '0')}
-          <span className="text-lg sm:text-xl text-white/70">.{ms.toString().padStart(2, '0')}</span>
-        </>
+        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
       ) : (
-        "00:00.00"
+        "00:00"
       )}
     </div>
   );
