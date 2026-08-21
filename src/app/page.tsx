@@ -49,15 +49,6 @@ export default function Home() {
         <div className="flex flex-col items-center gap-10 w-full">
           {/* Header Title Section */}
           <div className="flex flex-col items-center gap-3.5 max-w-xl">
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-[#00e054]"></span>
-              <span className="w-2 h-2 rounded-full bg-[#ff8000]"></span>
-              <span className="w-2 h-2 rounded-full bg-[#40bcf4]"></span>
-              <span className="text-[11px] font-bold uppercase tracking-widest text-text-secondary ml-1">
-                Filmtrace &middot; Daily Puzzle &middot; {new Date(puzzle.date + 'T00:00:00Z').toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' })}
-              </span>
-            </div>
-
             <h1 className="text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-tight">
               FILMTRACE
             </h1>
