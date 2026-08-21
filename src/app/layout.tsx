@@ -3,6 +3,8 @@ import { Inter } from 'next/font/google';
 import Link from 'next/link';
 import './globals.css';
 
+import Logo from '@/components/Logo';
+
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
@@ -22,11 +24,7 @@ export default function RootLayout({
         <header className="border-b border-border bg-bg-primary/95 backdrop-blur-md sticky top-0 z-50">
           <div className="max-w-5xl mx-auto px-4 min-h-[56px] flex items-center justify-between flex-wrap gap-2">
             <Link href="/" className="flex items-center gap-2 group">
-              <div className="flex items-center gap-1">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#00e054]"></span>
-                <span className="w-2.5 h-2.5 rounded-full bg-[#ff8000]"></span>
-                <span className="w-2.5 h-2.5 rounded-full bg-[#40bcf4]"></span>
-              </div>
+              <Logo variant="connected-frames" size={30} />
               <span className="font-black tracking-tight text-lg text-white group-hover:text-accent transition-colors">
                 FILMTRACE
               </span>

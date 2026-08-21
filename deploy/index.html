@@ -413,11 +413,30 @@
           <header className="border-b border-border bg-bg-primary/95 backdrop-blur sticky top-0 z-50">
             <div className="max-w-5xl mx-auto px-4 min-h-[56px] flex items-center justify-between flex-wrap gap-2">
               <div onClick={() => setScreen('home')} className="flex items-center gap-2 cursor-pointer group">
-                <div className="flex items-center gap-1">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#00e054]"></span>
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#ff8000]"></span>
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#40bcf4]"></span>
-                </div>
+                <svg width="30" height="30" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <linearGradient id="ft-nav-grad" x1="4" y1="4" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+                      <stop offset="0%" stopColor="#00e054" />
+                      <stop offset="50%" stopColor="#ff8000" />
+                      <stop offset="100%" stopColor="#40bcf4" />
+                    </linearGradient>
+                  </defs>
+                  {/* Left Film Frame */}
+                  <rect x="2" y="5" width="12" height="12" rx="2" stroke="#40bcf4" strokeWidth="1.75" fill="#1c2228" />
+                  <line x1="2" y1="8" x2="14" y2="8" stroke="#40bcf4" strokeWidth="1" strokeDasharray="1.5 1.5" />
+                  <line x1="2" y1="14" x2="14" y2="14" stroke="#40bcf4" strokeWidth="1" strokeDasharray="1.5 1.5" />
+                  
+                  {/* Right Film Frame */}
+                  <rect x="18" y="15" width="12" height="12" rx="2" stroke="#00e054" strokeWidth="1.75" fill="#1c2228" />
+                  <line x1="18" y1="18" x2="30" y2="18" stroke="#00e054" strokeWidth="1" strokeDasharray="1.5 1.5" />
+                  <line x1="18" y1="24" x2="30" y2="24" stroke="#00e054" strokeWidth="1" strokeDasharray="1.5 1.5" />
+
+                  {/* Glowing Trace Trail Line */}
+                  <path d="M 8 11 C 14 11 16 21 24 21" stroke="url(#ft-nav-grad)" strokeWidth="2.2" strokeLinecap="round" />
+                  <circle cx="8" cy="11" r="2" fill="#40bcf4" />
+                  <circle cx="16" cy="16" r="1.5" fill="#ff8000" />
+                  <circle cx="24" cy="21" r="2" fill="#00e054" />
+                </svg>
                 <span className="font-black tracking-tight text-lg text-white group-hover:text-accent transition-colors">
                   FILMTRACE
                 </span>
