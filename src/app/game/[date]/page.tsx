@@ -550,7 +550,7 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
                               </span>
                               <span className="text-[11px] text-text-muted">({filteredCast.length})</span>
                             </div>
-                            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
+                            <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8 gap-2 sm:gap-3">
                               {filteredCast.map((credit) => (
                                 <PersonCard
                                   key={`cast-${credit.id}`}
@@ -575,7 +575,7 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
                               </span>
                               <span className="text-[11px] text-text-muted">({filteredCrew.length})</span>
                             </div>
-                            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
+                            <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8 gap-2 sm:gap-3">
                               {filteredCrew.map((credit) => (
                                 <PersonCard
                                   key={`crew-${credit.id}`}
@@ -601,7 +601,7 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
 
                     {filmTab === 'cast' && (
                       filteredCast.length > 0 ? (
-                        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
+                        <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8 gap-2 sm:gap-3">
                           {filteredCast.map((credit) => (
                             <PersonCard
                               key={`cast-tab-${credit.id}`}
@@ -624,7 +624,7 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
 
                     {filmTab === 'crew' && (
                       filteredCrew.length > 0 ? (
-                        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
+                        <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8 gap-2 sm:gap-3">
                           {filteredCrew.map((credit) => (
                             <PersonCard
                               key={`crew-tab-${credit.id}`}
@@ -652,36 +652,30 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
           {/* VIEW: UNIFIED PERSON CARD & FILMOGRAPHY CONTAINER */}
           {state.currentView === 'person' && currentPerson && (
             <div className="bg-bg-card border border-border rounded-[6px] shadow-2xl overflow-hidden flex flex-col">
-              {/* Person Header Banner (Clean name & tags, no bulky bio) */}
-              <div className="p-4 sm:p-6 bg-gradient-to-b from-bg-secondary/50 to-bg-card border-b border-border flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5 text-left">
-                <div className="relative w-20 h-28 sm:w-24 sm:h-36 rounded-[4px] overflow-hidden bg-bg-secondary border border-border flex-shrink-0 shadow-lg">
+              {/* Person Header Banner (50% shorter thumbnail, clean name & tags) */}
+              <div className="p-3 sm:p-4 bg-gradient-to-b from-bg-secondary/40 to-bg-card border-b border-border flex items-center gap-3.5 text-left">
+                <div className="relative w-11 h-15 sm:w-12 sm:h-18 rounded-[4px] overflow-hidden bg-bg-secondary border border-border flex-shrink-0 shadow">
                   {currentPerson.profile_path ? (
                     <Image
                       src={profileUrl(currentPerson.profile_path, 'w185')}
                       alt={currentPerson.name}
                       fill
-                      sizes="96px"
+                      sizes="48px"
                       className="object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-3xl">👤</div>
+                    <div className="w-full h-full flex items-center justify-center text-2xl">👤</div>
                   )}
                 </div>
 
-                <div className="flex flex-col gap-1.5 min-w-0 justify-center flex-1">
-                  <div className="flex items-center gap-2 text-xs text-text-secondary flex-wrap">
-                    {currentPerson.known_for && <span className="font-bold text-white">{currentPerson.known_for}</span>}
-                    {currentPerson.place_of_birth && <span className="text-text-muted">· {currentPerson.place_of_birth}</span>}
-                  </div>
-
-                  <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">
-                    {currentPerson.name}
-                  </h1>
-
-                  <div className="flex items-center gap-1.5 flex-wrap pt-1">
-                    <span className="text-[10px] uppercase font-bold tracking-wider bg-bg-secondary text-text-secondary px-2.5 py-0.5 rounded border border-border">
-                      Filmography
-                    </span>
+                <div className="flex flex-col min-w-0 justify-center">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h1 className="text-lg sm:text-xl font-black text-white tracking-tight leading-tight truncate">
+                      {currentPerson.name}
+                    </h1>
+                    {currentPerson.known_for && (
+                      <span className="text-xs font-mono text-text-secondary font-medium">({currentPerson.known_for})</span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -770,7 +764,7 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
                       ? filteredPersonMovies
                       : filteredPersonTv
                     ).length > 0 ? (
-                      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
+                      <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8 gap-2 sm:gap-3">
                         {(personTab === 'all'
                           ? filteredPersonAll
                           : personTab === 'movies'
