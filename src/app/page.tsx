@@ -102,32 +102,46 @@ export default function Home() {
               { icon: '🚪', text: "Here's Johnny!" },
               { icon: '🌌', text: 'To infinity and beyond!' },
             ].map((q, idx) => (
-              <div key={`reel1-${idx}`} className="film-frame flex flex-col justify-between py-1 px-3 min-w-[260px] mx-1 rounded-[1px] transition-colors hover:bg-[#151c27] cursor-default">
-                {/* Top Sprocket Perforations */}
-                <div className="flex items-center justify-between gap-3 pb-1 border-b border-[#1e2938]/70">
-                  <div className="sprocket-hole"></div>
-                  <div className="sprocket-hole"></div>
-                  <div className="sprocket-hole"></div>
-                  <div className="sprocket-hole"></div>
-                  <div className="sprocket-hole"></div>
+              <div key={`reel1-${idx}`} className="flex items-stretch">
+                {/* Film Cell Frame */}
+                <div className="flex flex-col gap-1.5 py-0.5 px-2">
+                  {/* Top Sprockets Track (9 holes) */}
+                  <div className="flex items-center justify-between gap-2.5 px-1">
+                    <div className="sprocket-hole"></div>
+                    <div className="sprocket-hole"></div>
+                    <div className="sprocket-hole"></div>
+                    <div className="sprocket-hole"></div>
+                    <div className="sprocket-hole"></div>
+                    <div className="sprocket-hole"></div>
+                    <div className="sprocket-hole"></div>
+                    <div className="sprocket-hole"></div>
+                    <div className="sprocket-hole"></div>
+                  </div>
+
+                  {/* Exposed Photographic Cell Window */}
+                  <div className="film-frame-window px-4 py-2 min-w-[260px] flex items-center justify-center gap-2.5 cursor-default">
+                    <span className="text-sm flex-shrink-0">{q.icon}</span>
+                    <span className="text-xs font-bold text-white tracking-wide whitespace-nowrap drop-shadow">
+                      &ldquo;{q.text}&rdquo;
+                    </span>
+                  </div>
+
+                  {/* Bottom Sprockets Track (9 holes) */}
+                  <div className="flex items-center justify-between gap-2.5 px-1">
+                    <div className="sprocket-hole"></div>
+                    <div className="sprocket-hole"></div>
+                    <div className="sprocket-hole"></div>
+                    <div className="sprocket-hole"></div>
+                    <div className="sprocket-hole"></div>
+                    <div className="sprocket-hole"></div>
+                    <div className="sprocket-hole"></div>
+                    <div className="sprocket-hole"></div>
+                    <div className="sprocket-hole"></div>
+                  </div>
                 </div>
 
-                {/* Center Dialogue Frame */}
-                <div className="flex items-center justify-center gap-2 py-1.5 px-2 whitespace-nowrap">
-                  <span className="text-xs">{q.icon}</span>
-                  <span className="text-[11px] sm:text-xs font-semibold tracking-wide text-white drop-shadow">
-                    &ldquo;{q.text}&rdquo;
-                  </span>
-                </div>
-
-                {/* Bottom Sprocket Perforations */}
-                <div className="flex items-center justify-between gap-3 pt-1 border-t border-[#1e2938]/70">
-                  <div className="sprocket-hole"></div>
-                  <div className="sprocket-hole"></div>
-                  <div className="sprocket-hole"></div>
-                  <div className="sprocket-hole"></div>
-                  <div className="sprocket-hole"></div>
-                </div>
+                {/* Inter-Frame Cut Divider */}
+                <div className="frame-divider mx-0.5"></div>
               </div>
             ))}
           </div>
@@ -148,32 +162,46 @@ export default function Home() {
               { icon: '🚪', text: "Here's Johnny!" },
               { icon: '🌌', text: 'To infinity and beyond!' },
             ].map((q, idx) => (
-              <div key={`reel2-${idx}`} className="film-frame flex flex-col justify-between py-1 px-3 min-w-[260px] mx-1 rounded-[1px] transition-colors hover:bg-[#151c27] cursor-default">
-                {/* Top Sprocket Perforations */}
-                <div className="flex items-center justify-between gap-3 pb-1 border-b border-[#1e2938]/70">
-                  <div className="sprocket-hole"></div>
-                  <div className="sprocket-hole"></div>
-                  <div className="sprocket-hole"></div>
-                  <div className="sprocket-hole"></div>
-                  <div className="sprocket-hole"></div>
+              <div key={`reel2-${idx}`} className="flex items-stretch">
+                {/* Film Cell Frame */}
+                <div className="flex flex-col gap-1.5 py-0.5 px-2">
+                  {/* Top Sprockets Track (9 holes) */}
+                  <div className="flex items-center justify-between gap-2.5 px-1">
+                    <div className="sprocket-hole"></div>
+                    <div className="sprocket-hole"></div>
+                    <div className="sprocket-hole"></div>
+                    <div className="sprocket-hole"></div>
+                    <div className="sprocket-hole"></div>
+                    <div className="sprocket-hole"></div>
+                    <div className="sprocket-hole"></div>
+                    <div className="sprocket-hole"></div>
+                    <div className="sprocket-hole"></div>
+                  </div>
+
+                  {/* Exposed Photographic Cell Window */}
+                  <div className="film-frame-window px-4 py-2 min-w-[260px] flex items-center justify-center gap-2.5 cursor-default">
+                    <span className="text-sm flex-shrink-0">{q.icon}</span>
+                    <span className="text-xs font-bold text-white tracking-wide whitespace-nowrap drop-shadow">
+                      &ldquo;{q.text}&rdquo;
+                    </span>
+                  </div>
+
+                  {/* Bottom Sprockets Track (9 holes) */}
+                  <div className="flex items-center justify-between gap-2.5 px-1">
+                    <div className="sprocket-hole"></div>
+                    <div className="sprocket-hole"></div>
+                    <div className="sprocket-hole"></div>
+                    <div className="sprocket-hole"></div>
+                    <div className="sprocket-hole"></div>
+                    <div className="sprocket-hole"></div>
+                    <div className="sprocket-hole"></div>
+                    <div className="sprocket-hole"></div>
+                    <div className="sprocket-hole"></div>
+                  </div>
                 </div>
 
-                {/* Center Dialogue Frame */}
-                <div className="flex items-center justify-center gap-2 py-1.5 px-2 whitespace-nowrap">
-                  <span className="text-xs">{q.icon}</span>
-                  <span className="text-[11px] sm:text-xs font-semibold tracking-wide text-white drop-shadow">
-                    &ldquo;{q.text}&rdquo;
-                  </span>
-                </div>
-
-                {/* Bottom Sprocket Perforations */}
-                <div className="flex items-center justify-between gap-3 pt-1 border-t border-[#1e2938]/70">
-                  <div className="sprocket-hole"></div>
-                  <div className="sprocket-hole"></div>
-                  <div className="sprocket-hole"></div>
-                  <div className="sprocket-hole"></div>
-                  <div className="sprocket-hole"></div>
-                </div>
+                {/* Inter-Frame Cut Divider */}
+                <div className="frame-divider mx-0.5"></div>
               </div>
             ))}
           </div>

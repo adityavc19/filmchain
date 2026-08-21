@@ -61,25 +61,53 @@ body {
 }
 
 .film-strip-wrapper {
-  background: #07090c;
-  border-top: 2px solid #222d3b;
-  border-bottom: 2px solid #222d3b;
-  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.9), 0 4px 16px rgba(0, 0, 0, 0.4);
+  background: #050709;
+  border-top: 2.5px solid #2a3545;
+  border-bottom: 2.5px solid #2a3545;
+  box-shadow: inset 0 3px 12px rgba(0, 0, 0, 0.95), 0 6px 20px rgba(0, 0, 0, 0.5);
 }
 
 .sprocket-hole {
-  width: 11px;
-  height: 7px;
+  width: 13px;
+  height: 8px;
   background: #000000;
-  border: 1px solid #334458;
+  border: 1px solid #334356;
   border-radius: 2px;
+  box-shadow: inset 0 1.5px 3px rgba(0, 0, 0, 1), 0 1px 0 rgba(255, 255, 255, 0.08);
   flex-shrink: 0;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.95);
 }
 
-.film-frame {
-  background: #0e1219;
-  border-left: 2px solid #1f2a37;
-  border-right: 2px solid #1f2a37;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+.film-frame-window {
+  background: linear-gradient(180deg, #101620 0%, #0c1017 100%);
+  border: 1.5px solid #243242;
+  border-radius: 4px;
+  box-shadow: inset 0 1px 6px rgba(0, 0, 0, 0.9), 0 2px 8px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s ease;
+}
+
+.film-frame-window:hover {
+  border-color: #40bcf4;
+  background: linear-gradient(180deg, #141c29 0%, #0e141e 100%);
+  box-shadow: inset 0 1px 6px rgba(0, 0, 0, 0.8), 0 0 12px rgba(64, 188, 244, 0.15);
+}
+
+.frame-divider {
+  width: 10px;
+  background: #050709;
+  border-left: 1.5px solid #161e29;
+  border-right: 1.5px solid #161e29;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.frame-divider::after {
+  content: "";
+  width: 2px;
+  height: 14px;
+  background: #40bcf4;
+  opacity: 0.35;
+  border-radius: 1px;
 }
