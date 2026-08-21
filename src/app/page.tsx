@@ -259,10 +259,10 @@ export default function Home() {
             )}
           </div>
 
-          {/* Right Column: Clean Minimalist Icon-Based "How It Works" Visual (~25% taller with placeholder films) */}
+          {/* Right Column: Clean Minimalist Icon-Based "How It Works" Visual (30% larger cover images) */}
           <div className="lg:col-span-6 flex items-center justify-center">
-            <div className="w-full bg-[#1c242c] border border-[#28323e] rounded-[6px] p-6 sm:p-7 shadow-xl">
-              <div className="flex flex-col gap-5">
+            <div className="w-full bg-[#1c242c] border border-[#28323e] rounded-[6px] p-6 sm:p-8 shadow-xl">
+              <div className="flex flex-col gap-6">
                 
                 {/* Widget Header */}
                 <div className="flex items-center justify-between text-[11px] font-mono uppercase text-text-muted border-b border-[#28323e] pb-2.5">
@@ -270,34 +270,34 @@ export default function Home() {
                   <Clock className="w-3.5 h-3.5 text-text-secondary" />
                 </div>
 
-                {/* Clean Icon Flow (Film -> Actor -> Film -> ... -> End) */}
-                <div className="flex items-center justify-center gap-2 sm:gap-3 py-2">
-                  {/* 1. Start Film (Oppenheimer placeholder) */}
-                  <div className="flex flex-col items-center gap-1.5 w-18 sm:w-20">
-                    <div className="w-16 h-22 sm:w-18 sm:h-26 rounded-[4px] bg-[#222b35] border border-[#28323e] overflow-hidden shadow-sm relative">
-                      <Image src="https://image.tmdb.org/t/p/w185/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg" alt="Oppenheimer" fill className="object-cover" />
+                {/* Clean Icon Flow (30% larger cover images: Dil Chahta Hai -> Cast -> Film -> Oppenheimer) */}
+                <div className="flex items-center justify-center gap-2 sm:gap-3.5 py-2">
+                  {/* 1. Start Film (Dil Chahta Hai) */}
+                  <div className="flex flex-col items-center gap-2 w-20 sm:w-24">
+                    <div className="w-20 h-28 sm:w-24 sm:h-34 rounded-[4px] bg-[#222b35] border border-[#28323e] overflow-hidden shadow-md relative">
+                      <Image src="https://image.tmdb.org/t/p/w185/c6Cicaf2FFmfcInfsbPTxMLk5CS.jpg" alt="Dil Chahta Hai" fill className="object-cover" />
                     </div>
-                    <span className="text-[10px] font-bold text-white text-center truncate max-w-full">Oppenheimer</span>
+                    <span className="text-[11px] font-bold text-white text-center truncate max-w-full">Dil Chahta Hai</span>
                     <span className="text-[9px] uppercase font-bold text-text-secondary">Start</span>
                   </div>
 
-                  <span className="text-text-muted text-xs">&rarr;</span>
+                  <span className="text-text-muted text-xs sm:text-sm">&rarr;</span>
 
                   {/* 2. Actor / Crew (Unnamed) */}
-                  <div className="flex flex-col items-center gap-1.5 w-14 sm:w-16">
-                    <div className="w-14 h-22 sm:w-16 sm:h-26 rounded-[4px] bg-[#222b35] border border-[#28323e] flex flex-col items-center justify-center text-white shadow-sm gap-1.5">
-                      <Users className="w-5 h-5 text-text-secondary" />
+                  <div className="flex flex-col items-center gap-2 w-16 sm:w-20">
+                    <div className="w-16 h-28 sm:w-20 sm:h-34 rounded-[4px] bg-[#222b35] border border-[#28323e] flex flex-col items-center justify-center text-white shadow-sm gap-2">
+                      <Users className="w-6 h-6 sm:w-7 sm:h-7 opacity-75 text-text-secondary" />
                       <span className="text-[9px] font-mono uppercase text-text-muted">Cast</span>
                     </div>
                     <span className="text-[10px] font-medium text-text-secondary text-center">Cast / Crew</span>
                   </div>
 
-                  <span className="text-text-muted text-xs">&rarr;</span>
+                  <span className="text-text-muted text-xs sm:text-sm">&rarr;</span>
 
                   {/* 3. Next Film (Unnamed) */}
-                  <div className="flex flex-col items-center gap-1.5 w-14 sm:w-16">
-                    <div className="w-14 h-22 sm:w-16 sm:h-26 rounded-[4px] bg-[#222b35] border border-[#28323e] flex flex-col items-center justify-center text-white shadow-sm gap-1.5">
-                      <Film className="w-5 h-5 text-text-secondary" />
+                  <div className="flex flex-col items-center gap-2 w-16 sm:w-20">
+                    <div className="w-16 h-28 sm:w-20 sm:h-34 rounded-[4px] bg-[#222b35] border border-[#28323e] flex flex-col items-center justify-center text-white shadow-sm gap-2">
+                      <Film className="w-6 h-6 sm:w-7 sm:h-7 opacity-75 text-text-secondary" />
                       <span className="text-[9px] font-mono uppercase text-text-muted">Film</span>
                     </div>
                     <span className="text-[10px] font-medium text-text-secondary text-center">Film</span>
@@ -305,12 +305,12 @@ export default function Home() {
 
                   <span className="text-text-muted text-sm font-mono tracking-widest px-0.5">&middot;&middot;&middot;</span>
 
-                  {/* 4. End Film (Inception placeholder with green outline) */}
-                  <div className="flex flex-col items-center gap-1.5 w-18 sm:w-20">
-                    <div className="w-16 h-22 sm:w-18 sm:h-26 rounded-[4px] bg-[#222b35] border-2 border-[#00e054] overflow-hidden shadow-[0_0_16px_rgba(0,224,84,0.3)] relative">
-                      <Image src="https://image.tmdb.org/t/p/w185/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg" alt="Inception" fill className="object-cover" />
+                  {/* 4. End Film (Oppenheimer with green outline) */}
+                  <div className="flex flex-col items-center gap-2 w-20 sm:w-24">
+                    <div className="w-20 h-28 sm:w-24 sm:h-34 rounded-[4px] bg-[#222b35] border-2 border-[#00e054] overflow-hidden shadow-[0_0_18px_rgba(0,224,84,0.35)] relative">
+                      <Image src="https://image.tmdb.org/t/p/w185/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg" alt="Oppenheimer" fill className="object-cover" />
                     </div>
-                    <span className="text-[10px] font-bold text-[#00e054] text-center truncate max-w-full">Inception</span>
+                    <span className="text-[11px] font-bold text-[#00e054] text-center truncate max-w-full">Oppenheimer</span>
                     <span className="text-[9px] uppercase font-bold text-[#00e054]">End</span>
                   </div>
                 </div>
