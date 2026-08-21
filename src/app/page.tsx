@@ -82,122 +82,134 @@ export default function Home() {
 
   return (
     <div className="flex flex-col w-full">
-      {/* DYNAMIC MOTION STRIP */}
-      <div className="w-full bg-[#0e1114]/90 border-b border-[#28323e]/80 py-2.5 overflow-hidden select-none -mx-4 px-4 sm:-mx-6 sm:px-6 mb-6">
-        <div className="motion-ticker flex items-center gap-8 text-xs font-semibold whitespace-nowrap">
+      {/* DYNAMIC MOTION STRIP (Below Header - Off-White / Light Grey) */}
+      <div className="w-full bg-[#f1f3f6] border-b border-[#d8dde6] py-2 overflow-hidden select-none -mx-4 px-4 sm:-mx-6 sm:px-6 mb-6">
+        <div className="motion-ticker flex items-center gap-7 text-xs font-semibold whitespace-nowrap text-[#111827]">
           {/* Quotes loop 1 */}
-          <div className="flex items-center gap-8">
-            <span className="flex items-center gap-2">
-              <span className="text-base">🍿</span>
-              <span className="text-[#00e054] font-bold">&ldquo;May the Force be with you.&rdquo;</span>
-              <span className="text-text-muted text-[11px] font-normal">— Star Wars</span>
+          <div className="flex items-center gap-7">
+            <span className="flex items-center gap-1.5">
+              <span className="text-sm">🍿</span>
+              <span className="text-[#059669] font-black">&ldquo;May the Force be with you.&rdquo;</span>
             </span>
-            <span className="text-text-muted text-xs opacity-40">✦</span>
-            <span className="flex items-center gap-2">
-              <span className="text-base">🎬</span>
-              <span className="text-[#40bcf4] font-bold">&ldquo;Here&apos;s looking at you, kid.&rdquo;</span>
-              <span className="text-text-muted text-[11px] font-normal">— Casablanca</span>
+            <span className="text-[#94a3b8] text-xs">✦</span>
+            <span className="flex items-center gap-1.5">
+              <span className="text-sm">🚂</span>
+              <span className="text-[#d97706] font-black">&ldquo;Bade bade deshon mein aisi choti choti baatein hoti rehti hain, Senorita.&rdquo;</span>
             </span>
-            <span className="text-text-muted text-xs opacity-40">✦</span>
-            <span className="flex items-center gap-2">
-              <span className="text-base">🕶️</span>
-              <span className="text-[#ff8000] font-bold">&ldquo;I&apos;ll make him an offer he can&apos;t refuse.&rdquo;</span>
-              <span className="text-text-muted text-[11px] font-normal">— The Godfather</span>
+            <span className="text-[#94a3b8] text-xs">✦</span>
+            <span className="flex items-center gap-1.5">
+              <span className="text-sm">🎬</span>
+              <span className="text-[#0284c7] font-black">&ldquo;Here&apos;s looking at you, kid.&rdquo;</span>
             </span>
-            <span className="text-text-muted text-xs opacity-40">✦</span>
-            <span className="flex items-center gap-2">
-              <span className="text-base">🪐</span>
-              <span className="text-[#a855f7] font-bold">&ldquo;Do not go gentle into that good night.&rdquo;</span>
-              <span className="text-text-muted text-[11px] font-normal">— Interstellar</span>
+            <span className="text-[#94a3b8] text-xs">✦</span>
+            <span className="flex items-center gap-1.5">
+              <span className="text-sm">🕶️</span>
+              <span className="text-[#7c3aed] font-black">&ldquo;Don ko pakadna mushkil hi nahi, namumkin hai.&rdquo;</span>
             </span>
-            <span className="text-text-muted text-xs opacity-40">✦</span>
-            <span className="flex items-center gap-2">
-              <span className="text-base">⚡</span>
-              <span className="text-[#ffd700] font-bold">&ldquo;You&apos;re a wizard, Harry.&rdquo;</span>
-              <span className="text-text-muted text-[11px] font-normal">— Harry Potter</span>
+            <span className="text-[#94a3b8] text-xs">✦</span>
+            <span className="flex items-center gap-1.5">
+              <span className="text-sm">🪐</span>
+              <span className="text-[#4f46e5] font-black">&ldquo;Do not go gentle into that good night.&rdquo;</span>
             </span>
-            <span className="text-text-muted text-xs opacity-40">✦</span>
-            <span className="flex items-center gap-2">
-              <span className="text-base">🚗</span>
-              <span className="text-[#f43f5e] font-bold">&ldquo;Roads? Where we&apos;re going, we don&apos;t need roads.&rdquo;</span>
-              <span className="text-text-muted text-[11px] font-normal">— Back to the Future</span>
+            <span className="text-[#94a3b8] text-xs">✦</span>
+            <span className="flex items-center gap-1.5">
+              <span className="text-sm">💫</span>
+              <span className="text-[#e11d48] font-black">&ldquo;Picture abhi baaki hai mere dost!&rdquo;</span>
             </span>
-            <span className="text-text-muted text-xs opacity-40">✦</span>
-            <span className="flex items-center gap-2">
-              <span className="text-base">🍫</span>
-              <span className="text-[#00e054] font-bold">&ldquo;Life is like a box of chocolates.&rdquo;</span>
-              <span className="text-text-muted text-[11px] font-normal">— Forrest Gump</span>
+            <span className="text-[#94a3b8] text-xs">✦</span>
+            <span className="flex items-center gap-1.5">
+              <span className="text-sm">⚡</span>
+              <span className="text-[#b45309] font-black">&ldquo;You&apos;re a wizard, Harry.&rdquo;</span>
             </span>
-            <span className="text-text-muted text-xs opacity-40">✦</span>
-            <span className="flex items-center gap-2">
-              <span className="text-base">🚪</span>
-              <span className="text-[#40bcf4] font-bold">&ldquo;Here&apos;s Johnny!&rdquo;</span>
-              <span className="text-text-muted text-[11px] font-normal">— The Shining</span>
+            <span className="text-[#94a3b8] text-xs">✦</span>
+            <span className="flex items-center gap-1.5">
+              <span className="text-sm">👑</span>
+              <span className="text-[#0d9488] font-black">&ldquo;Mogambo khush hua.&rdquo;</span>
             </span>
-            <span className="text-text-muted text-xs opacity-40">✦</span>
-            <span className="flex items-center gap-2">
-              <span className="text-base">👑</span>
-              <span className="text-[#ff8000] font-bold">&ldquo;To infinity and beyond!&rdquo;</span>
-              <span className="text-text-muted text-[11px] font-normal">— Toy Story</span>
+            <span className="text-[#94a3b8] text-xs">✦</span>
+            <span className="flex items-center gap-1.5">
+              <span className="text-sm">🚗</span>
+              <span className="text-[#dc2626] font-black">&ldquo;Roads? Where we&apos;re going, we don&apos;t need roads.&rdquo;</span>
             </span>
-            <span className="text-text-muted text-xs opacity-40">✦</span>
+            <span className="text-[#94a3b8] text-xs">✦</span>
+            <span className="flex items-center gap-1.5">
+              <span className="text-sm">🍫</span>
+              <span className="text-[#059669] font-black">&ldquo;Life is like a box of chocolates.&rdquo;</span>
+            </span>
+            <span className="text-[#94a3b8] text-xs">✦</span>
+            <span className="flex items-center gap-1.5">
+              <span className="text-sm">🚪</span>
+              <span className="text-[#0284c7] font-black">&ldquo;Here&apos;s Johnny!&rdquo;</span>
+            </span>
+            <span className="text-[#94a3b8] text-xs">✦</span>
+            <span className="flex items-center gap-1.5">
+              <span className="text-sm">🌌</span>
+              <span className="text-[#7c3aed] font-black">&ldquo;To infinity and beyond!&rdquo;</span>
+            </span>
+            <span className="text-[#94a3b8] text-xs">✦</span>
           </div>
           {/* Quotes loop 2 */}
-          <div className="flex items-center gap-8">
-            <span className="flex items-center gap-2">
-              <span className="text-base">🍿</span>
-              <span className="text-[#00e054] font-bold">&ldquo;May the Force be with you.&rdquo;</span>
-              <span className="text-text-muted text-[11px] font-normal">— Star Wars</span>
+          <div className="flex items-center gap-7">
+            <span className="flex items-center gap-1.5">
+              <span className="text-sm">🍿</span>
+              <span className="text-[#059669] font-black">&ldquo;May the Force be with you.&rdquo;</span>
             </span>
-            <span className="text-text-muted text-xs opacity-40">✦</span>
-            <span className="flex items-center gap-2">
-              <span className="text-base">🎬</span>
-              <span className="text-[#40bcf4] font-bold">&ldquo;Here&apos;s looking at you, kid.&rdquo;</span>
-              <span className="text-text-muted text-[11px] font-normal">— Casablanca</span>
+            <span className="text-[#94a3b8] text-xs">✦</span>
+            <span className="flex items-center gap-1.5">
+              <span className="text-sm">🚂</span>
+              <span className="text-[#d97706] font-black">&ldquo;Bade bade deshon mein aisi choti choti baatein hoti rehti hain, Senorita.&rdquo;</span>
             </span>
-            <span className="text-text-muted text-xs opacity-40">✦</span>
-            <span className="flex items-center gap-2">
-              <span className="text-base">🕶️</span>
-              <span className="text-[#ff8000] font-bold">&ldquo;I&apos;ll make him an offer he can&apos;t refuse.&rdquo;</span>
-              <span className="text-text-muted text-[11px] font-normal">— The Godfather</span>
+            <span className="text-[#94a3b8] text-xs">✦</span>
+            <span className="flex items-center gap-1.5">
+              <span className="text-sm">🎬</span>
+              <span className="text-[#0284c7] font-black">&ldquo;Here&apos;s looking at you, kid.&rdquo;</span>
             </span>
-            <span className="text-text-muted text-xs opacity-40">✦</span>
-            <span className="flex items-center gap-2">
-              <span className="text-base">🪐</span>
-              <span className="text-[#a855f7] font-bold">&ldquo;Do not go gentle into that good night.&rdquo;</span>
-              <span className="text-text-muted text-[11px] font-normal">— Interstellar</span>
+            <span className="text-[#94a3b8] text-xs">✦</span>
+            <span className="flex items-center gap-1.5">
+              <span className="text-sm">🕶️</span>
+              <span className="text-[#7c3aed] font-black">&ldquo;Don ko pakadna mushkil hi nahi, namumkin hai.&rdquo;</span>
             </span>
-            <span className="text-text-muted text-xs opacity-40">✦</span>
-            <span className="flex items-center gap-2">
-              <span className="text-base">⚡</span>
-              <span className="text-[#ffd700] font-bold">&ldquo;You&apos;re a wizard, Harry.&rdquo;</span>
-              <span className="text-text-muted text-[11px] font-normal">— Harry Potter</span>
+            <span className="text-[#94a3b8] text-xs">✦</span>
+            <span className="flex items-center gap-1.5">
+              <span className="text-sm">🪐</span>
+              <span className="text-[#4f46e5] font-black">&ldquo;Do not go gentle into that good night.&rdquo;</span>
             </span>
-            <span className="text-text-muted text-xs opacity-40">✦</span>
-            <span className="flex items-center gap-2">
-              <span className="text-base">🚗</span>
-              <span className="text-[#f43f5e] font-bold">&ldquo;Roads? Where we&apos;re going, we don&apos;t need roads.&rdquo;</span>
-              <span className="text-text-muted text-[11px] font-normal">— Back to the Future</span>
+            <span className="text-[#94a3b8] text-xs">✦</span>
+            <span className="flex items-center gap-1.5">
+              <span className="text-sm">💫</span>
+              <span className="text-[#e11d48] font-black">&ldquo;Picture abhi baaki hai mere dost!&rdquo;</span>
             </span>
-            <span className="text-text-muted text-xs opacity-40">✦</span>
-            <span className="flex items-center gap-2">
-              <span className="text-base">🍫</span>
-              <span className="text-[#00e054] font-bold">&ldquo;Life is like a box of chocolates.&rdquo;</span>
-              <span className="text-text-muted text-[11px] font-normal">— Forrest Gump</span>
+            <span className="text-[#94a3b8] text-xs">✦</span>
+            <span className="flex items-center gap-1.5">
+              <span className="text-sm">⚡</span>
+              <span className="text-[#b45309] font-black">&ldquo;You&apos;re a wizard, Harry.&rdquo;</span>
             </span>
-            <span className="text-text-muted text-xs opacity-40">✦</span>
-            <span className="flex items-center gap-2">
-              <span className="text-base">🚪</span>
-              <span className="text-[#40bcf4] font-bold">&ldquo;Here&apos;s Johnny!&rdquo;</span>
-              <span className="text-text-muted text-[11px] font-normal">— The Shining</span>
+            <span className="text-[#94a3b8] text-xs">✦</span>
+            <span className="flex items-center gap-1.5">
+              <span className="text-sm">👑</span>
+              <span className="text-[#0d9488] font-black">&ldquo;Mogambo khush hua.&rdquo;</span>
             </span>
-            <span className="text-text-muted text-xs opacity-40">✦</span>
-            <span className="flex items-center gap-2">
-              <span className="text-base">👑</span>
-              <span className="text-[#ff8000] font-bold">&ldquo;To infinity and beyond!&rdquo;</span>
-              <span className="text-text-muted text-[11px] font-normal">— Toy Story</span>
+            <span className="text-[#94a3b8] text-xs">✦</span>
+            <span className="flex items-center gap-1.5">
+              <span className="text-sm">🚗</span>
+              <span className="text-[#dc2626] font-black">&ldquo;Roads? Where we&apos;re going, we don&apos;t need roads.&rdquo;</span>
             </span>
-            <span className="text-text-muted text-xs opacity-40">✦</span>
+            <span className="text-[#94a3b8] text-xs">✦</span>
+            <span className="flex items-center gap-1.5">
+              <span className="text-sm">🍫</span>
+              <span className="text-[#059669] font-black">&ldquo;Life is like a box of chocolates.&rdquo;</span>
+            </span>
+            <span className="text-[#94a3b8] text-xs">✦</span>
+            <span className="flex items-center gap-1.5">
+              <span className="text-sm">🚪</span>
+              <span className="text-[#0284c7] font-black">&ldquo;Here&apos;s Johnny!&rdquo;</span>
+            </span>
+            <span className="text-[#94a3b8] text-xs">✦</span>
+            <span className="flex items-center gap-1.5">
+              <span className="text-sm">🌌</span>
+              <span className="text-[#7c3aed] font-black">&ldquo;To infinity and beyond!&rdquo;</span>
+            </span>
+            <span className="text-[#94a3b8] text-xs">✦</span>
           </div>
         </div>
       </div>
