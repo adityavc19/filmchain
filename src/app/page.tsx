@@ -11,7 +11,8 @@ import {
   ArrowRight, 
   Compass, 
   Users, 
-  Clock 
+  Clock,
+  User
 } from 'lucide-react';
 import { posterUrl } from '@/lib/tmdb';
 
@@ -36,6 +37,8 @@ interface CommunityPuzzle {
   title: string | null;
   play_count: number;
   created_at: string;
+  start_film_id?: number;
+  end_film_id?: number;
   startFilm?: FilmInfo | null;
   endFilm?: FilmInfo | null;
 }
@@ -46,8 +49,9 @@ export default function Home() {
   const [communityPuzzles, setCommunityPuzzles] = useState<CommunityPuzzle[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Pre-game brief modal state
-  const [showBrief, setShowBrief] = useState(false);
+  // Pre-game brief modal states
+  const [showDailyBrief, setShowDailyBrief] = useState(false);
+  const [selectedCommunityPuzzle, setSelectedCommunityPuzzle] = useState<CommunityPuzzle | null>(null);
 
   useEffect(() => {
     Promise.all([
@@ -64,9 +68,14 @@ export default function Home() {
     });
   }, []);
 
-  function handleStartGame() {
+  function handleStartDailyGame() {
     if (!puzzle) return;
     router.push(`/game/${puzzle.date}`);
+  }
+
+  function handleStartCommunityGame() {
+    if (!selectedCommunityPuzzle) return;
+    router.push(`/game/custom/${selectedCommunityPuzzle.id}`);
   }
 
   return (
@@ -80,14 +89,14 @@ export default function Home() {
           
           {/* Eyebrow Badge */}
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1c242c] border border-[#28323e] text-[#9ab0c2] text-xs font-semibold tracking-wide uppercase">
-            <Sparkles className="w-3.5 h-3.5 text-accent" />
+            <Sparkles className="w-3.5 h-3.5 text-text-secondary" />
             <span>A Game for Cinephiles</span>
           </div>
 
           {/* Clean 2-Line Headline */}
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.08]">
             Two films. <br />
-            <span className="text-accent">How do you connect them?</span>
+            <span className="text-[#9ab0c2]">How do you connect them?</span>
           </h1>
 
           {/* Clean Concise Subtitle */}
@@ -95,10 +104,10 @@ export default function Home() {
             Trace the shortest path through shared actors, directors, and writers.
           </p>
 
-          {/* Primary Action Button */}
+          {/* Primary Action Button (Clean Solid White) */}
           <div className="pt-2 w-full sm:w-auto">
             <button
-              onClick={() => setShowBrief(true)}
+              onClick={() => setShowDailyBrief(true)}
               className="flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-[4px] bg-white hover:bg-[#e6e6e6] text-[#0e1114] font-black text-sm uppercase tracking-wider transition-all shadow-md cursor-pointer"
             >
               <Clapperboard className="w-4 h-4" />
@@ -160,10 +169,10 @@ export default function Home() {
 
                 {/* 4. End Film */}
                 <div className="flex flex-col items-center gap-1.5">
-                  <div className="w-12 h-14 rounded bg-[#222b35] border border-accent/50 flex items-center justify-center text-accent shadow-sm">
-                    <Film className="w-5 h-5 text-accent" />
+                  <div className="w-12 h-14 rounded bg-[#222b35] border border-[#28323e] flex items-center justify-center text-white shadow-sm">
+                    <Film className="w-5 h-5 text-white" />
                   </div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-accent">End</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-white">End</span>
                 </div>
               </div>
 
@@ -172,20 +181,14 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 2. COMMUNITY CHALLENGES */}
+      {/* 2. COMMUNITY CHALLENGES (Single Clean CTA at bottom) */}
       {communityPuzzles.length > 0 && (
         <section className="flex flex-col gap-4 w-full">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Compass className="w-5 h-5 text-[#40bcf4]" />
-              <h2 className="text-base sm:text-lg font-bold uppercase tracking-wider text-white">
-                Community Challenges
-              </h2>
-            </div>
-            <Link href="/community" className="text-xs text-accent hover:underline font-semibold flex items-center gap-1">
-              <span>View all games ({communityPuzzles.length})</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
+          <div className="flex items-center gap-2">
+            <Compass className="w-5 h-5 text-[#40bcf4]" />
+            <h2 className="text-base sm:text-lg font-bold uppercase tracking-wider text-white">
+              Community Challenges
+            </h2>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -215,21 +218,21 @@ export default function Home() {
                   </div>
                 </div>
 
-                <Link
-                  href={`/game/custom/${cp.id}`}
-                  className="w-full py-2 bg-[#222b35] hover:bg-accent hover:text-[#0e1114] text-text-primary text-[11px] font-bold uppercase tracking-wider rounded text-center border border-[#28323e] transition-colors flex items-center justify-center gap-1.5"
+                <button
+                  onClick={() => setSelectedCommunityPuzzle(cp)}
+                  className="w-full py-2 bg-[#222b35] hover:bg-[#2c3744] text-white text-[11px] font-bold uppercase tracking-wider rounded text-center border border-[#28323e] transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                 >
-                  <Clapperboard className="w-3.5 h-3.5" />
+                  <Clapperboard className="w-3.5 h-3.5 text-text-secondary" />
                   <span>Play Challenge</span>
-                </Link>
+                </button>
               </div>
             ))}
           </div>
 
-          <div className="flex justify-center pt-1">
+          <div className="flex justify-center pt-2">
             <Link
               href="/community"
-              className="px-5 py-2 rounded bg-[#1c242c] hover:bg-[#222b35] border border-[#28323e] text-xs font-bold text-text-secondary hover:text-white uppercase tracking-wider transition-colors flex items-center gap-1.5"
+              className="px-6 py-2.5 rounded bg-[#1c242c] hover:bg-[#222b35] border border-[#28323e] text-xs font-bold text-white uppercase tracking-wider transition-colors flex items-center gap-2 shadow-sm"
             >
               <span>Explore All Community Games</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -242,7 +245,7 @@ export default function Home() {
       <section className="w-full">
         <div className="bg-[#1c242c] border border-[#28323e] p-5 sm:p-6 rounded-[4px] w-full flex flex-col sm:flex-row items-center justify-between gap-5 shadow">
           <div className="flex flex-col gap-1">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-[#a78bfa]">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">
               Creator Studio
             </span>
             <h3 className="text-base sm:text-lg font-bold text-white">
@@ -254,7 +257,7 @@ export default function Home() {
           </div>
           <Link
             href="/create"
-            className="px-5 py-2.5 bg-accent hover:bg-accent-dim text-[#0e1114] text-xs font-bold uppercase tracking-wider rounded transition-colors whitespace-nowrap shadow-[0_0_16px_rgba(0,224,84,0.25)] flex items-center gap-1.5 cursor-pointer"
+            className="px-5 py-2.5 bg-white hover:bg-[#e6e6e6] text-[#0e1114] text-xs font-bold uppercase tracking-wider rounded transition-colors whitespace-nowrap shadow-md flex items-center gap-1.5 cursor-pointer"
           >
             <Sparkles className="w-4 h-4" />
             <span>Create a Game</span>
@@ -262,10 +265,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* DEDICATED PRE-GAME BRIEF MODAL */}
-      {showBrief && puzzle && (
+      {/* 4. TODAY'S CHALLENGE PRE-GAME BRIEF MODAL */}
+      {showDailyBrief && puzzle && (
         <div 
-          onClick={() => setShowBrief(false)}
+          onClick={() => setShowDailyBrief(false)}
           className="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4"
         >
           <div 
@@ -274,13 +277,13 @@ export default function Home() {
           >
             <div className="flex items-center justify-between border-b border-[#28323e] pb-3">
               <div className="flex items-center gap-2">
-                <Clapperboard className="w-5 h-5 text-accent" />
+                <Clapperboard className="w-5 h-5 text-white" />
                 <h2 className="text-base font-bold text-white uppercase tracking-wider">
                   Today&apos;s Challenge
                 </h2>
               </div>
               <button 
-                onClick={() => setShowBrief(false)}
+                onClick={() => setShowDailyBrief(false)}
                 className="text-text-muted hover:text-white text-lg cursor-pointer"
               >
                 ✕
@@ -310,7 +313,7 @@ export default function Home() {
 
               {/* End Movie */}
               <div className="flex flex-col items-center gap-1.5">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-accent bg-[#222b35] px-2 py-0.5 rounded border border-[#28323e]">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-white bg-[#222b35] px-2 py-0.5 rounded border border-[#28323e]">
                   END
                 </span>
                 <div className="w-16 h-24 relative rounded overflow-hidden bg-[#222b35] border border-[#28323e]">
@@ -326,8 +329,8 @@ export default function Home() {
             {/* Mission Instructions */}
             <div className="flex flex-col gap-2 text-xs text-text-secondary bg-[#0e1114] p-3.5 rounded border border-[#28323e] leading-relaxed">
               <div className="flex items-start gap-2">
-                <span className="text-accent font-bold">1.</span>
-                <span>Connect <strong className="text-white">{puzzle.startFilm.title}</strong> to <strong className="text-accent">{puzzle.endFilm.title}</strong>.</span>
+                <span className="text-white font-bold">1.</span>
+                <span>Connect <strong className="text-white">{puzzle.startFilm.title}</strong> to <strong className="text-white">{puzzle.endFilm.title}</strong>.</span>
               </div>
               <div className="flex items-start gap-2">
                 <span className="text-[#40bcf4] font-bold">2.</span>
@@ -339,10 +342,115 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Launch Action */}
+            {/* Launch Action (Clean Solid White) */}
             <button
-              onClick={handleStartGame}
-              className="w-full py-3.5 bg-accent hover:bg-accent-dim text-[#0e1114] font-black text-sm uppercase tracking-wider rounded-[4px] transition-all shadow-[0_0_20px_rgba(0,224,84,0.3)] cursor-pointer flex items-center justify-center gap-2"
+              onClick={handleStartDailyGame}
+              className="w-full py-3.5 bg-white hover:bg-[#e6e6e6] text-[#0e1114] font-black text-sm uppercase tracking-wider rounded-[4px] transition-all shadow-lg cursor-pointer flex items-center justify-center gap-2"
+            >
+              <span>START GAME</span>
+              <ArrowRight className="w-4 h-4 stroke-[3]" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 5. COMMUNITY CHALLENGE PRE-GAME BRIEF MODAL */}
+      {selectedCommunityPuzzle && (
+        <div 
+          onClick={() => setSelectedCommunityPuzzle(null)}
+          className="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4"
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="bg-[#1c242c] border border-[#28323e] p-6 sm:p-8 rounded-[4px] max-w-lg w-full flex flex-col gap-6 shadow-2xl text-left animate-in zoom-in-95 duration-200"
+          >
+            <div className="flex items-center justify-between border-b border-[#28323e] pb-3">
+              <div className="flex items-center gap-2">
+                <Compass className="w-5 h-5 text-[#40bcf4]" />
+                <h2 className="text-base font-bold text-white uppercase tracking-wider">
+                  {selectedCommunityPuzzle.title || 'Community Challenge'}
+                </h2>
+              </div>
+              <button 
+                onClick={() => setSelectedCommunityPuzzle(null)}
+                className="text-text-muted hover:text-white text-lg cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Creator Badge */}
+            {selectedCommunityPuzzle.creator_handle && (
+              <div className="flex items-center gap-2 text-xs text-text-secondary">
+                <User className="w-3.5 h-3.5 text-text-secondary" />
+                <span>Created by <strong className="text-white font-mono">@{selectedCommunityPuzzle.creator_handle}</strong></span>
+              </div>
+            )}
+
+            {/* Revealed Movie Pair */}
+            <div className="flex items-center justify-center gap-6 py-4 bg-[#0e1114] rounded-[4px] border border-[#28323e]">
+              {/* Start Movie */}
+              <div className="flex flex-col items-center gap-1.5">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary bg-[#222b35] px-2 py-0.5 rounded border border-[#28323e]">
+                  START
+                </span>
+                <div className="w-16 h-24 relative rounded overflow-hidden bg-[#222b35] border border-[#28323e]">
+                  {selectedCommunityPuzzle.startFilm?.poster_path ? (
+                    <Image src={posterUrl(selectedCommunityPuzzle.startFilm.poster_path, 'w185')} alt={selectedCommunityPuzzle.startFilm.title || ''} fill className="object-cover" />
+                  ) : <div className="w-full h-full flex items-center justify-center text-xs">🎬</div>}
+                </div>
+                <span className="text-xs font-bold text-white max-w-[110px] truncate text-center">
+                  {selectedCommunityPuzzle.startFilm?.title || 'Start Movie'}
+                </span>
+                {selectedCommunityPuzzle.startFilm?.year && (
+                  <span className="text-[10px] text-text-secondary font-mono">{selectedCommunityPuzzle.startFilm.year}</span>
+                )}
+              </div>
+
+              <div className="flex flex-col items-center gap-1 text-text-muted font-light">
+                <span className="text-xl">⟷</span>
+                <span className="text-[9px] font-mono uppercase font-bold text-text-muted">Connect</span>
+              </div>
+
+              {/* End Movie */}
+              <div className="flex flex-col items-center gap-1.5">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-white bg-[#222b35] px-2 py-0.5 rounded border border-[#28323e]">
+                  END
+                </span>
+                <div className="w-16 h-24 relative rounded overflow-hidden bg-[#222b35] border border-[#28323e]">
+                  {selectedCommunityPuzzle.endFilm?.poster_path ? (
+                    <Image src={posterUrl(selectedCommunityPuzzle.endFilm.poster_path, 'w185')} alt={selectedCommunityPuzzle.endFilm.title || ''} fill className="object-cover" />
+                  ) : <div className="w-full h-full flex items-center justify-center text-xs">🎬</div>}
+                </div>
+                <span className="text-xs font-bold text-white max-w-[110px] truncate text-center">
+                  {selectedCommunityPuzzle.endFilm?.title || 'End Movie'}
+                </span>
+                {selectedCommunityPuzzle.endFilm?.year && (
+                  <span className="text-[10px] text-text-secondary font-mono">{selectedCommunityPuzzle.endFilm.year}</span>
+                )}
+              </div>
+            </div>
+
+            {/* Mission Instructions */}
+            <div className="flex flex-col gap-2 text-xs text-text-secondary bg-[#0e1114] p-3.5 rounded border border-[#28323e] leading-relaxed">
+              <div className="flex items-start gap-2">
+                <span className="text-white font-bold">1.</span>
+                <span>Connect <strong className="text-white">{selectedCommunityPuzzle.startFilm?.title}</strong> to <strong className="text-white">{selectedCommunityPuzzle.endFilm?.title}</strong>.</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-[#40bcf4] font-bold">2.</span>
+                <span>Compete by doing it in the fastest time and with the fewest clicks.</span>
+              </div>
+              <div className="flex items-start gap-2 text-text-muted text-[11px] pt-1 border-t border-[#28323e]/50">
+                <span className="text-text-muted font-bold">3.</span>
+                <span>Timer begins when you click <strong>START GAME</strong>.</span>
+              </div>
+            </div>
+
+            {/* Launch Action (Clean Solid White) */}
+            <button
+              onClick={handleStartCommunityGame}
+              className="w-full py-3.5 bg-white hover:bg-[#e6e6e6] text-[#0e1114] font-black text-sm uppercase tracking-wider rounded-[4px] transition-all shadow-lg cursor-pointer flex items-center justify-center gap-2"
             >
               <span>START GAME</span>
               <ArrowRight className="w-4 h-4 stroke-[3]" />

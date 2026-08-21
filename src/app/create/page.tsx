@@ -200,11 +200,11 @@ export default function CreatePuzzlePage() {
               <span className="text-xs font-bold text-white max-w-[100px] truncate">{startMovie?.title}</span>
             </div>
 
-            <span className="text-xl text-accent font-light">⟷</span>
+            <span className="text-xl text-text-muted font-light">⟷</span>
 
             <div className="flex flex-col items-center gap-1.5">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-accent">Target</span>
-              <div className="w-16 h-24 relative rounded overflow-hidden bg-bg-card border-2 border-accent">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">End</span>
+              <div className="w-16 h-24 relative rounded overflow-hidden bg-bg-card border border-border">
                 {targetMovie?.poster_path ? (
                   <Image src={posterUrl(targetMovie.poster_path, 'w185')} alt={targetMovie.title} fill className="object-cover" />
                 ) : <div className="w-full h-full flex items-center justify-center text-xs">🎬</div>}
@@ -225,7 +225,7 @@ export default function CreatePuzzlePage() {
               />
               <button
                 onClick={copyLink}
-                className="px-4 py-2.5 bg-accent text-bg-primary text-xs font-bold uppercase tracking-wider rounded hover:bg-accent-dim transition-colors cursor-pointer whitespace-nowrap"
+                className="px-4 py-2.5 bg-white text-bg-primary text-xs font-bold uppercase tracking-wider rounded hover:bg-[#e6e6e6] transition-colors cursor-pointer whitespace-nowrap shadow-sm"
               >
                 {copied ? '✓ Copied' : 'Copy Link'}
               </button>
@@ -260,7 +260,7 @@ export default function CreatePuzzlePage() {
             <span className="text-xs text-text-secondary">
               Creator Handle: <strong className="text-white font-mono">@{handle}</strong>
             </span>
-            <Link href={`/profile/${handle}`} className="text-xs text-accent hover:underline font-semibold">
+            <Link href={`/profile/${handle}`} className="text-xs text-text-secondary hover:text-white font-medium">
               My Profile &rarr;
             </Link>
           </div>
@@ -280,7 +280,7 @@ export default function CreatePuzzlePage() {
                 {startMovie && (
                   <button
                     onClick={() => { setStartMovie(null); setStartQuery(''); }}
-                    className="text-[11px] text-accent hover:underline cursor-pointer font-normal"
+                    className="text-[11px] text-text-secondary hover:text-white cursor-pointer font-normal"
                   >
                     Change
                   </button>
@@ -298,7 +298,7 @@ export default function CreatePuzzlePage() {
                   <div className="flex flex-col min-w-0">
                     <span className="font-bold text-sm text-white truncate">{startMovie.title}</span>
                     {startMovie.year && <span className="text-xs text-text-secondary">{startMovie.year}</span>}
-                    <span className="text-[10px] text-accent font-semibold uppercase tracking-wider mt-1">✓ Selected as Start</span>
+                    <span className="text-[10px] text-text-secondary font-semibold uppercase tracking-wider mt-1">✓ Selected as Start</span>
                   </div>
                 </div>
               ) : (
@@ -309,7 +309,7 @@ export default function CreatePuzzlePage() {
                     placeholder="Search movie title (e.g. Inception)..."
                     value={startQuery}
                     onChange={(e) => setStartQuery(e.target.value)}
-                    className="w-full bg-bg-secondary border border-border text-white text-xs px-3.5 py-2.5 rounded focus:outline-none focus:border-accent placeholder:text-text-muted"
+                    className="w-full bg-bg-secondary border border-border text-white text-xs px-3.5 py-2.5 rounded focus:outline-none focus:border-text-secondary placeholder:text-text-muted"
                   />
                   {isSearchingStart && (
                     <span className="absolute right-3 top-2.5 text-xs text-text-muted animate-pulse">Searching...</span>
@@ -346,12 +346,12 @@ export default function CreatePuzzlePage() {
 
             {/* 2. TARGET MOVIE */}
             <div ref={targetRef} className="flex flex-col gap-3 relative">
-              <label className="text-xs font-bold uppercase tracking-wider text-accent flex items-center justify-between">
+              <label className="text-xs font-bold uppercase tracking-wider text-text-secondary flex items-center justify-between">
                 <span>2. Target Movie (Goal)</span>
                 {targetMovie && (
                   <button
                     onClick={() => { setTargetMovie(null); setTargetQuery(''); }}
-                    className="text-[11px] text-accent hover:underline cursor-pointer font-normal"
+                    className="text-[11px] text-text-secondary hover:text-white cursor-pointer font-normal"
                   >
                     Change
                   </button>
@@ -360,8 +360,8 @@ export default function CreatePuzzlePage() {
 
               {targetMovie ? (
                 /* Selected Target Movie Card */
-                <div className="flex items-center gap-3.5 bg-bg-secondary p-3.5 rounded border-2 border-accent shadow-[0_0_12px_rgba(0,224,84,0.2)]">
-                  <div className="w-14 h-20 relative rounded overflow-hidden bg-bg-card border border-accent flex-shrink-0">
+                <div className="flex items-center gap-3.5 bg-bg-secondary p-3.5 rounded border border-border">
+                  <div className="w-14 h-20 relative rounded overflow-hidden bg-bg-card border border-border flex-shrink-0">
                     {targetMovie.poster_path ? (
                       <Image src={posterUrl(targetMovie.poster_path, 'w185')} alt={targetMovie.title} fill className="object-cover" />
                     ) : <div className="w-full h-full flex items-center justify-center text-xs">🎬</div>}
@@ -369,7 +369,7 @@ export default function CreatePuzzlePage() {
                   <div className="flex flex-col min-w-0">
                     <span className="font-bold text-sm text-white truncate">{targetMovie.title}</span>
                     {targetMovie.year && <span className="text-xs text-text-secondary">{targetMovie.year}</span>}
-                    <span className="text-[10px] text-accent font-semibold uppercase tracking-wider mt-1">🎯 Goal Target</span>
+                    <span className="text-[10px] text-text-secondary font-semibold uppercase tracking-wider mt-1">🎯 Goal Target</span>
                   </div>
                 </div>
               ) : (
@@ -380,7 +380,7 @@ export default function CreatePuzzlePage() {
                     placeholder="Search target movie (e.g. Oppenheimer)..."
                     value={targetQuery}
                     onChange={(e) => setTargetQuery(e.target.value)}
-                    className="w-full bg-bg-secondary border border-border text-white text-xs px-3.5 py-2.5 rounded focus:outline-none focus:border-accent placeholder:text-text-muted"
+                    className="w-full bg-bg-secondary border border-border text-white text-xs px-3.5 py-2.5 rounded focus:outline-none focus:border-text-secondary placeholder:text-text-muted"
                   />
                   {isSearchingTarget && (
                     <span className="absolute right-3 top-2.5 text-xs text-text-muted animate-pulse">Searching...</span>
@@ -426,7 +426,7 @@ export default function CreatePuzzlePage() {
               placeholder={startMovie && targetMovie ? `${startMovie.title} → ${targetMovie.title}` : 'e.g. Nolan Cinematic Trail'}
               value={customTitle}
               onChange={(e) => setCustomTitle(e.target.value)}
-              className="bg-bg-secondary border border-border text-white text-xs px-3.5 py-2.5 rounded focus:outline-none focus:border-accent placeholder:text-text-muted"
+              className="bg-bg-secondary border border-border text-white text-xs px-3.5 py-2.5 rounded focus:outline-none focus:border-text-secondary placeholder:text-text-muted"
             />
           </div>
 
@@ -436,7 +436,7 @@ export default function CreatePuzzlePage() {
             disabled={!startMovie || !targetMovie || isCreating}
             className={`w-full py-3.5 rounded-[4px] font-black text-xs uppercase tracking-wider transition-all cursor-pointer ${
               startMovie && targetMovie && !isCreating
-                ? 'bg-accent text-bg-primary hover:bg-accent-dim shadow-[0_0_16px_rgba(0,224,84,0.35)]'
+                ? 'bg-white text-bg-primary hover:bg-[#e6e6e6] shadow-md'
                 : 'bg-bg-secondary text-text-muted border border-border cursor-not-allowed'
             }`}
           >

@@ -197,6 +197,7 @@
 
       // Pre-game briefing popup
       const [showBrief, setShowBrief] = useState(false);
+      const [selectedCommunityPuzzle, setSelectedCommunityPuzzle] = useState(null);
 
       // Game state
       const [customPuzzleId, setCustomPuzzleId] = useState(null);
@@ -840,7 +841,7 @@
                   <circle cx="16" cy="16" r="1.5" fill="#ff8000" />
                   <circle cx="24" cy="21" r="2" fill="#00e054" />
                 </svg>
-                <span className="font-black tracking-tight text-lg text-white group-hover:text-accent transition-colors">
+                <span className="font-black tracking-tight text-lg text-white group-hover:text-[#9ab0c2] transition-colors">
                   FILMTRACE
                 </span>
               </div>
@@ -861,7 +862,7 @@
                   }}
                   className={`flex items-center gap-1.5 py-1 transition-colors cursor-pointer ${screen === 'create' ? 'text-white font-bold' : 'text-text-secondary hover:text-white'}`}
                 >
-                  <span className="text-accent"><Icons.Plus /></span>
+                  <span className="text-text-secondary"><Icons.Plus /></span>
                   <span>Create Game</span>
                 </button>
                 <button
@@ -879,9 +880,9 @@
                 <button
                   onClick={() => openProfile(handle)}
                   title={`Profile (@${handle})`}
-                  className={`w-8 h-8 rounded-full bg-[#1c242c] hover:bg-[#2c3744] text-text-secondary hover:text-white border border-[#28323e] flex items-center justify-center transition-colors cursor-pointer ml-1 ${screen === 'profile' ? 'border-accent text-white' : ''}`}
+                  className={`w-8 h-8 rounded-full bg-[#1c242c] hover:bg-[#2c3744] text-text-secondary hover:text-white border border-[#28323e] flex items-center justify-center transition-colors cursor-pointer ml-1 ${screen === 'profile' ? 'border-text-secondary text-white' : ''}`}
                 >
-                  <span className="text-accent"><Icons.User /></span>
+                  <span className="text-text-secondary"><Icons.User /></span>
                 </button>
               </nav>
             </div>
@@ -902,14 +903,14 @@
                     
                     {/* Eyebrow Badge */}
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1c242c] border border-[#28323e] text-[#9ab0c2] text-xs font-semibold tracking-wide uppercase">
-                      <span className="text-accent"><Icons.Sparkles /></span>
+                      <span className="text-text-secondary"><Icons.Sparkles /></span>
                       <span>A Game for Cinephiles</span>
                     </div>
 
                     {/* Clean 2-Line Headline */}
                     <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.08]">
                       Two films. <br />
-                      <span className="text-accent">How do you connect them?</span>
+                      <span className="text-[#9ab0c2]">How do you connect them?</span>
                     </h1>
 
                     {/* Clean Concise Subtitle */}
@@ -917,7 +918,7 @@
                       Trace the shortest path through shared actors, directors, and writers.
                     </p>
 
-                    {/* Primary CTA */}
+                    {/* Primary CTA (Clean Solid White) */}
                     <div className="pt-2 w-full sm:w-auto">
                       <button
                         onClick={() => setShowBrief(true)}
@@ -980,10 +981,10 @@
 
                           {/* 4. End Film */}
                           <div className="flex flex-col items-center gap-1.5">
-                            <div className="w-12 h-14 rounded bg-[#222b35] border border-accent/50 flex items-center justify-center text-accent shadow-sm">
-                              <span className="text-accent"><Icons.Film /></span>
+                            <div className="w-12 h-14 rounded bg-[#222b35] border border-[#28323e] flex items-center justify-center text-white shadow-sm">
+                              <span className="text-white"><Icons.Film /></span>
                             </div>
-                            <span className="text-[10px] font-bold uppercase tracking-wider text-accent">End</span>
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-white">End</span>
                           </div>
                         </div>
 
@@ -995,17 +996,11 @@
                 {/* 2. COMMUNITY CHALLENGES */}
                 {communityPuzzles.length > 0 && (
                   <section className="flex flex-col gap-4 w-full">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="text-[#40bcf4]"><Icons.Compass /></span>
-                        <h2 className="text-base sm:text-lg font-bold uppercase tracking-wider text-white">
-                          Community Challenges
-                        </h2>
-                      </div>
-                      <button onClick={() => { setScreen('community'); }} className="text-xs text-accent hover:underline font-semibold flex items-center gap-1 cursor-pointer">
-                        <span>View all games ({communityPuzzles.length})</span>
-                        <Icons.ArrowRight />
-                      </button>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[#40bcf4]"><Icons.Compass /></span>
+                      <h2 className="text-base sm:text-lg font-bold uppercase tracking-wider text-white">
+                        Community Challenges
+                      </h2>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -1036,8 +1031,8 @@
                           </div>
 
                           <button
-                            onClick={() => loadCustomPuzzlePair(cp.start_film_id, cp.end_film_id, cp.creator_handle, cp.title)}
-                            className="w-full py-2 bg-[#222b35] hover:bg-accent hover:text-[#0e1114] text-text-primary text-[11px] font-bold uppercase tracking-wider rounded text-center border border-[#28323e] transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                            onClick={() => setSelectedCommunityPuzzle(cp)}
+                            className="w-full py-2 bg-[#222b35] hover:bg-[#2c3744] text-white text-[11px] font-bold uppercase tracking-wider rounded text-center border border-[#28323e] transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                           >
                             <Icons.Clapperboard />
                             <span>Play Challenge</span>
@@ -1046,10 +1041,10 @@
                       ))}
                     </div>
 
-                    <div className="flex justify-center pt-1">
+                    <div className="flex justify-center pt-2">
                       <button
                         onClick={() => { setScreen('community'); }}
-                        className="px-5 py-2 rounded bg-[#1c242c] hover:bg-[#222b35] border border-[#28323e] text-xs font-bold text-text-secondary hover:text-white uppercase tracking-wider transition-colors flex items-center gap-1.5 cursor-pointer"
+                        className="px-6 py-2.5 rounded bg-[#1c242c] hover:bg-[#222b35] border border-[#28323e] text-xs font-bold text-white uppercase tracking-wider transition-colors flex items-center gap-2 shadow-sm cursor-pointer"
                       >
                         <span>Explore All Community Games</span>
                         <Icons.ArrowRight />
@@ -1062,7 +1057,7 @@
                 <section className="w-full">
                   <div className="bg-[#1c242c] border border-[#28323e] p-5 sm:p-6 rounded-[4px] w-full flex flex-col sm:flex-row items-center justify-between gap-5 shadow">
                     <div className="flex flex-col gap-1">
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-[#a78bfa]">
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">
                         Creator Studio
                       </span>
                       <h3 className="text-base sm:text-lg font-bold text-white">
@@ -1074,102 +1069,13 @@
                     </div>
                     <button
                       onClick={() => { setCreatedPuzzleResult(null); setScreen('create'); }}
-                      className="px-5 py-2.5 bg-accent hover:bg-accent-dim text-[#0e1114] text-xs font-bold uppercase tracking-wider rounded transition-colors whitespace-nowrap shadow-[0_0_16px_rgba(0,224,84,0.25)] flex items-center gap-1.5 cursor-pointer"
+                      className="px-5 py-2.5 bg-white hover:bg-[#e6e6e6] text-[#0e1114] text-xs font-bold uppercase tracking-wider rounded transition-colors whitespace-nowrap shadow-md flex items-center gap-1.5 cursor-pointer"
                     >
                       <Icons.Sparkles />
                       <span>Create a Game</span>
                     </button>
                   </div>
                 </section>
-
-                {/* PRE-GAME BRIEF MODAL */}
-                {showBrief && todayPuzzle && (
-                  <div 
-                    onClick={() => setShowBrief(false)}
-                    className="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4"
-                  >
-                    <div 
-                      onClick={(e) => e.stopPropagation()}
-                      className="bg-[#1c242c] border border-[#28323e] p-6 sm:p-8 rounded-[4px] max-w-lg w-full flex flex-col gap-6 shadow-2xl text-left animate-in zoom-in-95 duration-200"
-                    >
-                      <div className="flex items-center justify-between border-b border-[#28323e] pb-3">
-                        <div className="flex items-center gap-2">
-                          <span className="text-accent"><Icons.Clapperboard /></span>
-                          <h2 className="text-base font-bold text-white uppercase tracking-wider">
-                            Today's Challenge
-                          </h2>
-                        </div>
-                        <button 
-                          onClick={() => setShowBrief(false)}
-                          className="text-text-muted hover:text-white text-lg cursor-pointer"
-                        >
-                          ✕
-                        </button>
-                      </div>
-
-                      {/* Revealed Movie Pair */}
-                      <div className="flex items-center justify-center gap-6 py-4 bg-[#0e1114] rounded-[4px] border border-[#28323e]">
-                        {/* Start Movie */}
-                        <div className="flex flex-col items-center gap-1.5">
-                          <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary bg-[#222b35] px-2 py-0.5 rounded border border-[#28323e]">
-                            START
-                          </span>
-                          <div className="w-16 h-24 relative rounded overflow-hidden bg-[#222b35] border border-[#28323e]">
-                            {todayPuzzle.startFilm.poster_path ? (
-                              <img src={posterUrl(todayPuzzle.startFilm.poster_path, 'w185')} alt={todayPuzzle.startFilm.title} className="w-full h-full object-cover" />
-                            ) : <div className="w-full h-full flex items-center justify-center text-xs">🎬</div>}
-                          </div>
-                          <span className="text-xs font-bold text-white max-w-[110px] truncate text-center">{todayPuzzle.startFilm.title}</span>
-                          <span className="text-[10px] text-text-secondary font-mono">{todayPuzzle.startFilm.year}</span>
-                        </div>
-
-                        <div className="flex flex-col items-center gap-1 text-text-muted font-light">
-                          <span className="text-xl">⟷</span>
-                          <span className="text-[9px] font-mono uppercase font-bold text-text-muted">Connect</span>
-                        </div>
-
-                        {/* End Movie */}
-                        <div className="flex flex-col items-center gap-1.5">
-                          <span className="text-[10px] font-bold uppercase tracking-widest text-accent bg-[#222b35] px-2 py-0.5 rounded border border-[#28323e]">
-                            END
-                          </span>
-                          <div className="w-16 h-24 relative rounded overflow-hidden bg-[#222b35] border border-[#28323e]">
-                            {todayPuzzle.endFilm.poster_path ? (
-                              <img src={posterUrl(todayPuzzle.endFilm.poster_path, 'w185')} alt={todayPuzzle.endFilm.title} className="w-full h-full object-cover" />
-                            ) : <div className="w-full h-full flex items-center justify-center text-xs">🎬</div>}
-                          </div>
-                          <span className="text-xs font-bold text-white max-w-[110px] truncate text-center">{todayPuzzle.endFilm.title}</span>
-                          <span className="text-[10px] text-text-secondary font-mono">{todayPuzzle.endFilm.year}</span>
-                        </div>
-                      </div>
-
-                      {/* Mission Instructions */}
-                      <div className="flex flex-col gap-2 text-xs text-text-secondary bg-[#0e1114] p-3.5 rounded border border-[#28323e] leading-relaxed">
-                        <div className="flex items-start gap-2">
-                          <span className="text-accent font-bold">1.</span>
-                          <span>Connect <strong className="text-white">{todayPuzzle.startFilm.title}</strong> to <strong className="text-accent">{todayPuzzle.endFilm.title}</strong>.</span>
-                        </div>
-                        <div className="flex items-start gap-2">
-                          <span className="text-[#40bcf4] font-bold">2.</span>
-                          <span>Compete by doing it in the fastest time and with the fewest clicks.</span>
-                        </div>
-                        <div className="flex items-start gap-2 text-text-muted text-[11px] pt-1 border-t border-[#28323e]/50">
-                          <span className="text-text-muted font-bold">3.</span>
-                          <span>Timer begins when you click <strong>START GAME</strong>.</span>
-                        </div>
-                      </div>
-
-                      {/* Launch Action */}
-                      <button
-                        onClick={handleStartDailyGame}
-                        className="w-full py-3.5 bg-accent hover:bg-accent-dim text-[#0e1114] font-black text-sm uppercase tracking-wider rounded-[4px] transition-all shadow-[0_0_20px_rgba(0,224,84,0.3)] cursor-pointer flex items-center justify-center gap-2"
-                      >
-                        <span>START GAME</span>
-                        <Icons.ArrowRight />
-                      </button>
-                    </div>
-                  </div>
-                )}
 
               </div>
             )}
@@ -1194,7 +1100,7 @@
 
                   <button
                     onClick={() => { setCreatedPuzzleResult(null); setScreen('create'); }}
-                    className="px-5 py-2.5 bg-accent hover:bg-accent-dim text-[#0e1114] text-xs font-bold uppercase tracking-wider rounded transition-colors whitespace-nowrap shadow-[0_0_16px_rgba(0,224,84,0.25)] flex items-center gap-1.5 cursor-pointer"
+                    className="px-5 py-2.5 bg-white hover:bg-[#e6e6e6] text-[#0e1114] text-xs font-bold uppercase tracking-wider rounded transition-colors whitespace-nowrap shadow-md flex items-center gap-1.5 cursor-pointer"
                   >
                     <Icons.Sparkles />
                     <span>+ Create Game</span>
@@ -1210,7 +1116,7 @@
                       placeholder="Search by movie title or creator (@username)..."
                       value={commSearch}
                       onChange={(e) => setCommSearch(e.target.value)}
-                      className="w-full bg-[#0e1114] border border-[#28323e] text-white text-xs pl-9 pr-8 py-2.5 rounded focus:outline-none focus:border-accent placeholder:text-text-muted"
+                      className="w-full bg-[#0e1114] border border-[#28323e] text-white text-xs pl-9 pr-8 py-2.5 rounded focus:outline-none focus:border-text-secondary placeholder:text-text-muted"
                     />
                     {commSearch && (
                       <button
@@ -1246,7 +1152,7 @@
                         </p>
                         <button
                           onClick={() => { setCreatedPuzzleResult(null); setScreen('create'); }}
-                          className="mt-2 px-5 py-2 bg-accent text-[#0e1114] text-xs font-bold uppercase tracking-wider rounded hover:bg-accent-dim transition-colors cursor-pointer"
+                          className="mt-2 px-5 py-2 bg-white text-[#0e1114] text-xs font-bold uppercase tracking-wider rounded hover:bg-[#e6e6e6] transition-colors cursor-pointer"
                         >
                           Create the First One
                         </button>
@@ -1284,7 +1190,7 @@
                               {cp.creator_handle && (
                                 <button
                                   onClick={() => openProfile(cp.creator_handle)}
-                                  className="text-[11px] text-text-secondary hover:text-accent font-mono truncate text-left cursor-pointer"
+                                  className="text-[11px] text-text-secondary hover:text-white font-mono truncate text-left cursor-pointer"
                                 >
                                   by @{cp.creator_handle}
                                 </button>
@@ -1298,8 +1204,8 @@
                           </div>
 
                           <button
-                            onClick={() => loadCustomPuzzlePair(cp.start_film_id, cp.end_film_id, cp.creator_handle, cp.title)}
-                            className="w-full py-2 bg-[#222b35] hover:bg-accent hover:text-[#0e1114] text-text-primary text-[11px] font-bold uppercase tracking-wider rounded text-center border border-[#28323e] transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                            onClick={() => setSelectedCommunityPuzzle(cp)}
+                            className="w-full py-2 bg-[#222b35] hover:bg-[#2c3744] text-white text-[11px] font-bold uppercase tracking-wider rounded text-center border border-[#28323e] transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                           >
                             <Icons.Clapperboard />
                             <span>Play Challenge</span>
@@ -1316,7 +1222,7 @@
             {screen === 'create' && (
               <div className="flex flex-col items-center gap-8 max-w-2xl mx-auto w-full py-4 text-center">
                 <div className="flex flex-col items-center gap-2">
-                  <span className="text-xs font-bold uppercase tracking-widest text-accent bg-accent/10 px-3 py-1 rounded border border-accent/20">
+                  <span className="text-xs font-bold uppercase tracking-widest text-text-secondary bg-[#1c242c] px-3 py-1 rounded border border-[#28323e]">
                     Studio
                   </span>
                   <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
@@ -1352,7 +1258,7 @@
                       <span className="text-xl text-text-muted font-light">⟷</span>
 
                       <div className="flex flex-col items-center gap-1.5">
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-accent">Target</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">End</span>
                         <div className="w-14 h-20 relative rounded overflow-hidden bg-[#222b35] border border-[#28323e]">
                           {createdPuzzleResult.endFilm?.poster_path && (
                             <img src={posterUrl(createdPuzzleResult.endFilm.poster_path, 'w185')} alt={createdPuzzleResult.endFilm.title} className="w-full h-full object-cover" />
@@ -1377,7 +1283,7 @@
                             setCopied(true);
                             setTimeout(() => setCopied(false), 2000);
                           }}
-                          className="px-4 py-2.5 bg-accent text-[#0e1114] text-xs font-bold uppercase tracking-wider rounded hover:bg-accent-dim transition-colors cursor-pointer"
+                          className="px-4 py-2.5 bg-white text-[#0e1114] text-xs font-bold uppercase tracking-wider rounded hover:bg-[#e6e6e6] transition-colors cursor-pointer shadow-sm"
                         >
                           {copied ? '✓ Copied' : 'Copy Link'}
                         </button>
@@ -1387,7 +1293,7 @@
                     <div className="flex items-center gap-3 w-full pt-2">
                       <button
                         onClick={() => loadCustomPuzzlePair(createdPuzzleResult.start_film_id, createdPuzzleResult.end_film_id, createdPuzzleResult.creator_handle, createdPuzzleResult.title)}
-                        className="flex-1 py-3 bg-white text-[#0e1114] text-xs font-bold uppercase tracking-wider rounded hover:bg-white/90 transition-colors text-center cursor-pointer font-bold"
+                        className="flex-1 py-3 bg-white text-[#0e1114] text-xs font-bold uppercase tracking-wider rounded hover:bg-[#e6e6e6] transition-colors text-center cursor-pointer font-bold shadow-md"
                       >
                         Play Puzzle Now &rarr;
                       </button>
@@ -1410,7 +1316,7 @@
                       <span className="text-xs text-text-secondary">
                         Creator Handle: <strong className="text-white font-mono">@{handle}</strong>
                       </span>
-                      <button onClick={() => openProfile(handle)} className="text-xs text-accent hover:underline font-semibold cursor-pointer">
+                      <button onClick={() => openProfile(handle)} className="text-xs text-text-secondary hover:text-white font-medium cursor-pointer">
                         My Profile &rarr;
                       </button>
                     </div>
@@ -1428,7 +1334,7 @@
                         <label className="text-xs font-bold uppercase tracking-wider text-text-secondary flex items-center justify-between">
                           <span>1. Start Movie</span>
                           {createStartMovie && (
-                            <button onClick={() => { setCreateStartMovie(null); setStartSearchQuery(''); }} className="text-[11px] text-accent hover:underline cursor-pointer">Change</button>
+                            <button onClick={() => { setCreateStartMovie(null); setStartSearchQuery(''); }} className="text-[11px] text-text-secondary hover:text-white cursor-pointer">Change</button>
                           )}
                         </label>
                         {createStartMovie ? (
@@ -1451,7 +1357,7 @@
                                 setStartSearchQuery(e.target.value);
                                 searchTmdbMovie(e.target.value, true);
                               }}
-                              className="w-full bg-[#0e1114] border border-[#28323e] text-white text-xs px-3.5 py-2.5 rounded focus:outline-none focus:border-accent"
+                              className="w-full bg-[#0e1114] border border-[#28323e] text-white text-xs px-3.5 py-2.5 rounded focus:outline-none focus:border-text-secondary"
                             />
                             {startSearchResults.length > 0 && (
                               <div className="mt-1.5 bg-[#0e1114] border border-[#28323e] rounded shadow-2xl max-h-48 overflow-y-auto">
@@ -1479,10 +1385,10 @@
 
                       {/* Target Film */}
                       <div className="flex flex-col gap-3 relative">
-                        <label className="text-xs font-bold uppercase tracking-wider text-accent flex items-center justify-between">
+                        <label className="text-xs font-bold uppercase tracking-wider text-text-secondary flex items-center justify-between">
                           <span>2. Target Movie</span>
                           {createTargetMovie && (
-                            <button onClick={() => { setCreateTargetMovie(null); setTargetSearchQuery(''); }} className="text-[11px] text-accent hover:underline cursor-pointer">Change</button>
+                            <button onClick={() => { setCreateTargetMovie(null); setTargetSearchQuery(''); }} className="text-[11px] text-text-secondary hover:text-white cursor-pointer">Change</button>
                           )}
                         </label>
                         {createTargetMovie ? (
@@ -1505,7 +1411,7 @@
                                 setTargetSearchQuery(e.target.value);
                                 searchTmdbMovie(e.target.value, false);
                               }}
-                              className="w-full bg-[#0e1114] border border-[#28323e] text-white text-xs px-3.5 py-2.5 rounded focus:outline-none focus:border-accent"
+                              className="w-full bg-[#0e1114] border border-[#28323e] text-white text-xs px-3.5 py-2.5 rounded focus:outline-none focus:border-text-secondary"
                             />
                             {targetSearchResults.length > 0 && (
                               <div className="mt-1.5 bg-[#0e1114] border border-[#28323e] rounded shadow-2xl max-h-48 overflow-y-auto">
@@ -1539,7 +1445,7 @@
                         placeholder={createStartMovie && createTargetMovie ? `${createStartMovie.title} → ${createTargetMovie.title}` : 'e.g. Nolan Cinematic Trail'}
                         value={createTitle}
                         onChange={(e) => setCreateTitle(e.target.value)}
-                        className="bg-[#0e1114] border border-[#28323e] text-white text-xs px-3.5 py-2 rounded focus:outline-none focus:border-accent"
+                        className="bg-[#0e1114] border border-[#28323e] text-white text-xs px-3.5 py-2 rounded focus:outline-none focus:border-text-secondary"
                       />
                     </div>
 
@@ -1548,7 +1454,7 @@
                       disabled={!createStartMovie || !createTargetMovie || isPublishing}
                       className={`w-full py-3.5 rounded-[4px] font-black text-xs uppercase tracking-wider transition-all cursor-pointer ${
                         createStartMovie && createTargetMovie && !isPublishing
-                          ? 'bg-accent text-[#0e1114] hover:bg-accent-dim shadow-[0_0_16px_rgba(0,224,84,0.35)]'
+                          ? 'bg-white text-[#0e1114] hover:bg-[#e6e6e6] shadow-md'
                           : 'bg-[#0e1114] text-text-muted border border-[#28323e] cursor-not-allowed'
                       }`}
                     >
@@ -1591,7 +1497,7 @@
                           </button>
                           <button
                             onClick={() => { setCreatedPuzzleResult(null); setScreen('create'); }}
-                            className="px-4 py-2 bg-accent hover:bg-accent-dim text-[#0e1114] text-xs font-bold uppercase tracking-wider rounded transition-colors cursor-pointer"
+                            className="px-4 py-2 bg-white hover:bg-[#e6e6e6] text-[#0e1114] text-xs font-bold uppercase tracking-wider rounded transition-colors cursor-pointer shadow-md"
                           >
                             + Create Game
                           </button>
@@ -1607,7 +1513,7 @@
                       </div>
                       <div className="bg-[#1c242c] border border-[#28323e] p-4 rounded-[4px]">
                         <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary block">Best Time</span>
-                        <span className="font-mono text-2xl font-bold text-accent mt-1 block">
+                        <span className="font-mono text-2xl font-bold text-white mt-1 block">
                           {profileData.bestTime !== null ? `${Math.floor(profileData.bestTime / 60)}:${String(profileData.bestTime % 60).padStart(2, '0')}` : '—'}
                         </span>
                       </div>
@@ -1630,7 +1536,7 @@
                           Created Puzzles ({profileData.puzzles.length})
                         </h2>
                         {profileData.username === handle && (
-                          <button onClick={() => { setCreatedPuzzleResult(null); setScreen('create'); }} className="text-xs text-accent hover:underline font-semibold cursor-pointer">
+                          <button onClick={() => { setCreatedPuzzleResult(null); setScreen('create'); }} className="text-xs text-text-secondary hover:text-white font-medium cursor-pointer">
                             + Create New
                           </button>
                         )}
@@ -1657,7 +1563,7 @@
                               <div className="flex items-center gap-2 pt-2 border-t border-[#28323e]">
                                 <button
                                   onClick={() => loadCustomPuzzlePair(p.start_film_id, p.end_film_id, p.creator_handle, p.title)}
-                                  className="flex-1 py-1.5 bg-accent text-[#0e1114] text-xs font-bold uppercase tracking-wider rounded cursor-pointer hover:bg-accent-dim"
+                                  className="flex-1 py-1.5 bg-white text-[#0e1114] text-xs font-bold uppercase tracking-wider rounded cursor-pointer hover:bg-[#e6e6e6]"
                                 >
                                   Play Puzzle &rarr;
                                 </button>
@@ -1676,7 +1582,7 @@
                         </div>
                       ) : (
                         <div className="bg-[#1c242c] border border-[#28323e] p-6 rounded text-center text-text-muted text-xs">
-                          No custom puzzles created yet. <button onClick={() => { setCreatedPuzzleResult(null); setScreen('create'); }} className="text-accent underline font-semibold ml-1 cursor-pointer">Create the first one!</button>
+                          No custom puzzles created yet. <button onClick={() => { setCreatedPuzzleResult(null); setScreen('create'); }} className="text-white underline font-semibold ml-1 cursor-pointer">Create the first one!</button>
                         </div>
                       )}
                     </div>
@@ -1702,14 +1608,14 @@
                             type="text"
                             value={editUsernameInput}
                             onChange={(e) => setEditUsernameInput(e.target.value)}
-                            className="w-full bg-[#0e1114] border border-[#28323e] text-white text-xs pl-7 pr-3 py-2 rounded focus:outline-none focus:border-accent font-mono"
+                            className="w-full bg-[#0e1114] border border-[#28323e] text-white text-xs pl-7 pr-3 py-2 rounded focus:outline-none focus:border-text-secondary font-mono"
                           />
                         </div>
                       </div>
 
                       <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#28323e]">
-                        <button onClick={() => setIsEditingProfile(false)} className="px-3 py-1.5 text-xs text-text-secondary">Cancel</button>
-                        <button onClick={handleSaveUsername} className="px-4 py-1.5 bg-accent text-[#0e1114] font-bold text-xs rounded hover:bg-accent-dim cursor-pointer">Save Username</button>
+                        <button onClick={() => setIsEditingProfile(false)} className="px-3 py-1.5 text-xs text-text-secondary cursor-pointer">Cancel</button>
+                        <button onClick={handleSaveUsername} className="px-4 py-1.5 bg-white text-[#0e1114] font-bold text-xs rounded hover:bg-[#e6e6e6] cursor-pointer">Save Username</button>
                       </div>
                     </div>
                   </div>
@@ -2311,10 +2217,208 @@
 
                 <button
                   onClick={() => setShowBrief(true)}
-                  className="mt-6 w-full max-w-[260px] py-3 bg-accent text-[#0e1114] text-xs font-bold uppercase tracking-wider rounded-[4px] hover:bg-accent-dim transition-all shadow-[0_0_16px_rgba(0,224,84,0.3)] cursor-pointer"
+                  className="mt-6 w-full max-w-[260px] py-3 bg-white text-[#0e1114] text-xs font-bold uppercase tracking-wider rounded-[4px] hover:bg-[#e6e6e6] transition-all shadow-md cursor-pointer"
                 >
                   Play Today's Puzzle
                 </button>
+              </div>
+            )}
+
+            {/* DAILY PRE-GAME BRIEF MODAL */}
+            {showBrief && todayPuzzle && (
+              <div 
+                onClick={() => setShowBrief(false)}
+                className="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4"
+              >
+                <div 
+                  onClick={(e) => e.stopPropagation()}
+                  className="bg-[#1c242c] border border-[#28323e] p-6 sm:p-8 rounded-[4px] max-w-lg w-full flex flex-col gap-6 shadow-2xl text-left animate-in zoom-in-95 duration-200"
+                >
+                  <div className="flex items-center justify-between border-b border-[#28323e] pb-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-white"><Icons.Clapperboard /></span>
+                      <h2 className="text-base font-bold text-white uppercase tracking-wider">
+                        Today's Challenge
+                      </h2>
+                    </div>
+                    <button 
+                      onClick={() => setShowBrief(false)}
+                      className="text-text-muted hover:text-white text-lg cursor-pointer"
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  {/* Revealed Movie Pair */}
+                  <div className="flex items-center justify-center gap-6 py-4 bg-[#0e1114] rounded-[4px] border border-[#28323e]">
+                    {/* Start Movie */}
+                    <div className="flex flex-col items-center gap-1.5">
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary bg-[#222b35] px-2 py-0.5 rounded border border-[#28323e]">
+                        START
+                      </span>
+                      <div className="w-16 h-24 relative rounded overflow-hidden bg-[#222b35] border border-[#28323e]">
+                        {todayPuzzle.startFilm.poster_path ? (
+                          <img src={posterUrl(todayPuzzle.startFilm.poster_path, 'w185')} alt={todayPuzzle.startFilm.title} className="w-full h-full object-cover" />
+                        ) : <div className="w-full h-full flex items-center justify-center text-xs">🎬</div>}
+                      </div>
+                      <span className="text-xs font-bold text-white max-w-[110px] truncate text-center">{todayPuzzle.startFilm.title}</span>
+                      <span className="text-[10px] text-text-secondary font-mono">{todayPuzzle.startFilm.year}</span>
+                    </div>
+
+                    <div className="flex flex-col items-center gap-1 text-text-muted font-light">
+                      <span className="text-xl">⟷</span>
+                      <span className="text-[9px] font-mono uppercase font-bold text-text-muted">Connect</span>
+                    </div>
+
+                    {/* End Movie */}
+                    <div className="flex flex-col items-center gap-1.5">
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-white bg-[#222b35] px-2 py-0.5 rounded border border-[#28323e]">
+                        END
+                      </span>
+                      <div className="w-16 h-24 relative rounded overflow-hidden bg-[#222b35] border border-[#28323e]">
+                        {todayPuzzle.endFilm.poster_path ? (
+                          <img src={posterUrl(todayPuzzle.endFilm.poster_path, 'w185')} alt={todayPuzzle.endFilm.title} className="w-full h-full object-cover" />
+                        ) : <div className="w-full h-full flex items-center justify-center text-xs">🎬</div>}
+                      </div>
+                      <span className="text-xs font-bold text-white max-w-[110px] truncate text-center">{todayPuzzle.endFilm.title}</span>
+                      <span className="text-[10px] text-text-secondary font-mono">{todayPuzzle.endFilm.year}</span>
+                    </div>
+                  </div>
+
+                  {/* Mission Instructions */}
+                  <div className="flex flex-col gap-2 text-xs text-text-secondary bg-[#0e1114] p-3.5 rounded border border-[#28323e] leading-relaxed">
+                    <div className="flex items-start gap-2">
+                      <span className="text-white font-bold">1.</span>
+                      <span>Connect <strong className="text-white">{todayPuzzle.startFilm.title}</strong> to <strong className="text-white">{todayPuzzle.endFilm.title}</strong>.</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <span className="text-[#40bcf4] font-bold">2.</span>
+                      <span>Compete by doing it in the fastest time and with the fewest clicks.</span>
+                    </div>
+                    <div className="flex items-start gap-2 text-text-muted text-[11px] pt-1 border-t border-[#28323e]/50">
+                      <span className="text-text-muted font-bold">3.</span>
+                      <span>Timer begins when you click <strong>START GAME</strong>.</span>
+                    </div>
+                  </div>
+
+                  {/* Launch Action (Clean Solid White) */}
+                  <button
+                    onClick={handleStartDailyGame}
+                    className="w-full py-3.5 bg-white hover:bg-[#e6e6e6] text-[#0e1114] font-black text-sm uppercase tracking-wider rounded-[4px] transition-all shadow-lg cursor-pointer flex items-center justify-center gap-2"
+                  >
+                    <span>START GAME</span>
+                    <Icons.ArrowRight />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* COMMUNITY CHALLENGE PRE-GAME BRIEF MODAL */}
+            {selectedCommunityPuzzle && (
+              <div 
+                onClick={() => setSelectedCommunityPuzzle(null)}
+                className="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4"
+              >
+                <div 
+                  onClick={(e) => e.stopPropagation()}
+                  className="bg-[#1c242c] border border-[#28323e] p-6 sm:p-8 rounded-[4px] max-w-lg w-full flex flex-col gap-6 shadow-2xl text-left animate-in zoom-in-95 duration-200"
+                >
+                  <div className="flex items-center justify-between border-b border-[#28323e] pb-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[#40bcf4]"><Icons.Compass /></span>
+                      <h2 className="text-base font-bold text-white uppercase tracking-wider">
+                        {selectedCommunityPuzzle.title || 'Community Challenge'}
+                      </h2>
+                    </div>
+                    <button 
+                      onClick={() => setSelectedCommunityPuzzle(null)}
+                      className="text-text-muted hover:text-white text-lg cursor-pointer"
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  {/* Creator Badge */}
+                  {selectedCommunityPuzzle.creator_handle && (
+                    <div className="flex items-center gap-2 text-xs text-text-secondary">
+                      <span className="text-text-secondary"><Icons.User /></span>
+                      <span>Created by <strong className="text-white font-mono">@{selectedCommunityPuzzle.creator_handle}</strong></span>
+                    </div>
+                  )}
+
+                  {/* Revealed Movie Pair */}
+                  <div className="flex items-center justify-center gap-6 py-4 bg-[#0e1114] rounded-[4px] border border-[#28323e]">
+                    {/* Start Movie */}
+                    <div className="flex flex-col items-center gap-1.5">
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary bg-[#222b35] px-2 py-0.5 rounded border border-[#28323e]">
+                        START
+                      </span>
+                      <div className="w-16 h-24 relative rounded overflow-hidden bg-[#222b35] border border-[#28323e]">
+                        {selectedCommunityPuzzle.startFilm?.poster_path ? (
+                          <img src={posterUrl(selectedCommunityPuzzle.startFilm.poster_path, 'w185')} alt={selectedCommunityPuzzle.startFilm.title || ''} className="w-full h-full object-cover" />
+                        ) : <div className="w-full h-full flex items-center justify-center text-xs">🎬</div>}
+                      </div>
+                      <span className="text-xs font-bold text-white max-w-[110px] truncate text-center">
+                        {selectedCommunityPuzzle.startFilm?.title || 'Start Movie'}
+                      </span>
+                      {selectedCommunityPuzzle.startFilm?.year && (
+                        <span className="text-[10px] text-text-secondary font-mono">{selectedCommunityPuzzle.startFilm.year}</span>
+                      )}
+                    </div>
+
+                    <div className="flex flex-col items-center gap-1 text-text-muted font-light">
+                      <span className="text-xl">⟷</span>
+                      <span className="text-[9px] font-mono uppercase font-bold text-text-muted">Connect</span>
+                    </div>
+
+                    {/* End Movie */}
+                    <div className="flex flex-col items-center gap-1.5">
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-white bg-[#222b35] px-2 py-0.5 rounded border border-[#28323e]">
+                        END
+                      </span>
+                      <div className="w-16 h-24 relative rounded overflow-hidden bg-[#222b35] border border-[#28323e]">
+                        {selectedCommunityPuzzle.endFilm?.poster_path ? (
+                          <img src={posterUrl(selectedCommunityPuzzle.endFilm.poster_path, 'w185')} alt={selectedCommunityPuzzle.endFilm.title || ''} className="w-full h-full object-cover" />
+                        ) : <div className="w-full h-full flex items-center justify-center text-xs">🎬</div>}
+                      </div>
+                      <span className="text-xs font-bold text-white max-w-[110px] truncate text-center">
+                        {selectedCommunityPuzzle.endFilm?.title || 'End Movie'}
+                      </span>
+                      {selectedCommunityPuzzle.endFilm?.year && (
+                        <span className="text-[10px] text-text-secondary font-mono">{selectedCommunityPuzzle.endFilm.year}</span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Mission Instructions */}
+                  <div className="flex flex-col gap-2 text-xs text-text-secondary bg-[#0e1114] p-3.5 rounded border border-[#28323e] leading-relaxed">
+                    <div className="flex items-start gap-2">
+                      <span className="text-white font-bold">1.</span>
+                      <span>Connect <strong className="text-white">{selectedCommunityPuzzle.startFilm?.title}</strong> to <strong className="text-white">{selectedCommunityPuzzle.endFilm?.title}</strong>.</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <span className="text-[#40bcf4] font-bold">2.</span>
+                      <span>Compete by doing it in the fastest time and with the fewest clicks.</span>
+                    </div>
+                    <div className="flex items-start gap-2 text-text-muted text-[11px] pt-1 border-t border-[#28323e]/50">
+                      <span className="text-text-muted font-bold">3.</span>
+                      <span>Timer begins when you click <strong>START GAME</strong>.</span>
+                    </div>
+                  </div>
+
+                  {/* Launch Action (Clean Solid White) */}
+                  <button
+                    onClick={() => {
+                      const cp = selectedCommunityPuzzle;
+                      setSelectedCommunityPuzzle(null);
+                      loadCustomPuzzlePair(cp.start_film_id, cp.end_film_id, cp.creator_handle, cp.title);
+                    }}
+                    className="w-full py-3.5 bg-white hover:bg-[#e6e6e6] text-[#0e1114] font-black text-sm uppercase tracking-wider rounded-[4px] transition-all shadow-lg cursor-pointer flex items-center justify-center gap-2"
+                  >
+                    <span>START GAME</span>
+                    <Icons.ArrowRight />
+                  </button>
+                </div>
               </div>
             )}
 

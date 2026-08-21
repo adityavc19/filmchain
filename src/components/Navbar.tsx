@@ -18,7 +18,7 @@ export default function Navbar() {
       <div className="max-w-5xl mx-auto px-4 min-h-[56px] flex items-center justify-between flex-wrap gap-2">
         <Link href="/" className="flex items-center gap-2.5 group">
           <Logo variant="connected-frames" size={26} />
-          <span className="font-black tracking-tight text-lg text-white group-hover:text-accent transition-colors">
+          <span className="font-black tracking-tight text-lg text-white group-hover:text-[#9ab0c2] transition-colors">
             FILMTRACE
           </span>
         </Link>
@@ -35,7 +35,7 @@ export default function Navbar() {
             href="/create" 
             className="flex items-center gap-1.5 py-1 text-text-secondary hover:text-white transition-colors"
           >
-            <Plus className="w-3.5 h-3.5 text-accent" />
+            <Plus className="w-3.5 h-3.5 text-text-secondary" />
             <span>Create Game</span>
           </Link>
           <Link 
@@ -52,7 +52,7 @@ export default function Navbar() {
               title={`Profile (@${handle})`}
               className="w-8 h-8 rounded-full bg-[#1c242c] hover:bg-[#28323e] text-text-secondary hover:text-white border border-[#28323e] flex items-center justify-center transition-colors ml-1"
             >
-              <User className="w-4 h-4 text-accent" />
+              <User className="w-4 h-4 text-text-secondary" />
             </Link>
           )}
         </nav>

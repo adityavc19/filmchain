@@ -94,7 +94,7 @@ export default function LeaderboardPage() {
       {todayDate && (
         <Link
           href={`/game/${todayDate}`}
-          className="mt-6 w-full max-w-[260px] py-3 bg-accent text-bg-primary text-xs font-bold uppercase tracking-wider rounded-[4px] hover:bg-accent-dim transition-all shadow-[0_0_16px_rgba(0,224,84,0.3)]"
+          className="mt-6 w-full max-w-[260px] py-3 bg-white text-[#0e1114] text-xs font-bold uppercase tracking-wider rounded-[4px] hover:bg-[#e6e6e6] transition-all shadow-md"
         >
           Play Today&apos;s Puzzle
         </Link>
