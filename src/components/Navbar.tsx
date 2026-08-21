@@ -14,7 +14,7 @@ export default function Navbar() {
   }, []);
 
   return (
-    <header className="border-b border-[#2c3440] bg-[#14181c] sticky top-0 z-50">
+    <header className="border-b border-[#242c35] bg-[#0e1114] sticky top-0 z-50 shadow-md">
       <div className="max-w-5xl mx-auto px-4 min-h-[56px] flex items-center justify-between flex-wrap gap-2">
         <Link href="/" className="flex items-center gap-2.5 group">
           <Logo variant="connected-frames" size={26} />

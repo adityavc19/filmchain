@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Filmtrace — Two films. One trail. How fast can you connect them?</title>
-  <meta name="description" content="Two films. One trail. How fast can you connect them?" />
+  <title>Filmtrace — Two films. How do you connect them?</title>
+  <meta name="description" content="Two films. How do you connect them? Connect movies through shared actors, directors, and crew." />
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- Fonts: Plus Jakarta Sans (Letterboxd-style Heavy Modern Sans) + JetBrains Mono -->
+  <!-- Fonts: Plus Jakarta Sans + JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet" />
@@ -26,10 +26,11 @@
       theme: {
         extend: {
           colors: {
-            'bg-primary': '#14181c',
-            'bg-secondary': '#1b2228',
-            'bg-card': '#202830',
-            'bg-hover': '#2c3440',
+            'bg-header': '#0e1114',
+            'bg-primary': '#161c22',
+            'bg-secondary': '#1c242c',
+            'bg-card': '#222b35',
+            'bg-hover': '#2c3744',
             'accent': '#00e054',
             'accent-dim': '#00b042',
             'accent-orange': '#ff8000',
@@ -38,7 +39,7 @@
             'text-primary': '#ffffff',
             'text-secondary': '#9ab0c2',
             'text-muted': '#667788',
-            'border': '#2c3440',
+            'border': '#28323e',
           },
           fontFamily: {
             sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
@@ -51,7 +52,7 @@
   
   <style>
     body {
-      background-color: #14181c;
+      background-color: #161c22;
       color: #ffffff;
       font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
     }
@@ -64,7 +65,7 @@
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col antialiased selection:bg-accent selection:text-bg-primary">
+<body class="min-h-screen flex flex-col antialiased selection:bg-accent selection:text-[#0e1114]">
   <div id="root" class="min-h-screen flex flex-col"></div>
 
   <script type="text/babel">
@@ -812,8 +813,8 @@
 
       return (
         <div className="flex-1 flex flex-col">
-          {/* Header (Letterboxd-style dark header bar) */}
-          <header className="border-b border-[#2c3440] bg-[#14181c] sticky top-0 z-50">
+          {/* Header (Solid dark bar contrasting against body canvas) */}
+          <header className="border-b border-[#242c35] bg-[#0e1114] sticky top-0 z-50 shadow-md">
             <div className="max-w-5xl mx-auto px-4 min-h-[56px] flex items-center justify-between flex-wrap gap-2">
               <div onClick={() => { setScreen('home'); }} className="flex items-center gap-2.5 cursor-pointer group">
                 <svg width="26" height="26" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -870,12 +871,12 @@
                   <span>Leaderboard</span>
                 </button>
 
-                {/* Profile Pill with Avatar Icon */}
+                {/* Profile Pill */}
                 <button
                   onClick={() => openProfile(handle)}
-                  className={`flex items-center gap-2 py-1 pl-2 pr-2.5 rounded-full bg-[#1e262f] hover:bg-[#2c3440] text-text-secondary hover:text-white border border-[#2c3440] transition-colors cursor-pointer ml-1 ${screen === 'profile' ? 'border-accent text-white' : ''}`}
+                  className={`flex items-center gap-2 py-1 pl-2 pr-2.5 rounded-full bg-[#1c242c] hover:bg-[#2c3744] text-text-secondary hover:text-white border border-[#28323e] transition-colors cursor-pointer ml-1 ${screen === 'profile' ? 'border-accent text-white' : ''}`}
                 >
-                  <div className="w-5 h-5 rounded-full bg-[#2c3440] text-accent flex items-center justify-center text-[10px]">
+                  <div className="w-5 h-5 rounded-full bg-[#222b35] text-accent flex items-center justify-center text-[10px]">
                     <Icons.User />
                   </div>
                   <span className="font-mono text-[11px] text-white">@{handle}</span>
@@ -884,48 +885,48 @@
             </div>
           </header>
 
-          {/* Main Content (Letterboxd deep slate page canvas) */}
+          {/* Main Content */}
           <main className="flex-1 max-w-5xl mx-auto w-full px-4 py-4 box-border flex flex-col gap-12">
 
             {/* SCREEN: HOME */}
             {screen === 'home' && (
-              <div className="flex flex-col items-center gap-14 w-full text-left">
+              <div className="flex flex-col items-center gap-12 w-full text-left">
                 
-                {/* 1. HERO SECTION (Letterboxd-style Heavy Sans Typography) */}
-                <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center pt-2 pb-6 w-full border-b border-[#2c3440]">
+                {/* 1. HERO SECTION */}
+                <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center pt-2 pb-6 w-full border-b border-[#28323e]">
                   
                   {/* Left Column: Headline & Action */}
-                  <div className="lg:col-span-7 flex flex-col gap-5 items-start">
+                  <div className="lg:col-span-6 flex flex-col gap-4 items-start">
                     
                     {/* Eyebrow Badge */}
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1e262f] border border-[#2c3440] text-[#9ab0c2] text-xs font-semibold tracking-wide uppercase">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1c242c] border border-[#28323e] text-[#9ab0c2] text-xs font-semibold tracking-wide uppercase">
                       <span className="text-accent"><Icons.Sparkles /></span>
                       <span>A Game for Cinephiles</span>
                     </div>
 
-                    {/* Heavy Sans Headline */}
+                    {/* Clean 2-Line Headline */}
                     <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.08]">
-                      Two films. One trail. <br />
-                      <span className="text-accent">How fast</span> can you connect them?
+                      Two films. <br />
+                      <span className="text-accent">How do you connect them?</span>
                     </h1>
 
-                    {/* Concise Subtext */}
-                    <p className="text-base sm:text-lg text-text-secondary font-normal leading-relaxed max-w-lg">
-                      Connect movies through shared actors, directors, and crew. Race the clock on the daily puzzle or challenge your friends.
+                    {/* Clean Concise Subtitle */}
+                    <p className="text-sm sm:text-base text-text-secondary font-normal leading-relaxed max-w-md">
+                      Trace the shortest path through shared actors, directors, and writers.
                     </p>
 
                     {/* Primary CTA */}
-                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-1 w-full sm:w-auto">
+                    <div className="pt-2 w-full sm:w-auto">
                       <button
                         onClick={() => setShowBrief(true)}
-                        className="flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-[4px] bg-[#00e054] hover:bg-[#00b042] text-bg-primary font-black text-sm uppercase tracking-wider transition-all shadow-[0_0_20px_rgba(0,224,84,0.25)] cursor-pointer"
+                        className="flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-[4px] bg-[#00e054] hover:bg-[#00b042] text-[#0e1114] font-black text-sm uppercase tracking-wider transition-all shadow-[0_0_20px_rgba(0,224,84,0.25)] cursor-pointer"
                       >
                         <Icons.Clapperboard />
                         <span>Play Today's Puzzle</span>
                       </button>
                     </div>
 
-                    {/* Daily Teaser Strip (Mystery - Unrevealed Pair) */}
+                    {/* Daily Teaser Strip with Dynamic Count */}
                     {todayPuzzle && (
                       <div className="flex items-center gap-3 pt-1 text-xs text-text-muted">
                         <span className="flex items-center gap-1.5 text-text-secondary font-mono">
@@ -935,75 +936,92 @@
                         <span>&middot;</span>
                         <span className="flex items-center gap-1.5 text-text-secondary">
                           <span className="text-[#40bcf4]"><Icons.Users /></span>
-                          1,200+ solvers today
+                          {52 + (todayPuzzle.playerCount || 0)} games played today
                         </span>
                       </div>
                     )}
                   </div>
 
-                  {/* Right Column: Visual Trail Illustration Graphic with Real Movie Reference */}
-                  <div className="lg:col-span-5 flex items-center justify-center relative">
-                    <div className="w-full max-w-md bg-[#1b2228] border border-[#2c3440] rounded-[6px] p-5 shadow-2xl relative overflow-hidden">
+                  {/* Right Column: Multi-Hop "How It Works" Visual Diagram */}
+                  <div className="lg:col-span-6 flex items-center justify-center">
+                    <div className="w-full bg-[#1c242c] border border-[#28323e] rounded-[6px] p-5 shadow-2xl relative overflow-hidden">
                       
                       <div className="flex flex-col gap-4 relative z-10">
-                        <div className="flex items-center justify-between text-[10px] font-mono uppercase text-text-muted border-b border-[#2c3440] pb-2">
-                          <span>TRAIL MECHANIC</span>
-                          <span className="text-accent font-semibold">2 HOPS &middot; 4 CLICKS</span>
+                        <div className="flex items-center justify-between text-[11px] font-mono uppercase text-text-muted border-b border-[#28323e] pb-2">
+                          <span>HOW IT WORKS</span>
+                          <span className="text-text-secondary">THE TRAIL</span>
                         </div>
 
-                        {/* Graphic Flow Layout */}
-                        <div className="flex items-center justify-between gap-2.5">
-                          {/* Film Card 1 */}
-                          <div className="flex flex-col items-center gap-1.5 w-24">
-                            <div className="w-20 h-28 rounded-[4px] bg-[#202830] border border-[#2c3440] flex flex-col items-center justify-center p-2 text-center shadow relative overflow-hidden">
-                              <span className="text-text-muted mb-1"><Icons.Film /></span>
-                              <span className="text-[11px] font-bold text-white leading-tight">The Dark Knight</span>
-                              <span className="text-[9px] text-text-muted font-mono mt-0.5">2008</span>
+                        {/* Multi-Hop Connected Trail (Start -> Person -> Movie -> Person -> Goal) */}
+                        <div className="flex items-center justify-between gap-2 overflow-x-auto hide-scrollbar py-1">
+                          
+                          {/* 1. Start Movie */}
+                          <div className="flex flex-col items-center gap-1 flex-shrink-0 w-20">
+                            <div className="w-18 h-24 rounded-[4px] bg-[#222b35] border border-[#28323e] flex flex-col items-center justify-center p-1.5 text-center shadow">
+                              <span className="text-text-muted mb-0.5"><Icons.Film /></span>
+                              <span className="text-[10px] font-bold text-white leading-tight line-clamp-2">Dark Knight</span>
+                              <span className="text-[8px] text-text-muted font-mono mt-0.5">2008</span>
                             </div>
-                            <span className="text-[9px] font-bold uppercase tracking-wider text-text-secondary bg-[#14181c] px-2 py-0.5 rounded border border-[#2c3440]">
+                            <span className="text-[8px] font-bold uppercase tracking-wider text-text-secondary bg-[#0e1114] px-1.5 py-0.5 rounded border border-[#28323e]">
                               Start
                             </span>
                           </div>
 
-                          {/* Connection Node */}
-                          <div className="flex-1 flex flex-col items-center gap-1">
-                            <div className="flex items-center w-full justify-center relative">
-                              <div className="h-[1.5px] bg-[#2c3440] w-full absolute top-1/2 -translate-y-1/2 z-0"></div>
-                              
-                              <div className="flex items-center gap-1.5 relative z-10 bg-[#1b2228] px-1">
-                                <div className="px-2 py-0.5 rounded bg-[#202830] border border-[#2c3440] text-[10px] font-semibold text-text-primary shadow">
-                                  Christian Bale
-                                </div>
-                              </div>
+                          <span className="text-text-muted text-xs font-mono">&rarr;</span>
+
+                          {/* 2. Person 1 */}
+                          <div className="flex flex-col items-center gap-1 flex-shrink-0">
+                            <div className="px-2 py-1 rounded bg-[#222b35] border border-[#28323e] text-[10px] font-semibold text-text-primary text-center shadow">
+                              Christian Bale
                             </div>
-                            <span className="text-[9px] text-text-muted font-mono">Actor in both</span>
+                            <span className="text-[8px] text-text-muted">Actor</span>
                           </div>
 
-                          {/* Film Card 2 (Neutral border - no green outline) */}
-                          <div className="flex flex-col items-center gap-1.5 w-24">
-                            <div className="w-20 h-28 rounded-[4px] bg-[#202830] border border-[#2c3440] flex flex-col items-center justify-center p-2 text-center shadow relative overflow-hidden">
-                              <span className="text-text-muted mb-1"><Icons.Film /></span>
-                              <span className="text-[11px] font-bold text-white leading-tight">The Prestige</span>
-                              <span className="text-[9px] text-text-muted font-mono mt-0.5">2006</span>
+                          <span className="text-text-muted text-xs font-mono">&rarr;</span>
+
+                          {/* 3. Intermediate Movie */}
+                          <div className="flex flex-col items-center gap-1 flex-shrink-0 w-20">
+                            <div className="w-18 h-24 rounded-[4px] bg-[#222b35] border border-[#28323e] flex flex-col items-center justify-center p-1.5 text-center shadow">
+                              <span className="text-text-muted mb-0.5"><Icons.Film /></span>
+                              <span className="text-[10px] font-bold text-white leading-tight line-clamp-2">The Prestige</span>
+                              <span className="text-[8px] text-text-muted font-mono mt-0.5">2006</span>
                             </div>
-                            <span className="text-[9px] font-bold uppercase tracking-wider text-accent bg-[#14181c] px-2 py-0.5 rounded border border-[#2c3440]">
+                            <span className="text-[8px] font-semibold text-text-muted">Link</span>
+                          </div>
+
+                          <span className="text-text-muted text-xs font-mono">&rarr;</span>
+
+                          {/* 4. Person 2 */}
+                          <div className="flex flex-col items-center gap-1 flex-shrink-0">
+                            <div className="px-2 py-1 rounded bg-[#222b35] border border-[#28323e] text-[10px] font-semibold text-text-primary text-center shadow">
+                              Hugh Jackman
+                            </div>
+                            <span className="text-[8px] text-text-muted">Actor</span>
+                          </div>
+
+                          <span className="text-text-muted text-xs font-mono">&rarr;</span>
+
+                          {/* 5. Goal Movie */}
+                          <div className="flex flex-col items-center gap-1 flex-shrink-0 w-20">
+                            <div className="w-18 h-24 rounded-[4px] bg-[#222b35] border border-[#28323e] flex flex-col items-center justify-center p-1.5 text-center shadow">
+                              <span className="text-text-muted mb-0.5"><Icons.Film /></span>
+                              <span className="text-[10px] font-bold text-white leading-tight line-clamp-2">Prisoners</span>
+                              <span className="text-[8px] text-text-muted font-mono mt-0.5">2013</span>
+                            </div>
+                            <span className="text-[8px] font-bold uppercase tracking-wider text-accent bg-[#0e1114] px-1.5 py-0.5 rounded border border-[#28323e]">
                               Goal
                             </span>
                           </div>
-                        </div>
 
-                        {/* Minimal Rule Note */}
-                        <div className="bg-[#14181c] p-2.5 rounded border border-[#2c3440] text-[11px] text-text-secondary text-center">
-                          Always alternates: <span className="text-white font-mono font-semibold">Film &rarr; Person &rarr; Film &rarr; Person</span>
                         </div>
                       </div>
                     </div>
                   </div>
                 </section>
 
-                {/* 2. COMMUNITY CHALLENGES SECTION (No green borders on target) */}
+                {/* 2. COMMUNITY CHALLENGES */}
                 {communityPuzzles.length > 0 && (
-                  <section className="flex flex-col gap-5 w-full">
+                  <section className="flex flex-col gap-4 w-full">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <span className="text-[#40bcf4]"><Icons.Compass /></span>
@@ -1019,16 +1037,15 @@
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                       {communityPuzzles.map((cp) => (
-                        <div key={cp.id} className="bg-[#1b2228] border border-[#2c3440] p-4 rounded-[4px] flex flex-col justify-between gap-4 shadow hover:border-text-secondary transition-colors">
+                        <div key={cp.id} className="bg-[#1c242c] border border-[#28323e] p-4 rounded-[4px] flex flex-col justify-between gap-4 shadow hover:border-text-secondary transition-colors">
                           <div className="flex items-center gap-3">
-                            <div className="w-11 h-16 relative rounded overflow-hidden bg-[#202830] border border-[#2c3440] flex-shrink-0">
+                            <div className="w-11 h-16 relative rounded overflow-hidden bg-[#222b35] border border-[#28323e] flex-shrink-0">
                               {cp.startFilm?.poster_path ? (
                                 <img src={posterUrl(cp.startFilm.poster_path, 'w185')} alt="" className="w-full h-full object-cover" />
                               ) : <div className="w-full h-full flex items-center justify-center text-xs">🎬</div>}
                             </div>
                             <span className="text-xs font-light text-text-muted">➔</span>
-                            {/* Film B has standard neutral border (no green outline) */}
-                            <div className="w-11 h-16 relative rounded overflow-hidden bg-[#202830] border border-[#2c3440] flex-shrink-0">
+                            <div className="w-11 h-16 relative rounded overflow-hidden bg-[#222b35] border border-[#28323e] flex-shrink-0">
                               {cp.endFilm?.poster_path ? (
                                 <img src={posterUrl(cp.endFilm.poster_path, 'w185')} alt="" className="w-full h-full object-cover" />
                               ) : <div className="w-full h-full flex items-center justify-center text-xs">🎬</div>}
@@ -1047,7 +1064,7 @@
 
                           <button
                             onClick={() => loadCustomPuzzlePair(cp.start_film_id, cp.end_film_id, cp.creator_handle, cp.title)}
-                            className="w-full py-2 bg-[#202830] hover:bg-accent hover:text-bg-primary text-text-primary text-[11px] font-bold uppercase tracking-wider rounded text-center border border-[#2c3440] transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                            className="w-full py-2 bg-[#222b35] hover:bg-accent hover:text-[#0e1114] text-text-primary text-[11px] font-bold uppercase tracking-wider rounded text-center border border-[#28323e] transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                           >
                             <Icons.Clapperboard />
                             <span>Play Challenge</span>
@@ -1060,21 +1077,21 @@
 
                 {/* 3. CREATE PUZZLE STUDIO CALLOUT */}
                 <section className="w-full">
-                  <div className="bg-[#1b2228] border border-[#2c3440] p-6 sm:p-7 rounded-[4px] w-full flex flex-col sm:flex-row items-center justify-between gap-5 shadow">
+                  <div className="bg-[#1c242c] border border-[#28323e] p-5 sm:p-6 rounded-[4px] w-full flex flex-col sm:flex-row items-center justify-between gap-5 shadow">
                     <div className="flex flex-col gap-1">
                       <span className="text-[10px] font-bold uppercase tracking-widest text-[#a78bfa]">
                         Creator Studio
                       </span>
-                      <h3 className="text-lg sm:text-xl font-bold text-white">
+                      <h3 className="text-base sm:text-lg font-bold text-white">
                         Have a tricky film connection in mind?
                       </h3>
                       <p className="text-xs text-text-secondary max-w-lg">
-                        Pick any two movies from TMDb to generate your own shareable puzzle and custom leaderboard.
+                        Pick any two movies to generate your own playable puzzle and custom leaderboard.
                       </p>
                     </div>
                     <button
                       onClick={() => { setCreatedPuzzleResult(null); setScreen('create'); }}
-                      className="px-5 py-2.5 bg-accent hover:bg-accent-dim text-bg-primary text-xs font-bold uppercase tracking-wider rounded transition-colors whitespace-nowrap shadow-[0_0_16px_rgba(0,224,84,0.25)] flex items-center gap-1.5 cursor-pointer"
+                      className="px-5 py-2.5 bg-accent hover:bg-accent-dim text-[#0e1114] text-xs font-bold uppercase tracking-wider rounded transition-colors whitespace-nowrap shadow-[0_0_16px_rgba(0,224,84,0.25)] flex items-center gap-1.5 cursor-pointer"
                     >
                       <Icons.Sparkles />
                       <span>Create a Game</span>
@@ -1082,7 +1099,7 @@
                   </div>
                 </section>
 
-                {/* PRE-GAME BRIEF MODAL (Reveals movie pair & starts timer only on START) */}
+                {/* PRE-GAME BRIEF MODAL */}
                 {showBrief && todayPuzzle && (
                   <div 
                     onClick={() => setShowBrief(false)}
@@ -1090,9 +1107,9 @@
                   >
                     <div 
                       onClick={(e) => e.stopPropagation()}
-                      className="bg-[#1b2228] border border-[#2c3440] p-6 sm:p-8 rounded-[4px] max-w-lg w-full flex flex-col gap-6 shadow-2xl text-left"
+                      className="bg-[#1c242c] border border-[#28323e] p-6 sm:p-8 rounded-[4px] max-w-lg w-full flex flex-col gap-6 shadow-2xl text-left animate-in zoom-in-95 duration-200"
                     >
-                      <div className="flex items-center justify-between border-b border-[#2c3440] pb-3">
+                      <div className="flex items-center justify-between border-b border-[#28323e] pb-3">
                         <div className="flex items-center gap-2">
                           <span className="text-accent"><Icons.Clapperboard /></span>
                           <h2 className="text-base font-bold text-white uppercase tracking-wider">
@@ -1107,14 +1124,14 @@
                         </button>
                       </div>
 
-                      {/* Revealed Movie Pair (Neutral borders on both) */}
-                      <div className="flex items-center justify-center gap-6 py-4 bg-[#14181c] rounded-[4px] border border-[#2c3440]">
+                      {/* Revealed Movie Pair */}
+                      <div className="flex items-center justify-center gap-6 py-4 bg-[#0e1114] rounded-[4px] border border-[#28323e]">
                         {/* Start Movie */}
                         <div className="flex flex-col items-center gap-1.5">
-                          <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary bg-[#202830] px-2 py-0.5 rounded border border-[#2c3440]">
+                          <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary bg-[#222b35] px-2 py-0.5 rounded border border-[#28323e]">
                             START
                           </span>
-                          <div className="w-16 h-24 relative rounded overflow-hidden bg-[#202830] border border-[#2c3440]">
+                          <div className="w-16 h-24 relative rounded overflow-hidden bg-[#222b35] border border-[#28323e]">
                             {todayPuzzle.startFilm.poster_path ? (
                               <img src={posterUrl(todayPuzzle.startFilm.poster_path, 'w185')} alt={todayPuzzle.startFilm.title} className="w-full h-full object-cover" />
                             ) : <div className="w-full h-full flex items-center justify-center text-xs">🎬</div>}
@@ -1128,12 +1145,12 @@
                           <span className="text-[9px] font-mono uppercase font-bold text-text-muted">Connect</span>
                         </div>
 
-                        {/* Target Movie (Neutral border) */}
+                        {/* Target Movie */}
                         <div className="flex flex-col items-center gap-1.5">
-                          <span className="text-[10px] font-bold uppercase tracking-widest text-accent bg-[#202830] px-2 py-0.5 rounded border border-[#2c3440]">
+                          <span className="text-[10px] font-bold uppercase tracking-widest text-accent bg-[#222b35] px-2 py-0.5 rounded border border-[#28323e]">
                             TARGET
                           </span>
-                          <div className="w-16 h-24 relative rounded overflow-hidden bg-[#202830] border border-[#2c3440]">
+                          <div className="w-16 h-24 relative rounded overflow-hidden bg-[#222b35] border border-[#28323e]">
                             {todayPuzzle.endFilm.poster_path ? (
                               <img src={posterUrl(todayPuzzle.endFilm.poster_path, 'w185')} alt={todayPuzzle.endFilm.title} className="w-full h-full object-cover" />
                             ) : <div className="w-full h-full flex items-center justify-center text-xs">🎬</div>}
@@ -1144,7 +1161,7 @@
                       </div>
 
                       {/* Mission Instructions */}
-                      <div className="flex flex-col gap-1.5 text-xs text-text-secondary bg-[#14181c] p-3 rounded border border-[#2c3440] leading-relaxed">
+                      <div className="flex flex-col gap-1.5 text-xs text-text-secondary bg-[#0e1114] p-3 rounded border border-[#28323e] leading-relaxed">
                         <p>
                           🎯 Connect <strong className="text-white">{todayPuzzle.startFilm.title}</strong> to <strong className="text-accent">{todayPuzzle.endFilm.title}</strong> in the fewest clicks and fastest time.
                         </p>
@@ -1156,7 +1173,7 @@
                       {/* Launch Action */}
                       <button
                         onClick={handleStartDailyGame}
-                        className="w-full py-3.5 bg-accent hover:bg-accent-dim text-bg-primary font-black text-sm uppercase tracking-wider rounded-[4px] transition-all shadow-[0_0_20px_rgba(0,224,84,0.3)] cursor-pointer flex items-center justify-center gap-2"
+                        className="w-full py-3.5 bg-accent hover:bg-accent-dim text-[#0e1114] font-black text-sm uppercase tracking-wider rounded-[4px] transition-all shadow-[0_0_20px_rgba(0,224,84,0.3)] cursor-pointer flex items-center justify-center gap-2"
                       >
                         <span>START GAME</span>
                         <Icons.ArrowRight />
@@ -1184,7 +1201,7 @@
                 </div>
 
                 {createdPuzzleResult ? (
-                  <div className="flex flex-col items-center gap-6 bg-[#1b2228] border border-[#2c3440] p-6 sm:p-8 rounded-[4px] w-full shadow-2xl text-left">
+                  <div className="flex flex-col items-center gap-6 bg-[#1c242c] border border-[#28323e] p-6 sm:p-8 rounded-[4px] w-full shadow-2xl text-left">
                     <div className="flex items-center gap-3">
                       <span className="text-2xl">🎉</span>
                       <div>
@@ -1193,11 +1210,11 @@
                       </div>
                     </div>
 
-                    {/* Movie Pair Preview (Neutral borders) */}
-                    <div className="flex items-center justify-center gap-6 w-full py-4 bg-[#14181c] rounded border border-[#2c3440]">
+                    {/* Movie Pair Preview */}
+                    <div className="flex items-center justify-center gap-6 w-full py-4 bg-[#0e1114] rounded border border-[#28323e]">
                       <div className="flex flex-col items-center gap-1.5">
                         <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">Start</span>
-                        <div className="w-14 h-20 relative rounded overflow-hidden bg-[#202830] border border-[#2c3440]">
+                        <div className="w-14 h-20 relative rounded overflow-hidden bg-[#222b35] border border-[#28323e]">
                           {createdPuzzleResult.startFilm?.poster_path && (
                             <img src={posterUrl(createdPuzzleResult.startFilm.poster_path, 'w185')} alt={createdPuzzleResult.startFilm.title} className="w-full h-full object-cover" />
                           )}
@@ -1209,7 +1226,7 @@
 
                       <div className="flex flex-col items-center gap-1.5">
                         <span className="text-[10px] font-bold uppercase tracking-widest text-accent">Target</span>
-                        <div className="w-14 h-20 relative rounded overflow-hidden bg-[#202830] border border-[#2c3440]">
+                        <div className="w-14 h-20 relative rounded overflow-hidden bg-[#222b35] border border-[#28323e]">
                           {createdPuzzleResult.endFilm?.poster_path && (
                             <img src={posterUrl(createdPuzzleResult.endFilm.poster_path, 'w185')} alt={createdPuzzleResult.endFilm.title} className="w-full h-full object-cover" />
                           )}
@@ -1225,7 +1242,7 @@
                           type="text"
                           readOnly
                           value={createdPuzzleResult.url}
-                          className="flex-1 bg-[#14181c] border border-[#2c3440] text-white text-xs px-3 py-2.5 rounded font-mono select-all focus:outline-none"
+                          className="flex-1 bg-[#0e1114] border border-[#28323e] text-white text-xs px-3 py-2.5 rounded font-mono select-all focus:outline-none"
                         />
                         <button
                           onClick={() => {
@@ -1233,7 +1250,7 @@
                             setCopied(true);
                             setTimeout(() => setCopied(false), 2000);
                           }}
-                          className="px-4 py-2.5 bg-accent text-bg-primary text-xs font-bold uppercase tracking-wider rounded hover:bg-accent-dim transition-colors cursor-pointer"
+                          className="px-4 py-2.5 bg-accent text-[#0e1114] text-xs font-bold uppercase tracking-wider rounded hover:bg-accent-dim transition-colors cursor-pointer"
                         >
                           {copied ? '✓ Copied' : 'Copy Link'}
                         </button>
@@ -1243,7 +1260,7 @@
                     <div className="flex items-center gap-3 w-full pt-2">
                       <button
                         onClick={() => loadCustomPuzzlePair(createdPuzzleResult.start_film_id, createdPuzzleResult.end_film_id, createdPuzzleResult.creator_handle, createdPuzzleResult.title)}
-                        className="flex-1 py-3 bg-white text-bg-primary text-xs font-bold uppercase tracking-wider rounded hover:bg-white/90 transition-colors text-center cursor-pointer font-bold"
+                        className="flex-1 py-3 bg-white text-[#0e1114] text-xs font-bold uppercase tracking-wider rounded hover:bg-white/90 transition-colors text-center cursor-pointer font-bold"
                       >
                         Play Puzzle Now &rarr;
                       </button>
@@ -1254,15 +1271,15 @@
                           setCreateTargetMovie(null);
                           setCreateTitle('');
                         }}
-                        className="px-4 py-3 bg-transparent text-text-secondary hover:text-white border border-[#2c3440] rounded text-xs font-semibold transition-colors cursor-pointer"
+                        className="px-4 py-3 bg-transparent text-text-secondary hover:text-white border border-[#28323e] rounded text-xs font-semibold transition-colors cursor-pointer"
                       >
                         Create Another
                       </button>
                     </div>
                   </div>
                 ) : (
-                  <div className="flex flex-col gap-6 bg-[#1b2228] border border-[#2c3440] p-6 sm:p-8 rounded-[4px] w-full shadow-2xl text-left">
-                    <div className="flex items-center justify-between border-b border-[#2c3440] pb-3">
+                  <div className="flex flex-col gap-6 bg-[#1c242c] border border-[#28323e] p-6 sm:p-8 rounded-[4px] w-full shadow-2xl text-left">
+                    <div className="flex items-center justify-between border-b border-[#28323e] pb-3">
                       <span className="text-xs text-text-secondary">
                         Creator Handle: <strong className="text-white font-mono">@{handle}</strong>
                       </span>
@@ -1288,8 +1305,8 @@
                           )}
                         </label>
                         {createStartMovie ? (
-                          <div className="flex items-center gap-3 bg-[#14181c] p-3 rounded border border-[#2c3440]">
-                            <div className="w-12 h-16 relative rounded overflow-hidden bg-[#202830] border border-[#2c3440] flex-shrink-0">
+                          <div className="flex items-center gap-3 bg-[#0e1114] p-3 rounded border border-[#28323e]">
+                            <div className="w-12 h-16 relative rounded overflow-hidden bg-[#222b35] border border-[#28323e] flex-shrink-0">
                               {createStartMovie.poster_path && <img src={posterUrl(createStartMovie.poster_path, 'w92')} alt={createStartMovie.title} className="w-full h-full object-cover" />}
                             </div>
                             <div className="flex flex-col min-w-0">
@@ -1307,10 +1324,10 @@
                                 setStartSearchQuery(e.target.value);
                                 searchTmdbMovie(e.target.value, true);
                               }}
-                              className="w-full bg-[#14181c] border border-[#2c3440] text-white text-xs px-3.5 py-2.5 rounded focus:outline-none focus:border-accent"
+                              className="w-full bg-[#0e1114] border border-[#28323e] text-white text-xs px-3.5 py-2.5 rounded focus:outline-none focus:border-accent"
                             />
                             {startSearchResults.length > 0 && (
-                              <div className="mt-1.5 bg-[#14181c] border border-[#2c3440] rounded shadow-2xl max-h-48 overflow-y-auto">
+                              <div className="mt-1.5 bg-[#0e1114] border border-[#28323e] rounded shadow-2xl max-h-48 overflow-y-auto">
                                 {startSearchResults.map(m => (
                                   <div
                                     key={`sm-${m.id}`}
@@ -1318,9 +1335,9 @@
                                       setCreateStartMovie(m);
                                       setStartSearchResults([]);
                                     }}
-                                    className="flex items-center gap-2.5 p-2 hover:bg-bg-hover cursor-pointer border-b border-[#2c3440]/50 last:border-0"
+                                    className="flex items-center gap-2.5 p-2 hover:bg-bg-hover cursor-pointer border-b border-[#28323e]/50 last:border-0"
                                   >
-                                    <div className="w-7 h-10 bg-[#202830] rounded overflow-hidden flex-shrink-0">
+                                    <div className="w-7 h-10 bg-[#222b35] rounded overflow-hidden flex-shrink-0">
                                       {m.poster_path && <img src={posterUrl(m.poster_path, 'w92')} alt={m.title} className="w-full h-full object-cover" />}
                                     </div>
                                     <span className="text-xs text-white font-medium truncate">{m.title}</span>
@@ -1333,7 +1350,7 @@
                         )}
                       </div>
 
-                      {/* Target Film (Neutral border) */}
+                      {/* Target Film */}
                       <div className="flex flex-col gap-3 relative">
                         <label className="text-xs font-bold uppercase tracking-wider text-accent flex items-center justify-between">
                           <span>2. Target Movie</span>
@@ -1342,8 +1359,8 @@
                           )}
                         </label>
                         {createTargetMovie ? (
-                          <div className="flex items-center gap-3 bg-[#14181c] p-3 rounded border border-[#2c3440]">
-                            <div className="w-12 h-16 relative rounded overflow-hidden bg-[#202830] border border-[#2c3440] flex-shrink-0">
+                          <div className="flex items-center gap-3 bg-[#0e1114] p-3 rounded border border-[#28323e]">
+                            <div className="w-12 h-16 relative rounded overflow-hidden bg-[#222b35] border border-[#28323e] flex-shrink-0">
                               {createTargetMovie.poster_path && <img src={posterUrl(createTargetMovie.poster_path, 'w92')} alt={createTargetMovie.title} className="w-full h-full object-cover" />}
                             </div>
                             <div className="flex flex-col min-w-0">
@@ -1361,10 +1378,10 @@
                                 setTargetSearchQuery(e.target.value);
                                 searchTmdbMovie(e.target.value, false);
                               }}
-                              className="w-full bg-[#14181c] border border-[#2c3440] text-white text-xs px-3.5 py-2.5 rounded focus:outline-none focus:border-accent"
+                              className="w-full bg-[#0e1114] border border-[#28323e] text-white text-xs px-3.5 py-2.5 rounded focus:outline-none focus:border-accent"
                             />
                             {targetSearchResults.length > 0 && (
-                              <div className="mt-1.5 bg-[#14181c] border border-[#2c3440] rounded shadow-2xl max-h-48 overflow-y-auto">
+                              <div className="mt-1.5 bg-[#0e1114] border border-[#28323e] rounded shadow-2xl max-h-48 overflow-y-auto">
                                 {targetSearchResults.map(m => (
                                   <div
                                     key={`tm-${m.id}`}
@@ -1372,9 +1389,9 @@
                                       setCreateTargetMovie(m);
                                       setTargetSearchResults([]);
                                     }}
-                                    className="flex items-center gap-2.5 p-2 hover:bg-bg-hover cursor-pointer border-b border-[#2c3440]/50 last:border-0"
+                                    className="flex items-center gap-2.5 p-2 hover:bg-bg-hover cursor-pointer border-b border-[#28323e]/50 last:border-0"
                                   >
-                                    <div className="w-7 h-10 bg-[#202830] rounded overflow-hidden flex-shrink-0">
+                                    <div className="w-7 h-10 bg-[#222b35] rounded overflow-hidden flex-shrink-0">
                                       {m.poster_path && <img src={posterUrl(m.poster_path, 'w92')} alt={m.title} className="w-full h-full object-cover" />}
                                     </div>
                                     <span className="text-xs text-white font-medium truncate">{m.title}</span>
@@ -1395,7 +1412,7 @@
                         placeholder={createStartMovie && createTargetMovie ? `${createStartMovie.title} → ${createTargetMovie.title}` : 'e.g. Nolan Cinematic Trail'}
                         value={createTitle}
                         onChange={(e) => setCreateTitle(e.target.value)}
-                        className="bg-[#14181c] border border-[#2c3440] text-white text-xs px-3.5 py-2 rounded focus:outline-none focus:border-accent"
+                        className="bg-[#0e1114] border border-[#28323e] text-white text-xs px-3.5 py-2 rounded focus:outline-none focus:border-accent"
                       />
                     </div>
 
@@ -1404,8 +1421,8 @@
                       disabled={!createStartMovie || !createTargetMovie || isPublishing}
                       className={`w-full py-3.5 rounded-[4px] font-black text-xs uppercase tracking-wider transition-all cursor-pointer ${
                         createStartMovie && createTargetMovie && !isPublishing
-                          ? 'bg-accent text-bg-primary hover:bg-accent-dim shadow-[0_0_16px_rgba(0,224,84,0.35)]'
-                          : 'bg-[#14181c] text-text-muted border border-[#2c3440] cursor-not-allowed'
+                          ? 'bg-accent text-[#0e1114] hover:bg-accent-dim shadow-[0_0_16px_rgba(0,224,84,0.35)]'
+                          : 'bg-[#0e1114] text-text-muted border border-[#28323e] cursor-not-allowed'
                       }`}
                     >
                       {isPublishing ? 'Publishing Puzzle...' : 'Create & Share Puzzle 🚀'}
@@ -1420,9 +1437,9 @@
               <div className="flex flex-col gap-8 max-w-3xl mx-auto w-full py-4 text-left">
                 {profileData ? (
                   <>
-                    <div className="bg-[#1b2228] border border-[#2c3440] p-6 sm:p-8 rounded-[4px] shadow-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+                    <div className="bg-[#1c242c] border border-[#28323e] p-6 sm:p-8 rounded-[4px] shadow-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
                       <div className="flex items-center gap-4">
-                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#00e054] via-[#ff8000] to-[#40bcf4] flex items-center justify-center text-2xl font-black text-bg-primary shadow-lg flex-shrink-0">
+                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#00e054] via-[#ff8000] to-[#40bcf4] flex items-center justify-center text-2xl font-black text-[#0e1114] shadow-lg flex-shrink-0">
                           {profileData.username.charAt(0).toUpperCase()}
                         </div>
                         <div className="flex flex-col gap-1">
@@ -1441,13 +1458,13 @@
                               setEditBioInput('');
                               setIsEditingProfile(true);
                             }}
-                            className="px-4 py-2 bg-[#202830] hover:bg-[#2c3440] text-white text-xs font-bold border border-[#2c3440] rounded transition-colors cursor-pointer"
+                            className="px-4 py-2 bg-[#222b35] hover:bg-[#2c3744] text-white text-xs font-bold border border-[#28323e] rounded transition-colors cursor-pointer"
                           >
                             Edit Username
                           </button>
                           <button
                             onClick={() => { setCreatedPuzzleResult(null); setScreen('create'); }}
-                            className="px-4 py-2 bg-accent hover:bg-accent-dim text-bg-primary text-xs font-bold uppercase tracking-wider rounded transition-colors cursor-pointer"
+                            className="px-4 py-2 bg-accent hover:bg-accent-dim text-[#0e1114] text-xs font-bold uppercase tracking-wider rounded transition-colors cursor-pointer"
                           >
                             + Create Game
                           </button>
@@ -1457,23 +1474,23 @@
 
                     {/* Stats Grid */}
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                      <div className="bg-[#1b2228] border border-[#2c3440] p-4 rounded-[4px]">
+                      <div className="bg-[#1c242c] border border-[#28323e] p-4 rounded-[4px]">
                         <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary block">Total Solves</span>
                         <span className="font-mono text-2xl font-black text-white mt-1 block">{profileData.totalSolves}</span>
                       </div>
-                      <div className="bg-[#1b2228] border border-[#2c3440] p-4 rounded-[4px]">
+                      <div className="bg-[#1c242c] border border-[#28323e] p-4 rounded-[4px]">
                         <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary block">Best Time</span>
                         <span className="font-mono text-2xl font-bold text-accent mt-1 block">
                           {profileData.bestTime !== null ? `${Math.floor(profileData.bestTime / 60)}:${String(profileData.bestTime % 60).padStart(2, '0')}` : '—'}
                         </span>
                       </div>
-                      <div className="bg-[#1b2228] border border-[#2c3440] p-4 rounded-[4px]">
+                      <div className="bg-[#1c242c] border border-[#28323e] p-4 rounded-[4px]">
                         <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary block">Fewest Clicks</span>
                         <span className="font-mono text-2xl font-black text-white mt-1 block">
                           {profileData.fewestClicks !== null ? profileData.fewestClicks : '—'}
                         </span>
                       </div>
-                      <div className="bg-[#1b2228] border border-[#2c3440] p-4 rounded-[4px]">
+                      <div className="bg-[#1c242c] border border-[#28323e] p-4 rounded-[4px]">
                         <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary block">Created Puzzles</span>
                         <span className="font-mono text-2xl font-black text-[#40bcf4] mt-1 block">{profileData.createdCount}</span>
                       </div>
@@ -1481,7 +1498,7 @@
 
                     {/* Created Puzzles */}
                     <div className="flex flex-col gap-3">
-                      <div className="flex items-center justify-between border-b border-[#2c3440] pb-2">
+                      <div className="flex items-center justify-between border-b border-[#28323e] pb-2">
                         <h2 className="text-base font-bold uppercase tracking-wider text-white">
                           Created Puzzles ({profileData.puzzles.length})
                         </h2>
@@ -1495,13 +1512,13 @@
                       {profileData.puzzles.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           {profileData.puzzles.map(p => (
-                            <div key={p.id} className="bg-[#1b2228] border border-[#2c3440] p-4 rounded flex flex-col gap-3 justify-between">
+                            <div key={p.id} className="bg-[#1c242c] border border-[#28323e] p-4 rounded flex flex-col gap-3 justify-between">
                               <div className="flex items-center gap-3">
-                                <div className="w-10 h-14 bg-[#202830] rounded overflow-hidden border border-[#2c3440] flex-shrink-0">
+                                <div className="w-10 h-14 bg-[#222b35] rounded overflow-hidden border border-[#28323e] flex-shrink-0">
                                   {p.startFilm?.poster_path && <img src={posterUrl(p.startFilm.poster_path, 'w92')} alt="" className="w-full h-full object-cover" />}
                                 </div>
                                 <span className="text-xs text-text-muted">➔</span>
-                                <div className="w-10 h-14 bg-[#202830] rounded overflow-hidden border border-[#2c3440] flex-shrink-0">
+                                <div className="w-10 h-14 bg-[#222b35] rounded overflow-hidden border border-[#28323e] flex-shrink-0">
                                   {p.endFilm?.poster_path && <img src={posterUrl(p.endFilm.poster_path, 'w92')} alt="" className="w-full h-full object-cover" />}
                                 </div>
                                 <div className="flex flex-col min-w-0">
@@ -1510,10 +1527,10 @@
                                 </div>
                               </div>
 
-                              <div className="flex items-center gap-2 pt-2 border-t border-[#2c3440]">
+                              <div className="flex items-center gap-2 pt-2 border-t border-[#28323e]">
                                 <button
                                   onClick={() => loadCustomPuzzlePair(p.start_film_id, p.end_film_id, p.creator_handle, p.title)}
-                                  className="flex-1 py-1.5 bg-accent text-bg-primary text-xs font-bold uppercase tracking-wider rounded cursor-pointer hover:bg-accent-dim"
+                                  className="flex-1 py-1.5 bg-accent text-[#0e1114] text-xs font-bold uppercase tracking-wider rounded cursor-pointer hover:bg-accent-dim"
                                 >
                                   Play Puzzle &rarr;
                                 </button>
@@ -1522,7 +1539,7 @@
                                     navigator.clipboard.writeText(p.url || `${window.location.origin}${window.location.pathname}?start=${p.start_film_id}&target=${p.end_film_id}&by=${encodeURIComponent(p.creator_handle || handle)}`);
                                     alert('Link copied to clipboard!');
                                   }}
-                                  className="px-3 py-1.5 bg-[#202830] border border-[#2c3440] text-text-secondary hover:text-white text-xs rounded cursor-pointer"
+                                  className="px-3 py-1.5 bg-[#222b35] border border-[#28323e] text-text-secondary hover:text-white text-xs rounded cursor-pointer"
                                 >
                                   Share
                                 </button>
@@ -1531,7 +1548,7 @@
                           ))}
                         </div>
                       ) : (
-                        <div className="bg-[#1b2228] border border-[#2c3440] p-6 rounded text-center text-text-muted text-xs">
+                        <div className="bg-[#1c242c] border border-[#28323e] p-6 rounded text-center text-text-muted text-xs">
                           No custom puzzles created yet. <button onClick={() => { setCreatedPuzzleResult(null); setScreen('create'); }} className="text-accent underline font-semibold ml-1 cursor-pointer">Create the first one!</button>
                         </div>
                       )}
@@ -1544,8 +1561,8 @@
                 {/* Edit Handle Modal */}
                 {isEditingProfile && (
                   <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div className="bg-[#1b2228] border border-[#2c3440] rounded-[4px] p-6 max-w-sm w-full flex flex-col gap-4 shadow-2xl">
-                      <div className="flex items-center justify-between border-b border-[#2c3440] pb-2">
+                    <div className="bg-[#1c242c] border border-[#28323e] rounded-[4px] p-6 max-w-sm w-full flex flex-col gap-4 shadow-2xl">
+                      <div className="flex items-center justify-between border-b border-[#28323e] pb-2">
                         <h2 className="text-sm font-bold text-white">Choose Unique Username</h2>
                         <button onClick={() => setIsEditingProfile(false)} className="text-text-muted hover:text-white">✕</button>
                       </div>
@@ -1558,14 +1575,14 @@
                             type="text"
                             value={editUsernameInput}
                             onChange={(e) => setEditUsernameInput(e.target.value)}
-                            className="w-full bg-[#14181c] border border-[#2c3440] text-white text-xs pl-7 pr-3 py-2 rounded focus:outline-none focus:border-accent font-mono"
+                            className="w-full bg-[#0e1114] border border-[#28323e] text-white text-xs pl-7 pr-3 py-2 rounded focus:outline-none focus:border-accent font-mono"
                           />
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#2c3440]">
+                      <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#28323e]">
                         <button onClick={() => setIsEditingProfile(false)} className="px-3 py-1.5 text-xs text-text-secondary">Cancel</button>
-                        <button onClick={handleSaveUsername} className="px-4 py-1.5 bg-accent text-bg-primary font-bold text-xs rounded hover:bg-accent-dim cursor-pointer">Save Username</button>
+                        <button onClick={handleSaveUsername} className="px-4 py-1.5 bg-accent text-[#0e1114] font-bold text-xs rounded hover:bg-accent-dim cursor-pointer">Save Username</button>
                       </div>
                     </div>
                   </div>
@@ -1577,11 +1594,11 @@
             {screen === 'game' && targetFilm && (
               <div className="flex flex-col gap-6">
                 {/* Sticky Status HUD */}
-                <div className="flex flex-col gap-3.5 bg-[#1b2228] p-4 sm:p-5 rounded-[4px] border border-[#2c3440] sticky top-16 z-30 shadow-2xl backdrop-blur-md">
+                <div className="flex flex-col gap-3.5 bg-[#1c242c] p-4 sm:p-5 rounded-[4px] border border-[#28323e] sticky top-16 z-30 shadow-2xl backdrop-blur-md">
                   <div className="flex items-center justify-between gap-4 flex-wrap sm:flex-nowrap">
-                    {/* Goal Film (Neutral border) */}
+                    {/* Goal Film */}
                     <div className="flex items-center gap-4">
-                      <div className="relative rounded-[4px] overflow-hidden flex-shrink-0 bg-[#202830] border border-[#2c3440] shadow-md w-[84px] h-[126px]">
+                      <div className="relative rounded-[4px] overflow-hidden flex-shrink-0 bg-[#222b35] border border-[#28323e] shadow-md w-[84px] h-[126px]">
                         <img src={posterUrl(targetFilm.poster_path, 'w185')} alt={targetFilm.title} className="w-full h-full object-cover" />
                       </div>
                       <div className="flex flex-col text-left gap-1">
@@ -1619,7 +1636,7 @@
                   </div>
 
                   {/* Breadcrumb Trail with Rewind */}
-                  <div className="pt-2 border-t border-[#2c3440] overflow-x-auto hide-scrollbar">
+                  <div className="pt-2 border-t border-[#28323e] overflow-x-auto hide-scrollbar">
                     <div className="flex items-center gap-1.5 whitespace-nowrap min-w-max text-xs">
                       {path.map((node, i) => {
                         const isLast = i === path.length - 1;
@@ -1634,7 +1651,7 @@
                                 isLast
                                   ? 'bg-transparent border-accent text-accent font-semibold'
                                   : canRewind
-                                  ? 'bg-[#202830] border-[#2c3440] text-text-secondary hover:text-white hover:border-text-secondary cursor-pointer'
+                                  ? 'bg-[#222b35] border-[#28323e] text-text-secondary hover:text-white hover:border-text-secondary cursor-pointer'
                                   : 'bg-transparent border-transparent text-text-muted cursor-default'
                               }`}
                               title={canRewind ? `Rewind to ${node.name}` : node.name}
@@ -1654,8 +1671,8 @@
                 {/* VIEW: FILM SCREEN */}
                 {currentView === 'film' && currentMedia && (
                   <>
-                    <div className="bg-[#1b2228] border border-[#2c3440] rounded-[4px] p-4 sm:p-5 flex flex-col sm:flex-row gap-4 sm:gap-6 text-left shadow-lg">
-                      <div className="relative w-20 h-[116px] sm:w-[84px] sm:h-[126px] rounded-[4px] overflow-hidden bg-[#202830] border border-[#2c3440] flex-shrink-0 self-center sm:self-start">
+                    <div className="bg-[#1c242c] border border-[#28323e] rounded-[4px] p-4 sm:p-5 flex flex-col sm:flex-row gap-4 sm:gap-6 text-left shadow-lg">
+                      <div className="relative w-20 h-[116px] sm:w-[84px] sm:h-[126px] rounded-[4px] overflow-hidden bg-[#222b35] border border-[#28323e] flex-shrink-0 self-center sm:self-start">
                         <img src={posterUrl(currentMedia.poster_path, 'w342')} alt={currentMedia.title} className="w-full h-full object-cover" />
                       </div>
 
@@ -1678,7 +1695,7 @@
                         {currentMedia.genres && currentMedia.genres.length > 0 && (
                           <div className="flex items-center gap-1.5 flex-wrap my-0.5">
                             {currentMedia.genres.map(g => (
-                              <span key={g.id} className="text-[10px] uppercase font-medium bg-[#202830] text-text-secondary px-2 py-0.5 rounded border border-[#2c3440]">
+                              <span key={g.id} className="text-[10px] uppercase font-medium bg-[#222b35] text-text-secondary px-2 py-0.5 rounded border border-[#28323e]">
                                 {g.name}
                               </span>
                             ))}
@@ -1694,7 +1711,7 @@
                     </div>
 
                     {/* Subheader & Tabs with Search Input */}
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-[#2c3440] pb-3 px-1">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-[#28323e] pb-3 px-1">
                       <span className="text-base sm:text-lg font-extrabold text-white tracking-tight">
                         Choose next person
                       </span>
@@ -1707,7 +1724,7 @@
                             placeholder="Search person or role..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="bg-[#14181c] border border-[#2c3440] text-white text-xs rounded-[4px] pl-8 pr-7 py-1.5 focus:outline-none focus:border-accent w-48 sm:w-56 transition-all placeholder:text-text-muted"
+                            className="bg-[#0e1114] border border-[#28323e] text-white text-xs rounded-[4px] pl-8 pr-7 py-1.5 focus:outline-none focus:border-accent w-48 sm:w-56 transition-all placeholder:text-text-muted"
                           />
                           <span className="absolute left-2.5 text-text-muted text-xs">🔍</span>
                           {searchQuery && (
@@ -1721,22 +1738,22 @@
                         </div>
 
                         {/* Tabs */}
-                        <div className="flex items-center gap-1 bg-[#14181c] p-1 rounded-[4px] border border-[#2c3440]">
+                        <div className="flex items-center gap-1 bg-[#0e1114] p-1 rounded-[4px] border border-[#28323e]">
                           <button
                             onClick={() => setFilmTab('all')}
-                            className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${filmTab === 'all' ? 'bg-accent text-bg-primary font-bold' : 'text-text-secondary hover:text-white'}`}
+                            className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${filmTab === 'all' ? 'bg-accent text-[#0e1114] font-bold' : 'text-text-secondary hover:text-white'}`}
                           >
                             All ({filteredFilmCredits.length})
                           </button>
                           <button
                             onClick={() => setFilmTab('cast')}
-                            className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${filmTab === 'cast' ? 'bg-accent text-bg-primary font-bold' : 'text-text-secondary hover:text-white'}`}
+                            className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${filmTab === 'cast' ? 'bg-accent text-[#0e1114] font-bold' : 'text-text-secondary hover:text-white'}`}
                           >
                             Cast ({filteredCast.length})
                           </button>
                           <button
                             onClick={() => setFilmTab('crew')}
-                            className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${filmTab === 'crew' ? 'bg-accent text-bg-primary font-bold' : 'text-text-secondary hover:text-white'}`}
+                            className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${filmTab === 'crew' ? 'bg-accent text-[#0e1114] font-bold' : 'text-text-secondary hover:text-white'}`}
                           >
                             Crew ({filteredCrew.length})
                           </button>
@@ -1756,7 +1773,7 @@
                           <>
                             {filteredCast.length > 0 && (
                               <div className="flex flex-col gap-3">
-                                <div className="flex items-center gap-2 border-b border-[#2c3440] pb-1.5">
+                                <div className="flex items-center gap-2 border-b border-[#28323e] pb-1.5">
                                   <span className="text-xs font-bold uppercase tracking-wider text-text-primary">Cast / Actors</span>
                                   <span className="text-[11px] text-text-muted">({filteredCast.length})</span>
                                 </div>
@@ -1767,7 +1784,7 @@
                                       onClick={() => onSelectPerson(c.id, c.name)}
                                       className="group flex flex-col gap-1.5 transition-all select-none cursor-pointer w-[110px]"
                                     >
-                                      <div className="relative w-full h-[165px] rounded-[4px] overflow-hidden bg-[#202830] border border-[#2c3440] group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)] transition-all duration-200">
+                                      <div className="relative w-full h-[165px] rounded-[4px] overflow-hidden bg-[#222b35] border border-[#28323e] group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)] transition-all duration-200">
                                         {c.profile_path ? (
                                           <img src={profileUrl(c.profile_path, 'w185')} alt={c.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                                         ) : (
@@ -1786,7 +1803,7 @@
 
                             {filteredCrew.length > 0 && (
                               <div className="flex flex-col gap-3 mt-2">
-                                <div className="flex items-center gap-2 border-b border-[#2c3440] pb-1.5">
+                                <div className="flex items-center gap-2 border-b border-[#28323e] pb-1.5">
                                   <span className="text-xs font-bold uppercase tracking-wider text-text-primary">Crew</span>
                                   <span className="text-[11px] text-text-muted">({filteredCrew.length})</span>
                                 </div>
@@ -1797,7 +1814,7 @@
                                       onClick={() => onSelectPerson(c.id, c.name)}
                                       className="group flex flex-col gap-1.5 transition-all select-none cursor-pointer w-[110px]"
                                     >
-                                      <div className="relative w-full h-[165px] rounded-[4px] overflow-hidden bg-[#202830] border border-[#2c3440] group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)] transition-all duration-200">
+                                      <div className="relative w-full h-[165px] rounded-[4px] overflow-hidden bg-[#222b35] border border-[#28323e] group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)] transition-all duration-200">
                                         {c.profile_path ? (
                                           <img src={profileUrl(c.profile_path, 'w185')} alt={c.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                                         ) : (
@@ -1820,7 +1837,7 @@
                           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
                             {filteredCast.map(c => (
                               <div key={`cast-tab-${c.id}`} onClick={() => onSelectPerson(c.id, c.name)} className="group flex flex-col gap-1.5 transition-all select-none cursor-pointer w-[110px]">
-                                <div className="relative w-full h-[165px] rounded-[4px] overflow-hidden bg-[#202830] border border-[#2c3440] group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)] transition-all duration-200">
+                                <div className="relative w-full h-[165px] rounded-[4px] overflow-hidden bg-[#222b35] border border-[#28323e] group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)] transition-all duration-200">
                                   {c.profile_path ? <img src={profileUrl(c.profile_path, 'w185')} alt={c.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-3xl">👤</div>}
                                 </div>
                                 <span className="font-medium text-text-primary text-xs line-clamp-1 leading-tight">{c.name}</span>
@@ -1834,7 +1851,7 @@
                           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
                             {filteredCrew.map(c => (
                               <div key={`crew-tab-${c.id}`} onClick={() => onSelectPerson(c.id, c.name)} className="group flex flex-col gap-1.5 transition-all select-none cursor-pointer w-[110px]">
-                                <div className="relative w-full h-[165px] rounded-[4px] overflow-hidden bg-[#202830] border border-[#2c3440] group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)] transition-all duration-200">
+                                <div className="relative w-full h-[165px] rounded-[4px] overflow-hidden bg-[#222b35] border border-[#28323e] group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)] transition-all duration-200">
                                   {c.profile_path ? <img src={profileUrl(c.profile_path, 'w185')} alt={c.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-3xl">👤</div>}
                                 </div>
                                 <span className="font-medium text-text-primary text-xs line-clamp-1 leading-tight">{c.name}</span>
@@ -1851,8 +1868,8 @@
                 {/* VIEW: PERSON SCREEN */}
                 {currentView === 'person' && currentPerson && (
                   <>
-                    <div className="bg-[#1b2228] border border-[#2c3440] rounded-[4px] p-4 sm:p-5 flex flex-col sm:flex-row gap-4 sm:gap-6 text-left shadow-lg">
-                      <div className="relative w-20 h-[116px] sm:w-[84px] sm:h-[126px] rounded-[4px] overflow-hidden bg-[#202830] border border-[#2c3440] flex-shrink-0 self-center sm:self-start">
+                    <div className="bg-[#1c242c] border border-[#28323e] rounded-[4px] p-4 sm:p-5 flex flex-col sm:flex-row gap-4 sm:gap-6 text-left shadow-lg">
+                      <div className="relative w-20 h-[116px] sm:w-[84px] sm:h-[126px] rounded-[4px] overflow-hidden bg-[#222b35] border border-[#28323e] flex-shrink-0 self-center sm:self-start">
                         {currentPerson.profile_path ? (
                           <img src={profileUrl(currentPerson.profile_path, 'w185')} alt={currentPerson.name} className="w-full h-full object-cover" />
                         ) : (
@@ -1879,7 +1896,7 @@
                     </div>
 
                     {/* Sub-Header & Tabs */}
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-[#2c3440] pb-3 px-1">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-[#28323e] pb-3 px-1">
                       <span className="text-base sm:text-lg font-extrabold text-white tracking-tight">
                         Choose next title
                       </span>
@@ -1892,7 +1909,7 @@
                             placeholder="Search title or character..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="bg-[#14181c] border border-[#2c3440] text-white text-xs rounded-[4px] pl-8 pr-7 py-1.5 focus:outline-none focus:border-accent w-48 sm:w-56 transition-all placeholder:text-text-muted"
+                            className="bg-[#0e1114] border border-[#28323e] text-white text-xs rounded-[4px] pl-8 pr-7 py-1.5 focus:outline-none focus:border-accent w-48 sm:w-56 transition-all placeholder:text-text-muted"
                           />
                           <span className="absolute left-2.5 text-text-muted text-xs">🔍</span>
                           {searchQuery && (
@@ -1906,23 +1923,23 @@
                         </div>
 
                         {/* Tabs */}
-                        <div className="flex items-center gap-1 bg-[#14181c] p-1 rounded-[4px] border border-[#2c3440]">
+                        <div className="flex items-center gap-1 bg-[#0e1114] p-1 rounded-[4px] border border-[#28323e]">
                           <button
                             onClick={() => setPersonTab('all')}
-                            className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${personTab === 'all' ? 'bg-accent text-bg-primary font-bold' : 'text-text-secondary hover:text-white'}`}
+                            className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${personTab === 'all' ? 'bg-accent text-[#0e1114] font-bold' : 'text-text-secondary hover:text-white'}`}
                           >
                             All ({filteredPersonAll.length})
                           </button>
                           <button
                             onClick={() => setPersonTab('movies')}
-                            className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${personTab === 'movies' ? 'bg-accent text-bg-primary font-bold' : 'text-text-secondary hover:text-white'}`}
+                            className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${personTab === 'movies' ? 'bg-accent text-[#0e1114] font-bold' : 'text-text-secondary hover:text-white'}`}
                           >
                             Movies ({filteredPersonMovies.length})
                           </button>
                           {personTvShows.length > 0 && (
                             <button
                               onClick={() => setPersonTab('tv')}
-                              className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${personTab === 'tv' ? 'bg-accent text-bg-primary font-bold' : 'text-text-secondary hover:text-white'}`}
+                              className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-[3px] transition-colors cursor-pointer ${personTab === 'tv' ? 'bg-accent text-[#0e1114] font-bold' : 'text-text-secondary hover:text-white'}`}
                             >
                               TV Shows ({filteredPersonTv.length})
                             </button>
@@ -1931,7 +1948,7 @@
                       </div>
                     </div>
 
-                    {/* Filmography Grid (Neutral border on goal) */}
+                    {/* Filmography Grid */}
                     {loadingStep ? (
                       <div className="flex items-center justify-center py-16 gap-3">
                         <div className="w-6 h-6 border-2 border-accent border-t-transparent rounded-full animate-spin"></div>
@@ -1950,14 +1967,14 @@
                             onClick={() => onSelectFilm(f.id, f.title)}
                             className="group flex flex-col gap-1.5 transition-all select-none cursor-pointer w-[110px]"
                           >
-                            <div className={`relative w-full h-[165px] rounded-[4px] overflow-hidden bg-[#202830] border border-[#2c3440] group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)] transition-all duration-200`}>
+                            <div className={`relative w-full h-[165px] rounded-[4px] overflow-hidden bg-[#222b35] border border-[#28323e] group-hover:border-accent group-hover:shadow-[0_0_12px_rgba(0,224,84,0.25)] transition-all duration-200`}>
                               {f.poster_path ? (
                                 <img src={posterUrl(f.poster_path, 'w185')} alt={f.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center text-3xl">🎬</div>
                               )}
                               {f.id === targetFilm.tmdb_id && (
-                                <div className="absolute top-1.5 right-1.5 bg-accent text-bg-primary text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded shadow">
+                                <div className="absolute top-1.5 right-1.5 bg-accent text-[#0e1114] text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded shadow">
                                   GOAL
                                 </div>
                               )}
@@ -1984,11 +2001,11 @@
                   </span>
 
                   <div className="flex items-center gap-3.5 my-1">
-                    <div className="w-16 h-24 rounded-[4px] overflow-hidden bg-[#202830] border border-[#2c3440] relative">
+                    <div className="w-16 h-24 rounded-[4px] overflow-hidden bg-[#222b35] border border-[#28323e] relative">
                       <img src={posterUrl(startFilm.poster_path, 'w185')} alt={startFilm.title} className="w-full h-full object-cover" />
                     </div>
                     <span className="text-2xl text-text-muted font-light">&rarr;</span>
-                    <div className="w-16 h-24 rounded-[4px] overflow-hidden bg-[#202830] border border-[#2c3440] relative">
+                    <div className="w-16 h-24 rounded-[4px] overflow-hidden bg-[#222b35] border border-[#28323e] relative">
                       <img src={posterUrl(targetFilm.poster_path, 'w185')} alt={targetFilm.title} className="w-full h-full object-cover" />
                     </div>
                   </div>
@@ -1999,7 +2016,7 @@
                 </div>
 
                 {/* Score Box */}
-                <div className="flex flex-col gap-2.5 bg-[#1b2228] border border-[#2c3440] rounded-[4px] p-6 w-full max-w-md shadow-2xl">
+                <div className="flex flex-col gap-2.5 bg-[#1c242c] border border-[#28323e] rounded-[4px] p-6 w-full max-w-md shadow-2xl">
                   <span className="text-[11px] font-bold uppercase tracking-widest text-text-secondary text-left">
                     Your Result
                   </span>
@@ -2012,7 +2029,7 @@
                         {Math.floor(elapsedSec / 60)}:{String(Math.floor(elapsedSec % 60)).padStart(2, '0')}
                       </span>
                     </div>
-                    <div className="w-px h-10 bg-[#2c3440]"></div>
+                    <div className="w-px h-10 bg-[#28323e]"></div>
                     <div className="text-center">
                       <span className="text-[11px] font-bold uppercase tracking-widest text-text-secondary block mb-1">
                         Clicks
@@ -2025,7 +2042,7 @@
                 </div>
 
                 {/* Leaderboard */}
-                <div className="flex flex-col gap-3 bg-[#1b2228] border border-[#2c3440] rounded-[4px] p-5 w-full max-w-md">
+                <div className="flex flex-col gap-3 bg-[#1c242c] border border-[#28323e] rounded-[4px] p-5 w-full max-w-md">
                   <div className="flex flex-col text-left gap-0.5">
                     <span className="text-sm font-extrabold text-white">Leaderboard</span>
                     <span className="text-[11px] text-text-muted">{customPuzzleId ? 'Fastest solvers for this puzzle' : "Today's fastest chains"}</span>
@@ -2033,7 +2050,7 @@
 
                   <table className="w-full border-collapse text-xs">
                     <thead>
-                      <tr className="border-b border-[#2c3440] text-[10px] uppercase text-text-secondary">
+                      <tr className="border-b border-[#28323e] text-[10px] uppercase text-text-secondary">
                         <th className="py-2 px-1.5 text-center w-9">Pos</th>
                         <th className="py-2 px-1.5 text-left">Player</th>
                         <th className="py-2 px-1.5 text-right">Time</th>
@@ -2050,7 +2067,7 @@
                           const secs = entry.time_seconds % 60;
 
                           return (
-                            <tr key={entry.id || idx} className={`border-b border-[#2c3440]/50 ${isYou ? 'bg-accent/10' : ''}`}>
+                            <tr key={entry.id || idx} className={`border-b border-[#28323e]/50 ${isYou ? 'bg-accent/10' : ''}`}>
                               <td className="py-2 px-1.5 text-center font-mono font-bold" style={{ color: rankColor }}>
                                 {idx + 1}
                               </td>
@@ -2082,7 +2099,7 @@
                 {/* Share Box */}
                 <div className="flex flex-col gap-2 w-full max-w-md text-left">
                   <span className="text-[10px] font-semibold uppercase tracking-wider text-text-muted">Share</span>
-                  <pre className="bg-[#14181c] border border-[#2c3440] rounded-[4px] p-3 text-xs text-text-secondary font-mono whitespace-pre-wrap">
+                  <pre className="bg-[#0e1114] border border-[#28323e] rounded-[4px] p-3 text-xs text-text-secondary font-mono whitespace-pre-wrap">
                     {`FILMTRACE\n${Math.floor(elapsedSec / 60)}:${String(Math.floor(elapsedSec % 60)).padStart(2, '0')} * ${clickCount} clicks\n${path.map(p => (p.type === 'film' ? '🎬' : '👤')).join(' > ')}\n${window.location.href}`}
                   </pre>
                   <button
@@ -2096,13 +2113,13 @@
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => { setScreen('home'); }}
-                    className="px-6 py-2.5 bg-transparent text-text-secondary text-xs font-semibold border border-[#2c3440] rounded-[4px] hover:text-white hover:border-text-secondary transition-all cursor-pointer"
+                    className="px-6 py-2.5 bg-transparent text-text-secondary text-xs font-semibold border border-[#28323e] rounded-[4px] hover:text-white hover:border-text-secondary transition-all cursor-pointer"
                   >
                     &larr; Home
                   </button>
                   <button
                     onClick={() => { setCreatedPuzzleResult(null); setScreen('create'); }}
-                    className="px-6 py-2.5 bg-accent text-bg-primary text-xs font-bold uppercase tracking-wider rounded-[4px] hover:bg-accent-dim transition-all cursor-pointer"
+                    className="px-6 py-2.5 bg-accent text-[#0e1114] text-xs font-bold uppercase tracking-wider rounded-[4px] hover:bg-accent-dim transition-all cursor-pointer"
                   >
                     + Create Game
                   </button>
@@ -2116,10 +2133,10 @@
                 <h1 className="text-3xl sm:text-4xl font-black text-white">Leaderboard</h1>
                 <p className="text-xs text-text-muted mb-4">Today's fastest chains</p>
 
-                <div className="flex flex-col gap-0 bg-[#1b2228] border border-[#2c3440] rounded-[4px] p-5 w-full shadow-2xl">
+                <div className="flex flex-col gap-0 bg-[#1c242c] border border-[#28323e] rounded-[4px] p-5 w-full shadow-2xl">
                   <table className="w-full border-collapse text-xs">
                     <thead>
-                      <tr className="border-b border-[#2c3440] text-[10px] uppercase text-text-secondary">
+                      <tr className="border-b border-[#28323e] text-[10px] uppercase text-text-secondary">
                         <th className="py-2.5 px-1.5 text-center w-10">Pos</th>
                         <th className="py-2.5 px-1.5 text-left">Player</th>
                         <th className="py-2.5 px-1.5 text-right">Time</th>
@@ -2136,7 +2153,7 @@
                           const secs = entry.time_seconds % 60;
 
                           return (
-                            <tr key={entry.id || idx} className={`border-b border-[#2c3440]/50 ${isYou ? 'bg-accent/10' : ''}`}>
+                            <tr key={entry.id || idx} className={`border-b border-[#28323e]/50 ${isYou ? 'bg-accent/10' : ''}`}>
                               <td className="py-2.5 px-1.5 text-center font-mono font-bold" style={{ color: rankColor }}>
                                 {idx + 1}
                               </td>
@@ -2167,7 +2184,7 @@
 
                 <button
                   onClick={() => setShowBrief(true)}
-                  className="mt-6 w-full max-w-[260px] py-3 bg-accent text-bg-primary text-xs font-bold uppercase tracking-wider rounded-[4px] hover:bg-accent-dim transition-all shadow-[0_0_16px_rgba(0,224,84,0.3)] cursor-pointer"
+                  className="mt-6 w-full max-w-[260px] py-3 bg-accent text-[#0e1114] text-xs font-bold uppercase tracking-wider rounded-[4px] hover:bg-accent-dim transition-all shadow-[0_0_16px_rgba(0,224,84,0.3)] cursor-pointer"
                 >
                   Play Today's Puzzle
                 </button>
@@ -2177,13 +2194,10 @@
           </main>
 
           {/* Footer */}
-          <footer className="border-t border-[#2c3440] bg-[#14181c] py-6 mt-auto">
+          <footer className="border-t border-[#242c35] bg-[#0e1114] py-6 mt-auto">
             <div className="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-text-muted">
-              <div className="flex items-center gap-2">
-                <span className="font-semibold text-text-secondary">Filmtrace</span> &mdash; Two films. One trail.
-              </div>
               <div className="flex items-center gap-1.5 text-text-secondary">
-                <span>Made with ❤️ and too many movie rewatches by</span>
+                <span>Made with passion and late-night cinema by</span>
                 <a 
                   href="https://github.com/adityavc19" 
                   target="_blank" 

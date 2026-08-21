@@ -1,14 +1,13 @@
 import type { Metadata } from 'next';
-import { Inter, Newsreader } from 'next/font/google';
+import { Inter } from 'next/font/google';
 import './globals.css';
 import Navbar from '@/components/Navbar';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
-const newsreader = Newsreader({ subsets: ['latin'], style: ['normal', 'italic'], variable: '--font-newsreader' });
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Filmtrace — Two films. One trail. How fast can you connect them?',
-  description: 'Two films. One trail. How fast can you connect them?',
+  title: 'Filmtrace — Connect the dots between films',
+  description: 'Connect movies through shared actors, directors, and crew.',
 };
 
 export default function RootLayout({
@@ -18,7 +17,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
-      <body className={`${inter.className} ${newsreader.variable} min-h-screen flex flex-col bg-bg-primary text-text-primary antialiased`}>
+      <body className={`${inter.className} min-h-screen flex flex-col bg-[#161c22] text-text-primary antialiased`}>
         {/* Top Header Navigation */}
         <Navbar />
 
@@ -28,13 +27,10 @@ export default function RootLayout({
         </div>
 
         {/* Footer */}
-        <footer className="border-t border-[#2c3440] bg-[#14181c] py-6 mt-auto">
+        <footer className="border-t border-[#242c35] bg-[#0e1114] py-6 mt-auto">
           <div className="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-text-muted">
-            <div className="flex items-center gap-2">
-              <span className="font-semibold text-text-secondary">Filmtrace</span> &mdash; Two films. One trail.
-            </div>
             <div className="flex items-center gap-1.5 text-text-secondary">
-              <span>Made with ❤️ and too many movie rewatches by</span>
+              <span>Made with passion and late-night cinema by</span>
               <a 
                 href="https://github.com/adityavc19" 
                 target="_blank" 
