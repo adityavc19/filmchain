@@ -89,33 +89,33 @@ export default function Home() {
           {/* Reel Loop 1 */}
           <div className="flex items-center">
             {[
-              { icon: '🍿', text: 'May the Force be with you.', stock: 'KODAK 5219', frame: '01A' },
-              { icon: '🚂', text: 'Bade bade deshon mein aisi choti choti baatein hoti rehti hain, Senorita.', stock: 'YRF 35MM', frame: '02A' },
-              { icon: '🎬', text: "Here's looking at you, kid.", stock: 'PANAVISION', frame: '03A' },
-              { icon: '🕶️', text: 'Don ko pakadna mushkil hi nahi, namumkin hai.', stock: 'EASTMAN 100', frame: '04A' },
-              { icon: '🪐', text: 'Do not go gentle into that good night.', stock: 'IMAX 70MM', frame: '05A' },
-              { icon: '💫', text: 'Picture abhi baaki hai mere dost!', stock: 'FUJIFILM', frame: '06A' },
-              { icon: '⚡', text: "You're a wizard, Harry.", stock: 'WARNER 35', frame: '07A' },
-              { icon: '👑', text: 'Mogambo khush hua.', stock: 'CINERAMA', frame: '08A' },
-              { icon: '🚗', text: "Roads? Where we're going, we don't need roads.", stock: 'SAFETY FILM', frame: '09A' },
-              { icon: '🍫', text: 'Life is like a box of chocolates.', stock: 'TECHNICOLOR', frame: '10A' },
-              { icon: '🚪', text: "Here's Johnny!", stock: 'KODAK 5247', frame: '11A' },
-              { icon: '🌌', text: 'To infinity and beyond!', stock: 'PIXAR 35', frame: '12A' },
+              { icon: '🍿', text: 'May the Force be with you.' },
+              { icon: '🚂', text: 'Bade bade deshon mein aisi choti choti baatein hoti rehti hain, Senorita.' },
+              { icon: '🎬', text: "Here's looking at you, kid." },
+              { icon: '🕶️', text: 'Don ko pakadna mushkil hi nahi, namumkin hai.' },
+              { icon: '🪐', text: 'Do not go gentle into that good night.' },
+              { icon: '💫', text: 'Picture abhi baaki hai mere dost!' },
+              { icon: '⚡', text: "You're a wizard, Harry." },
+              { icon: '👑', text: 'Mogambo khush hua.' },
+              { icon: '🚗', text: "Roads? Where we're going, we don't need roads." },
+              { icon: '🍫', text: 'Life is like a box of chocolates.' },
+              { icon: '🚪', text: "Here's Johnny!" },
+              { icon: '🌌', text: 'To infinity and beyond!' },
             ].map((q, idx) => (
-              <div key={`reel1-${idx}`} className="film-frame flex flex-col justify-between py-1 px-4 min-w-[280px] mx-1 rounded-[1px] transition-colors hover:bg-[#151c27] cursor-default">
+              <div key={`reel1-${idx}`} className="film-frame flex flex-col justify-between py-1 px-3 min-w-[260px] mx-1 rounded-[1px] transition-colors hover:bg-[#151c27] cursor-default">
                 {/* Top Sprocket Perforations */}
                 <div className="flex items-center justify-between gap-3 pb-1 border-b border-[#1e2938]/70">
                   <div className="sprocket-hole"></div>
-                  <span className="text-[8px] font-mono font-bold tracking-widest text-[#e4b363]/90 uppercase">
-                    {q.stock}
-                  </span>
+                  <div className="sprocket-hole"></div>
+                  <div className="sprocket-hole"></div>
+                  <div className="sprocket-hole"></div>
                   <div className="sprocket-hole"></div>
                 </div>
 
                 {/* Center Dialogue Frame */}
-                <div className="flex items-center gap-2 py-1 whitespace-nowrap">
+                <div className="flex items-center justify-center gap-2 py-1.5 px-2 whitespace-nowrap">
                   <span className="text-xs">{q.icon}</span>
-                  <span className="text-[11px] sm:text-xs font-bold tracking-wide text-white drop-shadow">
+                  <span className="text-[11px] sm:text-xs font-semibold tracking-wide text-white drop-shadow">
                     &ldquo;{q.text}&rdquo;
                   </span>
                 </div>
@@ -123,9 +123,9 @@ export default function Home() {
                 {/* Bottom Sprocket Perforations */}
                 <div className="flex items-center justify-between gap-3 pt-1 border-t border-[#1e2938]/70">
                   <div className="sprocket-hole"></div>
-                  <span className="text-[8px] font-mono text-[#71879d] tracking-wider uppercase">
-                    35MM FILM · FRAME {q.frame} ▲
-                  </span>
+                  <div className="sprocket-hole"></div>
+                  <div className="sprocket-hole"></div>
+                  <div className="sprocket-hole"></div>
                   <div className="sprocket-hole"></div>
                 </div>
               </div>
@@ -135,33 +135,33 @@ export default function Home() {
           {/* Reel Loop 2 (Duplicate for seamless continuous loop) */}
           <div className="flex items-center">
             {[
-              { icon: '🍿', text: 'May the Force be with you.', stock: 'KODAK 5219', frame: '01A' },
-              { icon: '🚂', text: 'Bade bade deshon mein aisi choti choti baatein hoti rehti hain, Senorita.', stock: 'YRF 35MM', frame: '02A' },
-              { icon: '🎬', text: "Here's looking at you, kid.", stock: 'PANAVISION', frame: '03A' },
-              { icon: '🕶️', text: 'Don ko pakadna mushkil hi nahi, namumkin hai.', stock: 'EASTMAN 100', frame: '04A' },
-              { icon: '🪐', text: 'Do not go gentle into that good night.', stock: 'IMAX 70MM', frame: '05A' },
-              { icon: '💫', text: 'Picture abhi baaki hai mere dost!', stock: 'FUJIFILM', frame: '06A' },
-              { icon: '⚡', text: "You're a wizard, Harry.", stock: 'WARNER 35', frame: '07A' },
-              { icon: '👑', text: 'Mogambo khush hua.', stock: 'CINERAMA', frame: '08A' },
-              { icon: '🚗', text: "Roads? Where we're going, we don't need roads.", stock: 'SAFETY FILM', frame: '09A' },
-              { icon: '🍫', text: 'Life is like a box of chocolates.', stock: 'TECHNICOLOR', frame: '10A' },
-              { icon: '🚪', text: "Here's Johnny!", stock: 'KODAK 5247', frame: '11A' },
-              { icon: '🌌', text: 'To infinity and beyond!', stock: 'PIXAR 35', frame: '12A' },
+              { icon: '🍿', text: 'May the Force be with you.' },
+              { icon: '🚂', text: 'Bade bade deshon mein aisi choti choti baatein hoti rehti hain, Senorita.' },
+              { icon: '🎬', text: "Here's looking at you, kid." },
+              { icon: '🕶️', text: 'Don ko pakadna mushkil hi nahi, namumkin hai.' },
+              { icon: '🪐', text: 'Do not go gentle into that good night.' },
+              { icon: '💫', text: 'Picture abhi baaki hai mere dost!' },
+              { icon: '⚡', text: "You're a wizard, Harry." },
+              { icon: '👑', text: 'Mogambo khush hua.' },
+              { icon: '🚗', text: "Roads? Where we're going, we don't need roads." },
+              { icon: '🍫', text: 'Life is like a box of chocolates.' },
+              { icon: '🚪', text: "Here's Johnny!" },
+              { icon: '🌌', text: 'To infinity and beyond!' },
             ].map((q, idx) => (
-              <div key={`reel2-${idx}`} className="film-frame flex flex-col justify-between py-1 px-4 min-w-[280px] mx-1 rounded-[1px] transition-colors hover:bg-[#151c27] cursor-default">
+              <div key={`reel2-${idx}`} className="film-frame flex flex-col justify-between py-1 px-3 min-w-[260px] mx-1 rounded-[1px] transition-colors hover:bg-[#151c27] cursor-default">
                 {/* Top Sprocket Perforations */}
                 <div className="flex items-center justify-between gap-3 pb-1 border-b border-[#1e2938]/70">
                   <div className="sprocket-hole"></div>
-                  <span className="text-[8px] font-mono font-bold tracking-widest text-[#e4b363]/90 uppercase">
-                    {q.stock}
-                  </span>
+                  <div className="sprocket-hole"></div>
+                  <div className="sprocket-hole"></div>
+                  <div className="sprocket-hole"></div>
                   <div className="sprocket-hole"></div>
                 </div>
 
                 {/* Center Dialogue Frame */}
-                <div className="flex items-center gap-2 py-1 whitespace-nowrap">
+                <div className="flex items-center justify-center gap-2 py-1.5 px-2 whitespace-nowrap">
                   <span className="text-xs">{q.icon}</span>
-                  <span className="text-[11px] sm:text-xs font-bold tracking-wide text-white drop-shadow">
+                  <span className="text-[11px] sm:text-xs font-semibold tracking-wide text-white drop-shadow">
                     &ldquo;{q.text}&rdquo;
                   </span>
                 </div>
@@ -169,9 +169,9 @@ export default function Home() {
                 {/* Bottom Sprocket Perforations */}
                 <div className="flex items-center justify-between gap-3 pt-1 border-t border-[#1e2938]/70">
                   <div className="sprocket-hole"></div>
-                  <span className="text-[8px] font-mono text-[#71879d] tracking-wider uppercase">
-                    35MM FILM · FRAME {q.frame} ▲
-                  </span>
+                  <div className="sprocket-hole"></div>
+                  <div className="sprocket-hole"></div>
+                  <div className="sprocket-hole"></div>
                   <div className="sprocket-hole"></div>
                 </div>
               </div>

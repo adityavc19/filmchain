@@ -29,14 +29,14 @@ export default function Navbar() {
             className="flex items-center gap-1.5 py-1 text-text-secondary hover:text-white transition-colors"
           >
             <Compass className="w-3.5 h-3.5 text-[#40bcf4]" />
-            <span>Community Games</span>
+            <span>Community</span>
           </Link>
           <Link 
             href="/create" 
             className="flex items-center gap-1.5 py-1 text-text-secondary hover:text-white transition-colors"
           >
             <Plus className="w-3.5 h-3.5 text-text-secondary" />
-            <span>Create Game</span>
+            <span>Create</span>
           </Link>
           <Link 
             href="/leaderboard" 
