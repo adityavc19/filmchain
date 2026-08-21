@@ -18,38 +18,44 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${inter.className} min-h-screen flex flex-col bg-bg-primary text-text-primary antialiased`}>
-        {/* Letterboxd-inspired Nav Bar */}
-        <header className="border-b border-border bg-bg-secondary/90 backdrop-blur-md sticky top-0 z-50">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-2.5 group">
-              {/* Iconic 3 circles */}
+        {/* Top Header Navigation */}
+        <header className="border-b border-border bg-bg-primary/95 backdrop-blur-md sticky top-0 z-50">
+          <div className="max-w-5xl mx-auto px-4 min-h-[56px] flex items-center justify-between flex-wrap gap-2">
+            <Link href="/" className="flex items-center gap-2 group">
               <div className="flex items-center gap-1">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#00e054] shadow-[0_0_8px_rgba(0,224,84,0.6)]"></span>
-                <span className="w-2.5 h-2.5 rounded-full bg-[#ff8000] shadow-[0_0_8px_rgba(255,128,0,0.6)]"></span>
-                <span className="w-2.5 h-2.5 rounded-full bg-[#40bcf4] shadow-[0_0_8px_rgba(64,188,244,0.6)]"></span>
+                <span className="w-2.5 h-2.5 rounded-full bg-[#00e054]"></span>
+                <span className="w-2.5 h-2.5 rounded-full bg-[#ff8000]"></span>
+                <span className="w-2.5 h-2.5 rounded-full bg-[#40bcf4]"></span>
               </div>
-              <span className="font-bold tracking-tight text-lg text-text-primary group-hover:text-accent transition-colors">
+              <span className="font-black tracking-tight text-lg text-white group-hover:text-accent transition-colors">
                 FILMCHAIN
               </span>
             </Link>
 
-            <nav className="flex items-center gap-5 text-xs font-semibold uppercase tracking-wider text-text-secondary">
-              <Link href="/" className="hover:text-text-primary transition-colors">Daily Puzzle</Link>
-              <Link href="/game/freeform" className="hover:text-text-primary transition-colors">Freeform</Link>
+            <nav className="flex items-center gap-3 sm:gap-4 text-xs font-semibold">
+              <Link href="/" className="px-3 py-1 text-text-secondary hover:text-white transition-colors">
+                Daily Puzzle
+              </Link>
+              <Link href="/leaderboard" className="px-3 py-1 text-text-secondary hover:text-white transition-colors">
+                Leaderboard
+              </Link>
+              <span className="px-3 py-1 text-text-muted flex items-center gap-1.5 cursor-default">
+                Freeform <span className="text-[9px] bg-bg-secondary border border-border px-1.5 py-0.5 rounded font-mono">SOON</span>
+              </span>
             </nav>
           </div>
         </header>
 
         {/* Main Content */}
-        <div className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+        <div className="flex-1 w-full max-w-5xl mx-auto px-4 py-6 box-border">
           {children}
         </div>
 
         {/* Footer */}
         <footer className="border-t border-border bg-bg-secondary py-6 mt-auto">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-text-muted">
+          <div className="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-text-muted">
             <div className="flex items-center gap-2">
-              <span className="font-semibold text-text-secondary">FilmChain</span> — Inspired by film connections
+              <span className="font-semibold text-text-secondary">FilmChain</span> — Connect movies through cast & crew
             </div>
             <div>Film data powered by TMDb</div>
           </div>
