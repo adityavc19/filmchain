@@ -83,134 +83,99 @@ export default function Home() {
 
   return (
     <div className="flex flex-col w-full">
-      {/* DYNAMIC MOTION STRIP (Below Header - Off-White / Light Grey) */}
-      <div className="w-full bg-[#f1f3f6] border-b border-[#d8dde6] py-2 overflow-hidden select-none -mx-4 px-4 sm:-mx-6 sm:px-6 mb-6">
-        <div className="motion-ticker flex items-center gap-7 text-xs font-semibold whitespace-nowrap text-[#111827]">
-          {/* Quotes loop 1 */}
-          <div className="flex items-center gap-7">
-            <span className="flex items-center gap-1.5">
-              <span className="text-sm">🍿</span>
-              <span className="text-[#059669] font-black">&ldquo;May the Force be with you.&rdquo;</span>
-            </span>
-            <span className="text-[#94a3b8] text-xs">✦</span>
-            <span className="flex items-center gap-1.5">
-              <span className="text-sm">🚂</span>
-              <span className="text-[#d97706] font-black">&ldquo;Bade bade deshon mein aisi choti choti baatein hoti rehti hain, Senorita.&rdquo;</span>
-            </span>
-            <span className="text-[#94a3b8] text-xs">✦</span>
-            <span className="flex items-center gap-1.5">
-              <span className="text-sm">🎬</span>
-              <span className="text-[#0284c7] font-black">&ldquo;Here&apos;s looking at you, kid.&rdquo;</span>
-            </span>
-            <span className="text-[#94a3b8] text-xs">✦</span>
-            <span className="flex items-center gap-1.5">
-              <span className="text-sm">🕶️</span>
-              <span className="text-[#7c3aed] font-black">&ldquo;Don ko pakadna mushkil hi nahi, namumkin hai.&rdquo;</span>
-            </span>
-            <span className="text-[#94a3b8] text-xs">✦</span>
-            <span className="flex items-center gap-1.5">
-              <span className="text-sm">🪐</span>
-              <span className="text-[#4f46e5] font-black">&ldquo;Do not go gentle into that good night.&rdquo;</span>
-            </span>
-            <span className="text-[#94a3b8] text-xs">✦</span>
-            <span className="flex items-center gap-1.5">
-              <span className="text-sm">💫</span>
-              <span className="text-[#e11d48] font-black">&ldquo;Picture abhi baaki hai mere dost!&rdquo;</span>
-            </span>
-            <span className="text-[#94a3b8] text-xs">✦</span>
-            <span className="flex items-center gap-1.5">
-              <span className="text-sm">⚡</span>
-              <span className="text-[#b45309] font-black">&ldquo;You&apos;re a wizard, Harry.&rdquo;</span>
-            </span>
-            <span className="text-[#94a3b8] text-xs">✦</span>
-            <span className="flex items-center gap-1.5">
-              <span className="text-sm">👑</span>
-              <span className="text-[#0d9488] font-black">&ldquo;Mogambo khush hua.&rdquo;</span>
-            </span>
-            <span className="text-[#94a3b8] text-xs">✦</span>
-            <span className="flex items-center gap-1.5">
-              <span className="text-sm">🚗</span>
-              <span className="text-[#dc2626] font-black">&ldquo;Roads? Where we&apos;re going, we don&apos;t need roads.&rdquo;</span>
-            </span>
-            <span className="text-[#94a3b8] text-xs">✦</span>
-            <span className="flex items-center gap-1.5">
-              <span className="text-sm">🍫</span>
-              <span className="text-[#059669] font-black">&ldquo;Life is like a box of chocolates.&rdquo;</span>
-            </span>
-            <span className="text-[#94a3b8] text-xs">✦</span>
-            <span className="flex items-center gap-1.5">
-              <span className="text-sm">🚪</span>
-              <span className="text-[#0284c7] font-black">&ldquo;Here&apos;s Johnny!&rdquo;</span>
-            </span>
-            <span className="text-[#94a3b8] text-xs">✦</span>
-            <span className="flex items-center gap-1.5">
-              <span className="text-sm">🌌</span>
-              <span className="text-[#7c3aed] font-black">&ldquo;To infinity and beyond!&rdquo;</span>
-            </span>
-            <span className="text-[#94a3b8] text-xs">✦</span>
+      {/* DYNAMIC MOTION STRIP — AUTHENTIC 35MM FILM REEL / ROLL */}
+      <div className="w-full film-strip-wrapper py-1.5 overflow-hidden select-none -mx-4 px-4 sm:-mx-6 sm:px-6 mb-6">
+        <div className="motion-ticker flex items-center">
+          {/* Reel Loop 1 */}
+          <div className="flex items-center">
+            {[
+              { icon: '🍿', text: 'May the Force be with you.', stock: 'KODAK 5219', frame: '01A' },
+              { icon: '🚂', text: 'Bade bade deshon mein aisi choti choti baatein hoti rehti hain, Senorita.', stock: 'YRF 35MM', frame: '02A' },
+              { icon: '🎬', text: "Here's looking at you, kid.", stock: 'PANAVISION', frame: '03A' },
+              { icon: '🕶️', text: 'Don ko pakadna mushkil hi nahi, namumkin hai.', stock: 'EASTMAN 100', frame: '04A' },
+              { icon: '🪐', text: 'Do not go gentle into that good night.', stock: 'IMAX 70MM', frame: '05A' },
+              { icon: '💫', text: 'Picture abhi baaki hai mere dost!', stock: 'FUJIFILM', frame: '06A' },
+              { icon: '⚡', text: "You're a wizard, Harry.", stock: 'WARNER 35', frame: '07A' },
+              { icon: '👑', text: 'Mogambo khush hua.', stock: 'CINERAMA', frame: '08A' },
+              { icon: '🚗', text: "Roads? Where we're going, we don't need roads.", stock: 'SAFETY FILM', frame: '09A' },
+              { icon: '🍫', text: 'Life is like a box of chocolates.', stock: 'TECHNICOLOR', frame: '10A' },
+              { icon: '🚪', text: "Here's Johnny!", stock: 'KODAK 5247', frame: '11A' },
+              { icon: '🌌', text: 'To infinity and beyond!', stock: 'PIXAR 35', frame: '12A' },
+            ].map((q, idx) => (
+              <div key={`reel1-${idx}`} className="film-frame flex flex-col justify-between py-1 px-4 min-w-[280px] mx-1 rounded-[1px] transition-colors hover:bg-[#151c27] cursor-default">
+                {/* Top Sprocket Perforations */}
+                <div className="flex items-center justify-between gap-3 pb-1 border-b border-[#1e2938]/70">
+                  <div className="sprocket-hole"></div>
+                  <span className="text-[8px] font-mono font-bold tracking-widest text-[#e4b363]/90 uppercase">
+                    {q.stock}
+                  </span>
+                  <div className="sprocket-hole"></div>
+                </div>
+
+                {/* Center Dialogue Frame */}
+                <div className="flex items-center gap-2 py-1 whitespace-nowrap">
+                  <span className="text-xs">{q.icon}</span>
+                  <span className="text-[11px] sm:text-xs font-bold tracking-wide text-white drop-shadow">
+                    &ldquo;{q.text}&rdquo;
+                  </span>
+                </div>
+
+                {/* Bottom Sprocket Perforations */}
+                <div className="flex items-center justify-between gap-3 pt-1 border-t border-[#1e2938]/70">
+                  <div className="sprocket-hole"></div>
+                  <span className="text-[8px] font-mono text-[#71879d] tracking-wider uppercase">
+                    35MM FILM · FRAME {q.frame} ▲
+                  </span>
+                  <div className="sprocket-hole"></div>
+                </div>
+              </div>
+            ))}
           </div>
-          {/* Quotes loop 2 */}
-          <div className="flex items-center gap-7">
-            <span className="flex items-center gap-1.5">
-              <span className="text-sm">🍿</span>
-              <span className="text-[#059669] font-black">&ldquo;May the Force be with you.&rdquo;</span>
-            </span>
-            <span className="text-[#94a3b8] text-xs">✦</span>
-            <span className="flex items-center gap-1.5">
-              <span className="text-sm">🚂</span>
-              <span className="text-[#d97706] font-black">&ldquo;Bade bade deshon mein aisi choti choti baatein hoti rehti hain, Senorita.&rdquo;</span>
-            </span>
-            <span className="text-[#94a3b8] text-xs">✦</span>
-            <span className="flex items-center gap-1.5">
-              <span className="text-sm">🎬</span>
-              <span className="text-[#0284c7] font-black">&ldquo;Here&apos;s looking at you, kid.&rdquo;</span>
-            </span>
-            <span className="text-[#94a3b8] text-xs">✦</span>
-            <span className="flex items-center gap-1.5">
-              <span className="text-sm">🕶️</span>
-              <span className="text-[#7c3aed] font-black">&ldquo;Don ko pakadna mushkil hi nahi, namumkin hai.&rdquo;</span>
-            </span>
-            <span className="text-[#94a3b8] text-xs">✦</span>
-            <span className="flex items-center gap-1.5">
-              <span className="text-sm">🪐</span>
-              <span className="text-[#4f46e5] font-black">&ldquo;Do not go gentle into that good night.&rdquo;</span>
-            </span>
-            <span className="text-[#94a3b8] text-xs">✦</span>
-            <span className="flex items-center gap-1.5">
-              <span className="text-sm">💫</span>
-              <span className="text-[#e11d48] font-black">&ldquo;Picture abhi baaki hai mere dost!&rdquo;</span>
-            </span>
-            <span className="text-[#94a3b8] text-xs">✦</span>
-            <span className="flex items-center gap-1.5">
-              <span className="text-sm">⚡</span>
-              <span className="text-[#b45309] font-black">&ldquo;You&apos;re a wizard, Harry.&rdquo;</span>
-            </span>
-            <span className="text-[#94a3b8] text-xs">✦</span>
-            <span className="flex items-center gap-1.5">
-              <span className="text-sm">👑</span>
-              <span className="text-[#0d9488] font-black">&ldquo;Mogambo khush hua.&rdquo;</span>
-            </span>
-            <span className="text-[#94a3b8] text-xs">✦</span>
-            <span className="flex items-center gap-1.5">
-              <span className="text-sm">🚗</span>
-              <span className="text-[#dc2626] font-black">&ldquo;Roads? Where we&apos;re going, we don&apos;t need roads.&rdquo;</span>
-            </span>
-            <span className="text-[#94a3b8] text-xs">✦</span>
-            <span className="flex items-center gap-1.5">
-              <span className="text-sm">🍫</span>
-              <span className="text-[#059669] font-black">&ldquo;Life is like a box of chocolates.&rdquo;</span>
-            </span>
-            <span className="text-[#94a3b8] text-xs">✦</span>
-            <span className="flex items-center gap-1.5">
-              <span className="text-sm">🚪</span>
-              <span className="text-[#0284c7] font-black">&ldquo;Here&apos;s Johnny!&rdquo;</span>
-            </span>
-            <span className="text-[#94a3b8] text-xs">✦</span>
-            <span className="flex items-center gap-1.5">
-              <span className="text-sm">🌌</span>
-              <span className="text-[#7c3aed] font-black">&ldquo;To infinity and beyond!&rdquo;</span>
-            </span>
-            <span className="text-[#94a3b8] text-xs">✦</span>
+
+          {/* Reel Loop 2 (Duplicate for seamless continuous loop) */}
+          <div className="flex items-center">
+            {[
+              { icon: '🍿', text: 'May the Force be with you.', stock: 'KODAK 5219', frame: '01A' },
+              { icon: '🚂', text: 'Bade bade deshon mein aisi choti choti baatein hoti rehti hain, Senorita.', stock: 'YRF 35MM', frame: '02A' },
+              { icon: '🎬', text: "Here's looking at you, kid.", stock: 'PANAVISION', frame: '03A' },
+              { icon: '🕶️', text: 'Don ko pakadna mushkil hi nahi, namumkin hai.', stock: 'EASTMAN 100', frame: '04A' },
+              { icon: '🪐', text: 'Do not go gentle into that good night.', stock: 'IMAX 70MM', frame: '05A' },
+              { icon: '💫', text: 'Picture abhi baaki hai mere dost!', stock: 'FUJIFILM', frame: '06A' },
+              { icon: '⚡', text: "You're a wizard, Harry.", stock: 'WARNER 35', frame: '07A' },
+              { icon: '👑', text: 'Mogambo khush hua.', stock: 'CINERAMA', frame: '08A' },
+              { icon: '🚗', text: "Roads? Where we're going, we don't need roads.", stock: 'SAFETY FILM', frame: '09A' },
+              { icon: '🍫', text: 'Life is like a box of chocolates.', stock: 'TECHNICOLOR', frame: '10A' },
+              { icon: '🚪', text: "Here's Johnny!", stock: 'KODAK 5247', frame: '11A' },
+              { icon: '🌌', text: 'To infinity and beyond!', stock: 'PIXAR 35', frame: '12A' },
+            ].map((q, idx) => (
+              <div key={`reel2-${idx}`} className="film-frame flex flex-col justify-between py-1 px-4 min-w-[280px] mx-1 rounded-[1px] transition-colors hover:bg-[#151c27] cursor-default">
+                {/* Top Sprocket Perforations */}
+                <div className="flex items-center justify-between gap-3 pb-1 border-b border-[#1e2938]/70">
+                  <div className="sprocket-hole"></div>
+                  <span className="text-[8px] font-mono font-bold tracking-widest text-[#e4b363]/90 uppercase">
+                    {q.stock}
+                  </span>
+                  <div className="sprocket-hole"></div>
+                </div>
+
+                {/* Center Dialogue Frame */}
+                <div className="flex items-center gap-2 py-1 whitespace-nowrap">
+                  <span className="text-xs">{q.icon}</span>
+                  <span className="text-[11px] sm:text-xs font-bold tracking-wide text-white drop-shadow">
+                    &ldquo;{q.text}&rdquo;
+                  </span>
+                </div>
+
+                {/* Bottom Sprocket Perforations */}
+                <div className="flex items-center justify-between gap-3 pt-1 border-t border-[#1e2938]/70">
+                  <div className="sprocket-hole"></div>
+                  <span className="text-[8px] font-mono text-[#71879d] tracking-wider uppercase">
+                    35MM FILM · FRAME {q.frame} ▲
+                  </span>
+                  <div className="sprocket-hole"></div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
