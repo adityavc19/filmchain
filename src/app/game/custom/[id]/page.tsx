@@ -308,10 +308,10 @@ export default function CustomGamePage({ params }: { params: Promise<{ id: strin
           {targetFilm && (
             <div className="flex items-start gap-3.5">
               <div
-                className="w-16 h-24 sm:w-18 sm:h-26 relative rounded overflow-hidden flex-shrink-0 bg-bg-secondary border border-border shadow-md"
+                className="w-20 h-28 sm:w-24 sm:h-34 relative rounded-[4px] overflow-hidden flex-shrink-0 bg-bg-secondary border-2 border-border shadow-lg"
               >
                 {targetFilm.poster_path ? (
-                  <Image src={posterUrl(targetFilm.poster_path, 'w185')} alt={targetFilm.title} fill sizes="72px" className="object-cover" />
+                  <Image src={posterUrl(targetFilm.poster_path, 'w342')} alt={targetFilm.title} fill sizes="96px" className="object-cover" />
                 ) : <div className="w-full h-full flex items-center justify-center text-xs text-text-muted">🎬</div>}
               </div>
               <div className="flex flex-col text-left justify-start pt-0.5">
@@ -354,11 +354,11 @@ export default function CustomGamePage({ params }: { params: Promise<{ id: strin
           {/* VIEW: UNIFIED FILM CARD & CAST/CREW CONTAINER */}
           {currentView === 'film' && currentMedia && (
             <div className="bg-bg-card border border-border rounded-[6px] shadow-2xl overflow-hidden flex flex-col">
-              {/* Film Header Banner (Top-aligned title & year) */}
+              {/* Film Header Banner (Hierarchy #2: Similar size to individual grid cards) */}
               <div className="p-3 sm:p-4 bg-gradient-to-b from-bg-secondary/40 to-bg-card border-b border-border flex items-start gap-3.5 text-left">
-                <div className="relative w-11 h-15 sm:w-12 sm:h-18 rounded-[4px] overflow-hidden bg-bg-secondary border border-border flex-shrink-0 shadow">
+                <div className="relative w-14 h-20 sm:w-16 sm:h-24 rounded-[4px] overflow-hidden bg-bg-secondary border border-border flex-shrink-0 shadow">
                   {currentMedia.poster_path ? (
-                    <Image src={posterUrl(currentMedia.poster_path, 'w185')} alt={currentMedia.title} fill sizes="48px" className="object-cover" />
+                    <Image src={posterUrl(currentMedia.poster_path, 'w185')} alt={currentMedia.title} fill sizes="64px" className="object-cover" />
                   ) : <div className="w-full h-full flex items-center justify-center text-xs">🎬</div>}
                 </div>
 
@@ -461,10 +461,11 @@ export default function CustomGamePage({ params }: { params: Promise<{ id: strin
           {/* VIEW: UNIFIED PERSON CARD & FILMOGRAPHY CONTAINER */}
           {currentView === 'person' && currentPerson && (
             <div className="bg-bg-card border border-border rounded-[6px] shadow-2xl overflow-hidden flex flex-col">
+              {/* Person Header Banner (Hierarchy #2: Similar size to individual grid cards) */}
               <div className="p-3 sm:p-4 bg-gradient-to-b from-bg-secondary/40 to-bg-card border-b border-border flex items-start gap-3.5 text-left">
-                <div className="relative w-11 h-15 sm:w-12 sm:h-18 rounded-[4px] overflow-hidden bg-bg-secondary border border-border flex-shrink-0 shadow">
+                <div className="relative w-14 h-20 sm:w-16 sm:h-24 rounded-[4px] overflow-hidden bg-bg-secondary border border-border flex-shrink-0 shadow">
                   {currentPerson.profile_path ? (
-                    <Image src={profileUrl(currentPerson.profile_path, 'w185')} alt={currentPerson.name} fill sizes="48px" className="object-cover" />
+                    <Image src={profileUrl(currentPerson.profile_path, 'w185')} alt={currentPerson.name} fill sizes="64px" className="object-cover" />
                   ) : <div className="w-full h-full flex items-center justify-center text-2xl">👤</div>}
                 </div>
                 <div className="flex flex-col min-w-0 justify-start pt-0.5">

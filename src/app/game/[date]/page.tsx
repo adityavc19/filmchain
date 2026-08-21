@@ -372,18 +372,18 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
       {/* Compact Sticky Game Status HUD */}
       <div className="flex flex-col gap-2.5 bg-bg-card/95 p-3 sm:p-3.5 rounded-[4px] border border-border sticky top-14 z-30 shadow-xl backdrop-blur-md">
         <div className="flex items-start justify-between gap-4 flex-wrap sm:flex-nowrap">
-          {/* Target Film Goal (Top-aligned, compact poster) */}
+          {/* Target Film Goal (Hierarchy #1: BIGGEST image on screen) */}
           {state.targetFilm && (
             <div className="flex items-start gap-3.5">
               <div
-                className="w-16 h-24 sm:w-18 sm:h-26 relative rounded overflow-hidden flex-shrink-0 bg-bg-secondary border border-border shadow-md"
+                className="w-20 h-28 sm:w-24 sm:h-34 relative rounded-[4px] overflow-hidden flex-shrink-0 bg-bg-secondary border-2 border-border shadow-lg"
               >
                 {state.targetFilm.poster_path ? (
                   <Image
-                    src={posterUrl(state.targetFilm.poster_path, 'w185')}
+                    src={posterUrl(state.targetFilm.poster_path, 'w342')}
                     alt={state.targetFilm.title}
                     fill
-                    sizes="72px"
+                    sizes="96px"
                     className="object-cover"
                   />
                 ) : (
@@ -438,15 +438,15 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
           {/* VIEW: UNIFIED FILM CARD & CAST/CREW CONTAINER */}
           {state.currentView === 'film' && currentMedia && (
             <div className="bg-bg-card border border-border rounded-[6px] shadow-2xl overflow-hidden flex flex-col">
-              {/* Film Header Banner (Top-aligned title & year) */}
+              {/* Film Header Banner (Hierarchy #2: Similar size to individual grid cards) */}
               <div className="p-3 sm:p-4 bg-gradient-to-b from-bg-secondary/40 to-bg-card border-b border-border flex items-start gap-3.5 text-left">
-                <div className="relative w-11 h-15 sm:w-12 sm:h-18 rounded-[4px] overflow-hidden bg-bg-secondary border border-border flex-shrink-0 shadow">
+                <div className="relative w-14 h-20 sm:w-16 sm:h-24 rounded-[4px] overflow-hidden bg-bg-secondary border border-border flex-shrink-0 shadow">
                   {currentMedia.poster_path ? (
                     <Image
                       src={posterUrl(currentMedia.poster_path, 'w185')}
                       alt={currentMedia.title}
                       fill
-                      sizes="48px"
+                      sizes="64px"
                       className="object-cover"
                     />
                   ) : (
@@ -657,15 +657,15 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
           {state.currentView === 'person' && currentPerson && (
             <div className="bg-bg-card border border-border rounded-[6px] shadow-2xl overflow-hidden flex flex-col">
               {/* Person Header Banner (50% shorter thumbnail, clean name & tags) */}
-              {/* Person Header Banner (Top-aligned name & tags) */}
+              {/* Person Header Banner (Hierarchy #2: Similar size to individual grid cards) */}
               <div className="p-3 sm:p-4 bg-gradient-to-b from-bg-secondary/40 to-bg-card border-b border-border flex items-start gap-3.5 text-left">
-                <div className="relative w-11 h-15 sm:w-12 sm:h-18 rounded-[4px] overflow-hidden bg-bg-secondary border border-border flex-shrink-0 shadow">
+                <div className="relative w-14 h-20 sm:w-16 sm:h-24 rounded-[4px] overflow-hidden bg-bg-secondary border border-border flex-shrink-0 shadow">
                   {currentPerson.profile_path ? (
                     <Image
                       src={profileUrl(currentPerson.profile_path, 'w185')}
                       alt={currentPerson.name}
                       fill
-                      sizes="48px"
+                      sizes="64px"
                       className="object-cover"
                     />
                   ) : (
