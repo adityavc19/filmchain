@@ -81,107 +81,232 @@ export default function Home() {
   }
 
   return (
-    <main className="flex flex-col items-center gap-12 py-4 max-w-5xl mx-auto w-full text-left">
-      
-      {/* 1. HERO SECTION */}
-      <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center pt-2 pb-6 w-full border-b border-[#28323e]">
+    <div className="flex flex-col w-full">
+      {/* DYNAMIC MOTION STRIP */}
+      <div className="w-full bg-[#0e1114]/90 border-b border-[#28323e]/80 py-2.5 overflow-hidden select-none -mx-4 px-4 sm:-mx-6 sm:px-6 mb-6">
+        <div className="motion-ticker flex items-center gap-8 text-xs font-semibold whitespace-nowrap">
+          {/* Quotes loop 1 */}
+          <div className="flex items-center gap-8">
+            <span className="flex items-center gap-2">
+              <span className="text-base">🍿</span>
+              <span className="text-[#00e054] font-bold">&ldquo;May the Force be with you.&rdquo;</span>
+              <span className="text-text-muted text-[11px] font-normal">— Star Wars</span>
+            </span>
+            <span className="text-text-muted text-xs opacity-40">✦</span>
+            <span className="flex items-center gap-2">
+              <span className="text-base">🎬</span>
+              <span className="text-[#40bcf4] font-bold">&ldquo;Here&apos;s looking at you, kid.&rdquo;</span>
+              <span className="text-text-muted text-[11px] font-normal">— Casablanca</span>
+            </span>
+            <span className="text-text-muted text-xs opacity-40">✦</span>
+            <span className="flex items-center gap-2">
+              <span className="text-base">🕶️</span>
+              <span className="text-[#ff8000] font-bold">&ldquo;I&apos;ll make him an offer he can&apos;t refuse.&rdquo;</span>
+              <span className="text-text-muted text-[11px] font-normal">— The Godfather</span>
+            </span>
+            <span className="text-text-muted text-xs opacity-40">✦</span>
+            <span className="flex items-center gap-2">
+              <span className="text-base">🪐</span>
+              <span className="text-[#a855f7] font-bold">&ldquo;Do not go gentle into that good night.&rdquo;</span>
+              <span className="text-text-muted text-[11px] font-normal">— Interstellar</span>
+            </span>
+            <span className="text-text-muted text-xs opacity-40">✦</span>
+            <span className="flex items-center gap-2">
+              <span className="text-base">⚡</span>
+              <span className="text-[#ffd700] font-bold">&ldquo;You&apos;re a wizard, Harry.&rdquo;</span>
+              <span className="text-text-muted text-[11px] font-normal">— Harry Potter</span>
+            </span>
+            <span className="text-text-muted text-xs opacity-40">✦</span>
+            <span className="flex items-center gap-2">
+              <span className="text-base">🚗</span>
+              <span className="text-[#f43f5e] font-bold">&ldquo;Roads? Where we&apos;re going, we don&apos;t need roads.&rdquo;</span>
+              <span className="text-text-muted text-[11px] font-normal">— Back to the Future</span>
+            </span>
+            <span className="text-text-muted text-xs opacity-40">✦</span>
+            <span className="flex items-center gap-2">
+              <span className="text-base">🍫</span>
+              <span className="text-[#00e054] font-bold">&ldquo;Life is like a box of chocolates.&rdquo;</span>
+              <span className="text-text-muted text-[11px] font-normal">— Forrest Gump</span>
+            </span>
+            <span className="text-text-muted text-xs opacity-40">✦</span>
+            <span className="flex items-center gap-2">
+              <span className="text-base">🚪</span>
+              <span className="text-[#40bcf4] font-bold">&ldquo;Here&apos;s Johnny!&rdquo;</span>
+              <span className="text-text-muted text-[11px] font-normal">— The Shining</span>
+            </span>
+            <span className="text-text-muted text-xs opacity-40">✦</span>
+            <span className="flex items-center gap-2">
+              <span className="text-base">👑</span>
+              <span className="text-[#ff8000] font-bold">&ldquo;To infinity and beyond!&rdquo;</span>
+              <span className="text-text-muted text-[11px] font-normal">— Toy Story</span>
+            </span>
+            <span className="text-text-muted text-xs opacity-40">✦</span>
+          </div>
+          {/* Quotes loop 2 */}
+          <div className="flex items-center gap-8">
+            <span className="flex items-center gap-2">
+              <span className="text-base">🍿</span>
+              <span className="text-[#00e054] font-bold">&ldquo;May the Force be with you.&rdquo;</span>
+              <span className="text-text-muted text-[11px] font-normal">— Star Wars</span>
+            </span>
+            <span className="text-text-muted text-xs opacity-40">✦</span>
+            <span className="flex items-center gap-2">
+              <span className="text-base">🎬</span>
+              <span className="text-[#40bcf4] font-bold">&ldquo;Here&apos;s looking at you, kid.&rdquo;</span>
+              <span className="text-text-muted text-[11px] font-normal">— Casablanca</span>
+            </span>
+            <span className="text-text-muted text-xs opacity-40">✦</span>
+            <span className="flex items-center gap-2">
+              <span className="text-base">🕶️</span>
+              <span className="text-[#ff8000] font-bold">&ldquo;I&apos;ll make him an offer he can&apos;t refuse.&rdquo;</span>
+              <span className="text-text-muted text-[11px] font-normal">— The Godfather</span>
+            </span>
+            <span className="text-text-muted text-xs opacity-40">✦</span>
+            <span className="flex items-center gap-2">
+              <span className="text-base">🪐</span>
+              <span className="text-[#a855f7] font-bold">&ldquo;Do not go gentle into that good night.&rdquo;</span>
+              <span className="text-text-muted text-[11px] font-normal">— Interstellar</span>
+            </span>
+            <span className="text-text-muted text-xs opacity-40">✦</span>
+            <span className="flex items-center gap-2">
+              <span className="text-base">⚡</span>
+              <span className="text-[#ffd700] font-bold">&ldquo;You&apos;re a wizard, Harry.&rdquo;</span>
+              <span className="text-text-muted text-[11px] font-normal">— Harry Potter</span>
+            </span>
+            <span className="text-text-muted text-xs opacity-40">✦</span>
+            <span className="flex items-center gap-2">
+              <span className="text-base">🚗</span>
+              <span className="text-[#f43f5e] font-bold">&ldquo;Roads? Where we&apos;re going, we don&apos;t need roads.&rdquo;</span>
+              <span className="text-text-muted text-[11px] font-normal">— Back to the Future</span>
+            </span>
+            <span className="text-text-muted text-xs opacity-40">✦</span>
+            <span className="flex items-center gap-2">
+              <span className="text-base">🍫</span>
+              <span className="text-[#00e054] font-bold">&ldquo;Life is like a box of chocolates.&rdquo;</span>
+              <span className="text-text-muted text-[11px] font-normal">— Forrest Gump</span>
+            </span>
+            <span className="text-text-muted text-xs opacity-40">✦</span>
+            <span className="flex items-center gap-2">
+              <span className="text-base">🚪</span>
+              <span className="text-[#40bcf4] font-bold">&ldquo;Here&apos;s Johnny!&rdquo;</span>
+              <span className="text-text-muted text-[11px] font-normal">— The Shining</span>
+            </span>
+            <span className="text-text-muted text-xs opacity-40">✦</span>
+            <span className="flex items-center gap-2">
+              <span className="text-base">👑</span>
+              <span className="text-[#ff8000] font-bold">&ldquo;To infinity and beyond!&rdquo;</span>
+              <span className="text-text-muted text-[11px] font-normal">— Toy Story</span>
+            </span>
+            <span className="text-text-muted text-xs opacity-40">✦</span>
+          </div>
+        </div>
+      </div>
+
+      <main className="flex flex-col items-center gap-12 max-w-5xl mx-auto w-full text-left">
         
-        {/* Left Column: Title & Action */}
-        <div className="lg:col-span-6 flex flex-col gap-4 items-start">
+        {/* 1. HERO SECTION */}
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center pt-2 pb-6 w-full border-b border-[#28323e]">
           
-          {/* Eyebrow Badge */}
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1c242c] border border-[#28323e] text-[#9ab0c2] text-xs font-semibold tracking-wide uppercase">
-            <Sparkles className="w-3.5 h-3.5 text-text-secondary" />
-            <span>A Game for Cinephiles</span>
-          </div>
-
-          {/* Clean 2-Line Headline */}
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.08]">
-            <span className="text-[#00e054]">Two films.</span> <br />
-            <span className="text-[#9ab0c2]">How do you connect them?</span>
-          </h1>
-
-          {/* Clean Concise Subtitle */}
-          <p className="mt-4 sm:mt-5 text-sm sm:text-base text-text-secondary font-normal leading-relaxed max-w-md">
-            Trace the shortest path through shared actors, directors, and writers.
-          </p>
-
-          {/* Primary Action Button (Clean Solid White) */}
-          <div className="pt-2 w-full sm:w-auto">
-            <button
-              onClick={() => setShowDailyBrief(true)}
-              className="flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-[4px] bg-white hover:bg-[#e6e6e6] text-[#0e1114] font-black text-sm uppercase tracking-wider transition-all shadow-md cursor-pointer"
-            >
-              <Clapperboard className="w-4 h-4" />
-              <span>Play Today&apos;s Challenge</span>
-            </button>
-          </div>
-
-          {/* Daily Teaser Strip with Dynamic Count */}
-          {puzzle && (
-            <div className="flex items-center gap-1.5 pt-1 text-xs text-text-secondary">
-              <Users className="w-3.5 h-3.5 text-[#40bcf4]" />
-              <span>{52 + (puzzle.playerCount || 0)} games played today</span>
+          {/* Left Column: Title & Action */}
+          <div className="lg:col-span-6 flex flex-col gap-4 items-start">
+            
+            {/* Eyebrow Badge */}
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1c242c] border border-[#28323e] text-[#9ab0c2] text-xs font-semibold tracking-wide uppercase">
+              <Sparkles className="w-3.5 h-3.5 text-text-secondary" />
+              <span>A Game for Cinephiles</span>
             </div>
-          )}
-        </div>
 
-        {/* Right Column: Clean Minimalist Icon-Based "How It Works" Visual */}
-        <div className="lg:col-span-6 flex items-center justify-center">
-          <div className="w-full bg-[#1c242c] border border-[#28323e] rounded-[6px] p-5 shadow-xl">
-            <div className="flex flex-col gap-4">
-              
-              {/* Widget Header */}
-              <div className="flex items-center justify-between text-[11px] font-mono uppercase text-text-muted border-b border-[#28323e] pb-2">
-                <span>HOW IT WORKS</span>
-                <Clock className="w-3.5 h-3.5 text-text-secondary" />
+            {/* Clean 2-Line Headline */}
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.08]">
+              <span className="text-[#00e054]">Two films.</span> <br />
+              <span className="text-[#9ab0c2]">How do you connect them?</span>
+            </h1>
+
+            {/* Clean Concise Subtitle */}
+            <p className="mt-4 sm:mt-5 text-sm sm:text-base text-text-secondary font-normal leading-relaxed max-w-md">
+              Trace the shortest path through shared actors, directors, and writers.
+            </p>
+
+            {/* Primary Action Button (Clean Solid White) */}
+            <div className="pt-2 w-full sm:w-auto">
+              <button
+                onClick={() => setShowDailyBrief(true)}
+                className="flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-[4px] bg-white hover:bg-[#e6e6e6] text-[#0e1114] font-black text-sm uppercase tracking-wider transition-all shadow-md cursor-pointer"
+              >
+                <Clapperboard className="w-4 h-4" />
+                <span>Play Today&apos;s Challenge</span>
+              </button>
+            </div>
+
+            {/* Daily Teaser Strip with Dynamic Count */}
+            {puzzle && (
+              <div className="flex items-center gap-1.5 pt-1 text-xs text-text-secondary">
+                <Users className="w-3.5 h-3.5 text-[#40bcf4]" />
+                <span>{52 + (puzzle.playerCount || 0)} games played today</span>
               </div>
+            )}
+          </div>
 
-              {/* Clean Icon Flow (Film -> Actor -> Film -> ... -> End) */}
-              <div className="flex items-center justify-center gap-2 sm:gap-3 py-3">
-                {/* 1. Start Film */}
-                <div className="flex flex-col items-center gap-1.5">
-                  <div className="w-12 h-14 rounded bg-[#222b35] border border-[#28323e] flex items-center justify-center text-white shadow-sm">
-                    <Film className="w-5 h-5 text-text-secondary" />
-                  </div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-text-secondary">Film</span>
+          {/* Right Column: Clean Minimalist Icon-Based "How It Works" Visual (~25% taller with placeholder films) */}
+          <div className="lg:col-span-6 flex items-center justify-center">
+            <div className="w-full bg-[#1c242c] border border-[#28323e] rounded-[6px] p-6 sm:p-7 shadow-xl">
+              <div className="flex flex-col gap-5">
+                
+                {/* Widget Header */}
+                <div className="flex items-center justify-between text-[11px] font-mono uppercase text-text-muted border-b border-[#28323e] pb-2.5">
+                  <span>HOW IT WORKS</span>
+                  <Clock className="w-3.5 h-3.5 text-text-secondary" />
                 </div>
 
-                <span className="text-text-muted text-xs">&rarr;</span>
-
-                {/* 2. Actor / Crew */}
-                <div className="flex flex-col items-center gap-1.5">
-                  <div className="w-12 h-14 rounded bg-[#222b35] border border-[#28323e] flex items-center justify-center text-white shadow-sm">
-                    <Users className="w-5 h-5 text-text-secondary" />
+                {/* Clean Icon Flow (Film -> Actor -> Film -> ... -> End) */}
+                <div className="flex items-center justify-center gap-2 sm:gap-3 py-2">
+                  {/* 1. Start Film (Oppenheimer placeholder) */}
+                  <div className="flex flex-col items-center gap-1.5 w-18 sm:w-20">
+                    <div className="w-16 h-22 sm:w-18 sm:h-26 rounded-[4px] bg-[#222b35] border border-[#28323e] overflow-hidden shadow-sm relative">
+                      <Image src="https://image.tmdb.org/t/p/w185/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg" alt="Oppenheimer" fill className="object-cover" />
+                    </div>
+                    <span className="text-[10px] font-bold text-white text-center truncate max-w-full">Oppenheimer</span>
+                    <span className="text-[9px] uppercase font-bold text-text-secondary">Start</span>
                   </div>
-                  <span className="text-[10px] font-medium text-text-secondary">Cast / Crew</span>
+
+                  <span className="text-text-muted text-xs">&rarr;</span>
+
+                  {/* 2. Actor / Crew (Unnamed) */}
+                  <div className="flex flex-col items-center gap-1.5 w-14 sm:w-16">
+                    <div className="w-14 h-22 sm:w-16 sm:h-26 rounded-[4px] bg-[#222b35] border border-[#28323e] flex flex-col items-center justify-center text-white shadow-sm gap-1.5">
+                      <Users className="w-5 h-5 text-text-secondary" />
+                      <span className="text-[9px] font-mono uppercase text-text-muted">Cast</span>
+                    </div>
+                    <span className="text-[10px] font-medium text-text-secondary text-center">Cast / Crew</span>
+                  </div>
+
+                  <span className="text-text-muted text-xs">&rarr;</span>
+
+                  {/* 3. Next Film (Unnamed) */}
+                  <div className="flex flex-col items-center gap-1.5 w-14 sm:w-16">
+                    <div className="w-14 h-22 sm:w-16 sm:h-26 rounded-[4px] bg-[#222b35] border border-[#28323e] flex flex-col items-center justify-center text-white shadow-sm gap-1.5">
+                      <Film className="w-5 h-5 text-text-secondary" />
+                      <span className="text-[9px] font-mono uppercase text-text-muted">Film</span>
+                    </div>
+                    <span className="text-[10px] font-medium text-text-secondary text-center">Film</span>
+                  </div>
+
+                  <span className="text-text-muted text-sm font-mono tracking-widest px-0.5">&middot;&middot;&middot;</span>
+
+                  {/* 4. End Film (Inception placeholder with green outline) */}
+                  <div className="flex flex-col items-center gap-1.5 w-18 sm:w-20">
+                    <div className="w-16 h-22 sm:w-18 sm:h-26 rounded-[4px] bg-[#222b35] border-2 border-[#00e054] overflow-hidden shadow-[0_0_16px_rgba(0,224,84,0.3)] relative">
+                      <Image src="https://image.tmdb.org/t/p/w185/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg" alt="Inception" fill className="object-cover" />
+                    </div>
+                    <span className="text-[10px] font-bold text-[#00e054] text-center truncate max-w-full">Inception</span>
+                    <span className="text-[9px] uppercase font-bold text-[#00e054]">End</span>
+                  </div>
                 </div>
 
-                <span className="text-text-muted text-xs">&rarr;</span>
-
-                {/* 3. Next Film */}
-                <div className="flex flex-col items-center gap-1.5">
-                  <div className="w-12 h-14 rounded bg-[#222b35] border border-[#28323e] flex items-center justify-center text-white shadow-sm">
-                    <Film className="w-5 h-5 text-text-secondary" />
-                  </div>
-                  <span className="text-[10px] font-medium text-text-secondary">Film</span>
-                </div>
-
-                <span className="text-text-muted text-sm font-mono tracking-widest px-1">&middot;&middot;&middot;</span>
-
-                {/* 4. End Film */}
-                <div className="flex flex-col items-center gap-1.5">
-                  <div className="w-12 h-14 rounded bg-[#222b35] border-2 border-[#00e054] flex items-center justify-center text-[#00e054] shadow-[0_0_12px_rgba(0,224,84,0.25)]">
-                    <Film className="w-5 h-5 text-[#00e054]" />
-                  </div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#00e054]">End</span>
-                </div>
               </div>
-
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
       {/* 2. COMMUNITY CHALLENGES (Single Clean CTA at bottom) */}
       {communityPuzzles.length > 0 && (
@@ -461,6 +586,7 @@ export default function Home() {
         </div>
       )}
 
-    </main>
+      </main>
+    </div>
   );
 }
