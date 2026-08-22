@@ -15,15 +15,15 @@ export default function Navbar() {
 
   return (
     <header className="border-b border-[#242c35] bg-[#0e1114] sticky top-0 z-50 shadow-md">
-      <div className="max-w-5xl mx-auto px-4 min-h-[56px] flex items-center justify-between flex-wrap gap-2">
+      <div className="max-w-5xl mx-auto px-3 sm:px-4 min-h-[56px] flex items-center justify-between flex-wrap gap-y-2 py-2 sm:py-0">
         <Link href="/" className="flex items-center gap-2.5 group">
           <Logo variant="connected-frames" size={26} />
           <span className="font-black tracking-tight text-lg text-white group-hover:text-[#9ab0c2] transition-colors">
-            FILMTRACE
+            FILM SPEEDRUN
           </span>
         </Link>
 
-        <nav className="flex items-center gap-3 sm:gap-5 text-xs font-medium">
+        <nav className="flex items-center gap-2.5 sm:gap-5 text-[11px] sm:text-xs font-medium w-full sm:w-auto">
           <Link 
             href="/community" 
             className="flex items-center gap-1.5 py-1 text-text-secondary hover:text-white transition-colors"
@@ -50,9 +50,9 @@ export default function Navbar() {
             <Link
               href={`/profile/${handle}`}
               title={`Profile (@${handle})`}
-              className="w-8 h-8 rounded-full bg-[#1c242c] hover:bg-[#28323e] text-text-secondary hover:text-white border border-[#28323e] flex items-center justify-center transition-colors ml-1"
+              className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#1c242c] hover:bg-[#28323e] text-text-secondary hover:text-white border border-[#28323e] flex items-center justify-center transition-colors ml-auto sm:ml-2 flex-shrink-0"
             >
-              <User className="w-4 h-4 text-text-secondary" />
+              <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-text-secondary" />
             </Link>
           )}
         </nav>

@@ -451,19 +451,21 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
             </div>
           )}
 
-          {/* Right Metrics: Clicks & Timer on Top Right */}
-          <div className="flex items-center gap-3.5 sm:gap-6 flex-shrink-0 text-right">
+          {/* Right Metrics: Highlighted Container with contrast */}
+          <div className="flex items-center gap-2.5 sm:gap-4 bg-[#26323e] border border-[#3e4f61] rounded-[6px] px-2.5 py-1.5 sm:px-3.5 sm:py-2 shadow-sm flex-shrink-0">
             {/* Clicks Counter */}
-            <div className="flex flex-col text-right">
-              <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-text-secondary leading-none">CLICKS</span>
-              <span className="font-mono text-base sm:text-2xl font-black text-white leading-tight mt-0.5">
+            <div className="flex flex-col items-center text-center">
+              <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-[#9ab0c2] leading-none">CLICKS</span>
+              <span className="font-mono text-sm sm:text-lg font-black text-white leading-tight mt-0.5">
                 {state.clickCount}
               </span>
             </div>
 
+            <div className="w-px h-5 sm:h-6 bg-[#3e4f61]"></div>
+
             {/* Running Clock */}
-            <div className="flex flex-col text-right">
-              <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-text-secondary leading-none">TIME</span>
+            <div className="flex flex-col items-center text-center">
+              <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-[#9ab0c2] leading-none">TIME</span>
               <div className="mt-0.5">
                 <Timer startTime={state.startTime} endTime={state.endTime} />
               </div>
@@ -519,7 +521,6 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
                     <span className="text-sm sm:text-base font-extrabold uppercase tracking-wider text-white">
                       Choose next person
                     </span>
-                    <span className="text-xs text-text-muted font-mono">({filteredFilmCredits.length})</span>
                   </div>
 
                   {/* Search Input & Filter Pills below heading */}
@@ -737,7 +738,6 @@ export default function GamePage({ params }: { params: Promise<{ date: string }>
                     <span className="text-sm sm:text-base font-extrabold uppercase tracking-wider text-white">
                       Choose next title
                     </span>
-                    <span className="text-xs text-text-muted font-mono">({filteredPersonAll.length})</span>
                   </div>
 
                   {/* Search Input & Filter Pills below heading */}

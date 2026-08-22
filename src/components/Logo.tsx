@@ -132,7 +132,7 @@ export default function Logo({
       {renderIcon()}
       {showText && (
         <span className="font-black tracking-tight text-lg text-white">
-          FILMTRACE
+          FILM SPEEDRUN
         </span>
       )}
     </div>

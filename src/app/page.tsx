@@ -176,11 +176,11 @@ export default function Home() {
               </button>
             </div>
 
-            {/* Daily Teaser Strip with Dynamic Count */}
+            {/* Daily Teaser Strip with Dynamic Count (+50 offset) */}
             {puzzle && (
               <div className="flex items-center gap-1.5 pt-1 text-xs text-text-secondary">
                 <Users className="w-3.5 h-3.5 text-[#40bcf4]" />
-                <span>{(puzzle.playerCount || 0)} {(puzzle.playerCount || 0) === 1 ? 'game' : 'games'} played today</span>
+                <span>{((puzzle.playerCount || 0) + 50)} games played today</span>
               </div>
             )}
           </div>

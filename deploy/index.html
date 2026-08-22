@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Filmtrace — Two films. How fast can you connect them?</title>
+  <title>Film Speedrun: Two films. How fast can you connect them?</title>
   <meta name="description" content="Trace the shortest path between two films traversing through the cast &amp; crew. Play daily cinephile challenges and climb the live leaderboard." />
 
   <!-- Favicon & Touch Icons -->
@@ -17,24 +17,24 @@
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://filmtrace.surge.sh/" />
-  <meta property="og:title" content="Filmtrace — Two films. How fast can you connect them?" />
+  <meta property="og:url" content="https://filmspeedrun.surge.sh/" />
+  <meta property="og:title" content="Film Speedrun: Two films. How fast can you connect them?" />
   <meta property="og:description" content="Trace the shortest path between two films traversing through the cast &amp; crew. Play daily cinephile challenges and climb the live leaderboard." />
-  <meta property="og:image" content="https://filmtrace.surge.sh/og-image-v2.png" />
-  <meta property="og:image:secure_url" content="https://filmtrace.surge.sh/og-image-v2.png" />
+  <meta property="og:image" content="https://filmspeedrun.surge.sh/og-image-v2.png" />
+  <meta property="og:image:secure_url" content="https://filmspeedrun.surge.sh/og-image-v2.png" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="Filmtrace — Two films. How fast can you connect them?" />
-  <meta property="og:site_name" content="Filmtrace" />
+  <meta property="og:image:alt" content="Film Speedrun: Two films. How fast can you connect them?" />
+  <meta property="og:site_name" content="Film Speedrun" />
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:url" content="https://filmtrace.surge.sh/" />
-  <meta name="twitter:title" content="Filmtrace — Two films. How fast can you connect them?" />
+  <meta name="twitter:url" content="https://filmspeedrun.surge.sh/" />
+  <meta name="twitter:title" content="Film Speedrun: Two films. How fast can you connect them?" />
   <meta name="twitter:description" content="Trace the shortest path between two films traversing through the cast &amp; crew. Play daily cinephile challenges and climb the live leaderboard." />
-  <meta name="twitter:image" content="https://filmtrace.surge.sh/og-image-v2.png" />
-  <meta name="twitter:image:alt" content="Filmtrace — Two films. How fast can you connect them?" />
+  <meta name="twitter:image" content="https://filmspeedrun.surge.sh/og-image-v2.png" />
+  <meta name="twitter:image:alt" content="Film Speedrun: Two films. How fast can you connect them?" />
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -1175,7 +1175,7 @@
         const timeStr = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
         const emojiPath = path.map(p => (p.type === 'film' ? '🎬' : '👤')).join(' > ');
         const customTag = customCreator ? ` (by @${customCreator})` : '';
-        const text = `FILMTRACE${customTag}\n${timeStr} * ${clickCount} clicks\n${emojiPath}\n${window.location.href}`;
+        const text = `FILM SPEEDRUN${customTag}\n${timeStr} • ${clickCount} clicks\n${emojiPath}\nhttps://filmspeedrun.surge.sh`;
 
         navigator.clipboard.writeText(text).then(() => {
           setCopied(true);
@@ -1213,7 +1213,7 @@
         <div className="flex-1 flex flex-col">
           {/* Header (Solid dark bar contrasting against body canvas) */}
           <header className="border-b border-[#242c35] bg-[#0e1114] sticky top-0 z-50 shadow-md">
-            <div className="max-w-5xl mx-auto px-4 min-h-[56px] flex items-center justify-between flex-wrap gap-2">
+            <div className="max-w-5xl mx-auto px-3 sm:px-4 min-h-[56px] flex items-center justify-between flex-wrap gap-y-2 py-2 sm:py-0">
               <div onClick={() => { setScreen('home'); }} className="flex items-center gap-2.5 cursor-pointer group">
                 <svg width="26" height="26" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <defs>
@@ -1235,11 +1235,11 @@
                   <circle cx="24" cy="21" r="2" fill="#00e054" />
                 </svg>
                 <span className="font-black tracking-tight text-lg text-white group-hover:text-[#9ab0c2] transition-colors">
-                  FILMTRACE
+                  FILM SPEEDRUN
                 </span>
               </div>
 
-              <nav className="flex items-center gap-3 sm:gap-5 text-xs font-medium">
+              <nav className="flex items-center gap-2.5 sm:gap-5 text-[11px] sm:text-xs font-medium w-full sm:w-auto">
                 <button
                   onClick={() => { setScreen('community'); }}
                   className={`flex items-center gap-1.5 py-1 transition-colors cursor-pointer ${screen === 'community' ? 'text-white font-bold' : 'text-text-secondary hover:text-white'}`}
@@ -1269,11 +1269,11 @@
                   <span>Leaderboard</span>
                 </button>
 
-                {/* Profile Button */}
+                {/* Profile Button (Pushed to Far Right on Mobile) */}
                 <button
                   onClick={() => openProfile(handle)}
                   title={`Profile (@${handle})`}
-                  className={`w-8 h-8 rounded-full bg-[#1c242c] hover:bg-[#2c3744] text-text-secondary hover:text-white border border-[#28323e] flex items-center justify-center transition-colors cursor-pointer ml-1 ${screen === 'profile' ? 'border-text-secondary text-white' : ''}`}
+                  className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#1c242c] hover:bg-[#2c3744] text-text-secondary hover:text-white border border-[#28323e] flex items-center justify-center transition-colors cursor-pointer ml-auto sm:ml-2 flex-shrink-0 ${screen === 'profile' ? 'border-text-secondary text-white' : ''}`}
                 >
                   <span className="text-text-secondary"><Icons.User /></span>
                 </button>
@@ -1355,11 +1355,11 @@
                       </button>
                     </div>
 
-                    {/* Daily Teaser Strip with Dynamic Count */}
+                    {/* Daily Teaser Strip with Dynamic Count (+50 offset) */}
                     {todayPuzzle && (
                       <div className="flex items-center gap-1.5 pt-1 text-xs text-text-secondary">
                         <span className="text-[#40bcf4]"><Icons.Users /></span>
-                        <span>{(todayPuzzle.playerCount || 0)} {(todayPuzzle.playerCount || 0) === 1 ? 'game' : 'games'} played today</span>
+                        <span>{((todayPuzzle.playerCount || 0) + 50)} games played today</span>
                       </div>
                     )}
                   </div>
@@ -2099,17 +2099,18 @@
                       </div>
                     </div>
 
-                    {/* Metrics (Clicks & Time on Top Right) */}
-                    <div className="flex items-center gap-3.5 sm:gap-6 flex-shrink-0 text-right">
-                      <div className="flex flex-col text-right">
-                        <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-text-secondary leading-none">CLICKS</span>
-                        <span className="font-mono text-base sm:text-2xl font-black text-white leading-tight mt-0.5">
+                    {/* Highlighted Metrics Container with contrast */}
+                    <div className="flex items-center gap-2.5 sm:gap-4 bg-[#26323e] border border-[#3e4f61] rounded-[6px] px-2.5 py-1.5 sm:px-3.5 sm:py-2 shadow-sm flex-shrink-0">
+                      <div className="flex flex-col items-center text-center">
+                        <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-[#9ab0c2] leading-none">CLICKS</span>
+                        <span className="font-mono text-sm sm:text-lg font-black text-white leading-tight mt-0.5">
                           {clickCount}
                         </span>
                       </div>
-                      <div className="flex flex-col text-right">
-                        <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-text-secondary leading-none">TIME</span>
-                        <div className="font-mono text-base sm:text-2xl font-bold text-[#cbd5e1] tracking-tight tabular-nums select-none leading-tight mt-0.5">
+                      <div className="w-px h-5 sm:h-6 bg-[#3e4f61]"></div>
+                      <div className="flex flex-col items-center text-center">
+                        <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-[#9ab0c2] leading-none">TIME</span>
+                        <div className="font-mono text-sm sm:text-lg font-bold text-white tracking-tight tabular-nums select-none leading-tight mt-0.5">
                           {String(Math.floor(elapsedSec / 60)).padStart(2, '0')}:{String(Math.floor(elapsedSec % 60)).padStart(2, '0')}
                         </div>
                       </div>
@@ -2178,7 +2179,6 @@
                           <span className="text-sm sm:text-base font-extrabold uppercase tracking-wider text-white">
                             Choose Next Person
                           </span>
-                          <span className="text-xs text-text-muted font-mono">({filteredFilmCredits.length})</span>
                         </div>
 
                         {/* Search Input & Filter Pills row below heading */}
@@ -2365,7 +2365,6 @@
                           <span className="text-sm sm:text-base font-extrabold uppercase tracking-wider text-white">
                             Choose Next Film
                           </span>
-                          <span className="text-xs text-text-muted font-mono">({filteredPersonAll.length})</span>
                         </div>
 
                         {/* Search & Pills Row below heading */}
@@ -3032,7 +3031,7 @@
               
               {/* Creator Credit & Social Links */}
               <div className="flex items-center gap-3 text-text-secondary flex-wrap justify-center sm:justify-start">
-                <span>Made with passion by Aditya</span>
+                <span>Made by Aditya</span>
 
                 <span className="text-[#28323e]">|</span>
 

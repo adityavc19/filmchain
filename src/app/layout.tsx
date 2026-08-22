@@ -6,9 +6,9 @@ import Navbar from '@/components/Navbar';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Filmtrace — Two films. How fast can you connect them?',
+  title: 'Film Speedrun: Two films. How fast can you connect them?',
   description: 'Trace the shortest path between two films traversing through the cast & crew. Play daily cinephile challenges and climb the live leaderboard.',
-  metadataBase: new URL('https://filmtrace.surge.sh'),
+  metadataBase: new URL('https://filmspeedrun.surge.sh'),
   icons: {
     icon: [
       { url: '/favicon.svg', type: 'image/svg+xml' },
@@ -21,24 +21,24 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: 'website',
-    url: 'https://filmtrace.surge.sh',
-    title: 'Filmtrace — Two films. How fast can you connect them?',
+    url: 'https://filmspeedrun.surge.sh',
+    title: 'Film Speedrun: Two films. How fast can you connect them?',
     description: 'Trace the shortest path between two films traversing through the cast & crew. Play daily cinephile challenges and climb the live leaderboard.',
-    siteName: 'Filmtrace',
+    siteName: 'Film Speedrun',
     images: [
       {
-        url: 'https://filmtrace.surge.sh/og-image-v2.png',
+        url: 'https://filmspeedrun.surge.sh/og-image-v2.png',
         width: 1200,
         height: 630,
-        alt: 'Filmtrace — Two films. How fast can you connect them?',
+        alt: 'Film Speedrun: Two films. How fast can you connect them?',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Filmtrace — Two films. How fast can you connect them?',
+    title: 'Film Speedrun: Two films. How fast can you connect them?',
     description: 'Trace the shortest path between two films traversing through the cast & crew. Play daily cinephile challenges and climb the live leaderboard.',
-    images: ['https://filmtrace.surge.sh/og-image-v2.png'],
+    images: ['https://filmspeedrun.surge.sh/og-image-v2.png'],
   },
 };
 
@@ -62,7 +62,7 @@ export default function RootLayout({
         <footer className="border-t border-[#242c35] bg-[#0e1114] py-6 mt-auto">
           <div className="max-w-5xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-text-muted">
             <div className="flex items-center gap-3 text-text-secondary flex-wrap justify-center sm:justify-start">
-              <span>Made with passion by Aditya</span>
+              <span>Made by Aditya</span>
 
               <span className="text-[#28323e]">|</span>
 
