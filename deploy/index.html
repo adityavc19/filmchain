@@ -1344,11 +1344,11 @@
                       Trace the shortest path between two films traversing through the cast &amp; crew
                     </p>
 
-                    {/* Primary CTA (Clean Solid White) */}
+                    {/* Primary CTA (Letterboxd Green Style) */}
                     <div className="pt-2 w-full sm:w-auto">
                       <button
                         onClick={() => setShowBrief(true)}
-                        className="flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-[4px] bg-white hover:bg-[#e6e6e6] text-[#0e1114] font-black text-sm uppercase tracking-wider transition-all shadow-md cursor-pointer"
+                        className="flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-[4px] bg-[#00c030] hover:bg-[#00e054] text-white font-black text-sm uppercase tracking-wider transition-all shadow-[0_2px_12px_rgba(0,192,48,0.3)] cursor-pointer active:scale-[0.99]"
                       >
                         <Icons.Clapperboard />
                         <span>Play Today's Challenge</span>
@@ -1473,7 +1473,7 @@
 
                           <button
                             onClick={() => setSelectedCommunityPuzzle(cp)}
-                            className="w-full py-2 bg-[#222b35] hover:bg-[#2c3744] text-white text-[11px] font-bold uppercase tracking-wider rounded-[4px] text-center border border-[#28323e] transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
+                            className="w-full py-2 bg-[#00c030] hover:bg-[#00e054] text-white text-[11px] font-black uppercase tracking-wider rounded-[4px] text-center transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm active:scale-[0.99]"
                           >
                             <Icons.Clapperboard />
                             <span>Play Challenge</span>
@@ -1510,7 +1510,7 @@
                     </div>
                     <button
                       onClick={() => { setCreatedPuzzleResult(null); setScreen('create'); }}
-                      className="px-5 py-2.5 bg-white hover:bg-[#e6e6e6] text-[#0e1114] text-xs font-bold uppercase tracking-wider rounded transition-colors whitespace-nowrap shadow-md flex items-center gap-1.5 cursor-pointer"
+                      className="px-5 py-2.5 bg-[#00c030] hover:bg-[#00e054] text-white text-xs font-black uppercase tracking-wider rounded transition-all whitespace-nowrap shadow-md flex items-center gap-1.5 cursor-pointer active:scale-[0.99]"
                     >
                       <Icons.Sparkles />
                       <span>Create a Game</span>
@@ -1541,7 +1541,7 @@
 
                   <button
                     onClick={() => { setCreatedPuzzleResult(null); setScreen('create'); }}
-                    className="px-5 py-2.5 bg-white hover:bg-[#e6e6e6] text-[#0e1114] text-xs font-bold uppercase tracking-wider rounded transition-colors whitespace-nowrap shadow-md flex items-center gap-1.5 cursor-pointer"
+                    className="px-5 py-2.5 bg-[#00c030] hover:bg-[#00e054] text-white text-xs font-black uppercase tracking-wider rounded transition-all whitespace-nowrap shadow-md flex items-center gap-1.5 cursor-pointer active:scale-[0.99]"
                   >
                     <Icons.Sparkles />
                     <span>+ Create Game</span>
@@ -1642,7 +1642,7 @@
 
                           <button
                             onClick={() => setSelectedCommunityPuzzle(cp)}
-                            className="w-full py-2 bg-[#222b35] hover:bg-[#2c3744] text-white text-[11px] font-bold uppercase tracking-wider rounded-[4px] text-center border border-[#28323e] transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
+                            className="w-full py-2 bg-[#00c030] hover:bg-[#00e054] text-white text-[11px] font-black uppercase tracking-wider rounded-[4px] text-center transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm active:scale-[0.99]"
                           >
                             <Icons.Clapperboard />
                             <span>Play Challenge</span>
@@ -1730,7 +1730,7 @@
                     <div className="flex items-center gap-3 w-full pt-2">
                       <button
                         onClick={() => loadCustomPuzzlePair(createdPuzzleResult.start_film_id, createdPuzzleResult.end_film_id, createdPuzzleResult.creator_handle, createdPuzzleResult.title)}
-                        className="flex-1 py-3 bg-white text-[#0e1114] text-xs font-bold uppercase tracking-wider rounded hover:bg-[#e6e6e6] transition-colors text-center cursor-pointer font-bold shadow-md"
+                        className="flex-1 py-3 bg-[#00c030] hover:bg-[#00e054] text-white text-xs font-black uppercase tracking-wider rounded-[4px] transition-all text-center cursor-pointer shadow-md active:scale-[0.99]"
                       >
                         Play Puzzle Now &rarr;
                       </button>
@@ -1891,7 +1891,7 @@
                       disabled={!createStartMovie || !createTargetMovie || isPublishing}
                       className={`w-full py-3.5 rounded-[4px] font-black text-xs uppercase tracking-wider transition-all cursor-pointer ${
                         createStartMovie && createTargetMovie && !isPublishing
-                          ? 'bg-white text-[#0e1114] hover:bg-[#e6e6e6] shadow-md'
+                          ? 'bg-[#00c030] text-white hover:bg-[#00e054] shadow-md active:scale-[0.99]'
                           : 'bg-[#0e1114] text-text-muted border border-[#28323e] cursor-not-allowed'
                       }`}
                     >
@@ -1966,7 +1966,7 @@
                         {profileData.username === handle && (
                           <button
                             onClick={() => { setCreatedPuzzleResult(null); setScreen('create'); }}
-                            className="flex items-center gap-1.5 px-4 py-2 bg-white hover:bg-[#e6e6e6] text-[#0e1114] font-black text-xs uppercase tracking-wider rounded-[4px] transition-all cursor-pointer shadow-md"
+                            className="flex items-center gap-1.5 px-4 py-2 bg-[#00c030] hover:bg-[#00e054] text-white font-black text-xs uppercase tracking-wider rounded-[4px] transition-all cursor-pointer shadow-md active:scale-[0.99]"
                           >
                             <span className="text-sm font-bold leading-none">+</span>
                             <span>Create Game</span>
@@ -1995,7 +1995,7 @@
                               <div className="flex items-center gap-2 pt-2 border-t border-[#28323e]">
                                 <button
                                   onClick={() => loadCustomPuzzlePair(p.start_film_id, p.end_film_id, p.creator_handle, p.title)}
-                                  className="flex-1 py-1.5 bg-white text-[#0e1114] text-xs font-bold uppercase tracking-wider rounded cursor-pointer hover:bg-[#e6e6e6]"
+                                  className="flex-1 py-1.5 bg-[#00c030] hover:bg-[#00e054] text-white text-xs font-black uppercase tracking-wider rounded-[4px] cursor-pointer transition-all shadow-sm active:scale-[0.99]"
                                 >
                                   Play Puzzle &rarr;
                                 </button>
@@ -2818,7 +2818,7 @@
 
                 <button
                   onClick={() => setShowBrief(true)}
-                  className="mt-4 w-full max-w-[260px] py-3 bg-white text-[#0e1114] text-xs font-bold uppercase tracking-wider rounded-[4px] hover:bg-[#e6e6e6] transition-all shadow-md cursor-pointer"
+                  className="mt-4 w-full max-w-[260px] py-3 bg-[#00c030] hover:bg-[#00e054] text-white text-xs font-black uppercase tracking-wider rounded-[4px] transition-all shadow-md cursor-pointer active:scale-[0.99]"
                 >
                   Play Today's Challenge
                 </button>
@@ -2902,10 +2902,10 @@
                     </div>
                   </div>
 
-                  {/* Launch Action (Clean Solid White) */}
+                  {/* Launch Action (Letterboxd Green Style) */}
                   <button
                     onClick={handleStartDailyGame}
-                    className="w-full py-3.5 bg-white hover:bg-[#e6e6e6] text-[#0e1114] font-black text-sm uppercase tracking-wider rounded-[4px] transition-all shadow-lg cursor-pointer flex items-center justify-center gap-2"
+                    className="w-full py-3.5 bg-[#00c030] hover:bg-[#00e054] text-white font-black text-sm uppercase tracking-wider rounded-[4px] transition-all shadow-lg cursor-pointer flex items-center justify-center gap-2 active:scale-[0.99]"
                   >
                     <span>START GAME</span>
                     <Icons.ArrowRight />
@@ -3007,14 +3007,14 @@
                     </div>
                   </div>
 
-                  {/* Launch Action (Clean Solid White) */}
+                  {/* Launch Action (Letterboxd Green Style) */}
                   <button
                     onClick={() => {
                       const cp = selectedCommunityPuzzle;
                       setSelectedCommunityPuzzle(null);
                       loadCustomPuzzlePair(cp.start_film_id, cp.end_film_id, cp.creator_handle, cp.title);
                     }}
-                    className="w-full py-3.5 bg-white hover:bg-[#e6e6e6] text-[#0e1114] font-black text-sm uppercase tracking-wider rounded-[4px] transition-all shadow-lg cursor-pointer flex items-center justify-center gap-2"
+                    className="w-full py-3.5 bg-[#00c030] hover:bg-[#00e054] text-white font-black text-sm uppercase tracking-wider rounded-[4px] transition-all shadow-lg cursor-pointer flex items-center justify-center gap-2 active:scale-[0.99]"
                   >
                     <span>START GAME</span>
                     <Icons.ArrowRight />

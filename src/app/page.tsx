@@ -165,11 +165,11 @@ export default function Home() {
               Trace the shortest path between two films traversing through the cast &amp; crew
             </p>
 
-            {/* Primary Action Button (Clean Solid White) */}
+            {/* Primary Action Button (Letterboxd Green Style) */}
             <div className="pt-2 w-full sm:w-auto">
               <button
                 onClick={() => setShowDailyBrief(true)}
-                className="flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-[4px] bg-white hover:bg-[#e6e6e6] text-[#0e1114] font-black text-sm uppercase tracking-wider transition-all shadow-md cursor-pointer"
+                className="flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-[4px] bg-[#00c030] hover:bg-[#00e054] text-white font-black text-sm uppercase tracking-wider transition-all shadow-[0_2px_12px_rgba(0,192,48,0.3)] cursor-pointer active:scale-[0.99]"
               >
                 <Clapperboard className="w-4 h-4" />
                 <span>Play Today&apos;s Challenge</span>
@@ -294,9 +294,9 @@ export default function Home() {
 
                 <button
                   onClick={() => setSelectedCommunityPuzzle(cp)}
-                  className="w-full py-2 bg-[#222b35] hover:bg-[#2c3744] text-white text-[11px] font-bold uppercase tracking-wider rounded-[4px] text-center border border-[#28323e] transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
+                  className="w-full py-2 bg-[#00c030] hover:bg-[#00e054] text-white text-[11px] font-black uppercase tracking-wider rounded-[4px] text-center transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm active:scale-[0.99]"
                 >
-                  <Clapperboard className="w-3.5 h-3.5 text-text-secondary" />
+                  <Clapperboard className="w-3.5 h-3.5" />
                   <span>Play Challenge</span>
                 </button>
               </div>
@@ -331,7 +331,7 @@ export default function Home() {
           </div>
           <Link
             href="/create"
-            className="px-5 py-2.5 bg-white hover:bg-[#e6e6e6] text-[#0e1114] text-xs font-bold uppercase tracking-wider rounded transition-colors whitespace-nowrap shadow-md flex items-center gap-1.5 cursor-pointer"
+            className="px-5 py-2.5 bg-[#00c030] hover:bg-[#00e054] text-white text-xs font-black uppercase tracking-wider rounded transition-all whitespace-nowrap shadow-md flex items-center gap-1.5 cursor-pointer active:scale-[0.99]"
           >
             <Sparkles className="w-4 h-4" />
             <span>Create a Game</span>
@@ -416,10 +416,10 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Launch Action (Clean Solid White) */}
+            {/* Launch Action (Letterboxd Green Style) */}
             <button
               onClick={handleStartDailyGame}
-              className="w-full py-3.5 bg-white hover:bg-[#e6e6e6] text-[#0e1114] font-black text-sm uppercase tracking-wider rounded-[4px] transition-all shadow-lg cursor-pointer flex items-center justify-center gap-2"
+              className="w-full py-3.5 bg-[#00c030] hover:bg-[#00e054] text-white font-black text-sm uppercase tracking-wider rounded-[4px] transition-all shadow-lg cursor-pointer flex items-center justify-center gap-2 active:scale-[0.99]"
             >
               <span>START GAME</span>
               <ArrowRight className="w-4 h-4 stroke-[3]" />
@@ -521,10 +521,10 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Launch Action (Clean Solid White) */}
+            {/* Launch Action (Letterboxd Green Style) */}
             <button
               onClick={handleStartCommunityGame}
-              className="w-full py-3.5 bg-white hover:bg-[#e6e6e6] text-[#0e1114] font-black text-sm uppercase tracking-wider rounded-[4px] transition-all shadow-lg cursor-pointer flex items-center justify-center gap-2"
+              className="w-full py-3.5 bg-[#00c030] hover:bg-[#00e054] text-white font-black text-sm uppercase tracking-wider rounded-[4px] transition-all shadow-lg cursor-pointer flex items-center justify-center gap-2 active:scale-[0.99]"
             >
               <span>START GAME</span>
               <ArrowRight className="w-4 h-4 stroke-[3]" />

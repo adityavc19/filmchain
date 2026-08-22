@@ -235,7 +235,7 @@ export default function CreatePuzzlePage() {
           <div className="flex items-center gap-3 w-full pt-2">
             <button
               onClick={() => router.push(`/game/custom/${createdPuzzle.id}`)}
-              className="flex-1 py-3 bg-white text-bg-primary text-xs font-bold uppercase tracking-wider rounded hover:bg-white/90 transition-colors text-center cursor-pointer"
+              className="flex-1 py-3 bg-[#00c030] hover:bg-[#00e054] text-white text-xs font-black uppercase tracking-wider rounded-[4px] transition-all text-center cursor-pointer shadow-md active:scale-[0.99]"
             >
               Play Puzzle Now &rarr;
             </button>
@@ -436,7 +436,7 @@ export default function CreatePuzzlePage() {
             disabled={!startMovie || !targetMovie || isCreating}
             className={`w-full py-3.5 rounded-[4px] font-black text-xs uppercase tracking-wider transition-all cursor-pointer ${
               startMovie && targetMovie && !isCreating
-                ? 'bg-white text-bg-primary hover:bg-[#e6e6e6] shadow-md'
+                ? 'bg-[#00c030] text-white hover:bg-[#00e054] shadow-md active:scale-[0.99]'
                 : 'bg-bg-secondary text-text-muted border border-border cursor-not-allowed'
             }`}
           >

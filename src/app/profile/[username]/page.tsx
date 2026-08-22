@@ -269,7 +269,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
           {isOwner && (
             <Link
               href="/create"
-              className="flex items-center gap-1.5 px-4 py-2 bg-white hover:bg-[#e6e6e6] text-[#0e1114] font-black text-xs uppercase tracking-wider rounded-[4px] transition-all cursor-pointer shadow-md"
+              className="flex items-center gap-1.5 px-4 py-2 bg-[#00c030] hover:bg-[#00e054] text-white font-black text-xs uppercase tracking-wider rounded-[4px] transition-all cursor-pointer shadow-md active:scale-[0.99]"
             >
               <span className="text-sm font-bold leading-none">+</span>
               <span>Create Game</span>
@@ -308,7 +308,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                 <div className="flex items-center gap-2 pt-2 border-t border-border/60">
                   <Link
                     href={`/game/custom/${p.id}`}
-                    className="flex-1 py-1.5 bg-accent text-bg-primary text-[11px] font-bold uppercase tracking-wider rounded text-center hover:bg-accent-dim transition-colors"
+                    className="flex-1 py-1.5 bg-[#00c030] hover:bg-[#00e054] text-white text-[11px] font-black uppercase tracking-wider rounded-[4px] text-center transition-all shadow-sm active:scale-[0.99]"
                   >
                     Play Puzzle &rarr;
                   </Link>
