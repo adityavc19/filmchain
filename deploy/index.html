@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Filmtrace — Two films. How do you connect them?</title>
+  <title>Filmtrace — Two films. How fast can you connect them?</title>
   <meta name="description" content="Trace the shortest path between two films traversing through the cast &amp; crew. Play daily cinephile challenges and climb the live leaderboard." />
 
   <!-- Favicon & Touch Icons -->
@@ -18,23 +18,23 @@
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://filmtrace.surge.sh/" />
-  <meta property="og:title" content="Filmtrace — Two films. How do you connect them?" />
+  <meta property="og:title" content="Filmtrace — Two films. How fast can you connect them?" />
   <meta property="og:description" content="Trace the shortest path between two films traversing through the cast &amp; crew. Play daily cinephile challenges and climb the live leaderboard." />
   <meta property="og:image" content="https://filmtrace.surge.sh/og-image-v2.png" />
   <meta property="og:image:secure_url" content="https://filmtrace.surge.sh/og-image-v2.png" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="Filmtrace — Two films. How do you connect them?" />
+  <meta property="og:image:alt" content="Filmtrace — Two films. How fast can you connect them?" />
   <meta property="og:site_name" content="Filmtrace" />
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:url" content="https://filmtrace.surge.sh/" />
-  <meta name="twitter:title" content="Filmtrace — Two films. How do you connect them?" />
+  <meta name="twitter:title" content="Filmtrace — Two films. How fast can you connect them?" />
   <meta name="twitter:description" content="Trace the shortest path between two films traversing through the cast &amp; crew. Play daily cinephile challenges and climb the live leaderboard." />
   <meta name="twitter:image" content="https://filmtrace.surge.sh/og-image-v2.png" />
-  <meta name="twitter:image:alt" content="Filmtrace — Two films. How do you connect them?" />
+  <meta name="twitter:image:alt" content="Filmtrace — Two films. How fast can you connect them?" />
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -520,6 +520,19 @@
             console.warn('Using fallback puzzle pair');
           }
 
+          let livePlayerCount = 0;
+          try {
+            const countRes = await fetch(`${SUPABASE_URL}/rest/v1/leaderboard_entries?select=id&puzzle_date=eq.${pDate}`, {
+              headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` }
+            });
+            const countData = await countRes.json();
+            if (Array.isArray(countData)) {
+              livePlayerCount = countData.length;
+            }
+          } catch (e) {
+            console.warn('Could not fetch live player count:', e);
+          }
+
           const [sDetails, tDetails] = await Promise.all([
             cachedTmdbFetch(`${TMDB_BASE}/movie/${sId}?api_key=${TMDB_API_KEY}`),
             cachedTmdbFetch(`${TMDB_BASE}/movie/${tId}?api_key=${TMDB_API_KEY}`),
@@ -539,6 +552,7 @@
               year: tDetails.release_date ? parseInt(tDetails.release_date.split('-')[0]) : null,
               poster_path: tDetails.poster_path,
             },
+            playerCount: livePlayerCount,
           };
 
           setTodayPuzzle(puzzleObj);
@@ -928,6 +942,7 @@
                 path: newPath,
               })
             });
+            setTodayPuzzle(prev => prev ? { ...prev, playerCount: (prev.playerCount || 0) + 1 } : prev);
             fetchLeaderboardData(todayPuzzle ? todayPuzzle.date : '2026-08-21');
           } catch (e) {
             console.error('Failed to submit score:', e);
@@ -1436,7 +1451,7 @@
                     {/* Clean 2-Line Headline */}
                     <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.08]">
                       <span className="text-[#00e054]">Two films.</span> <br />
-                      <span className="text-[#9ab0c2]">How do you connect them?</span>
+                      <span className="text-[#9ab0c2]">How fast can you connect them?</span>
                     </h1>
 
                     {/* Clean Concise Subtitle */}
@@ -1459,7 +1474,7 @@
                     {todayPuzzle && (
                       <div className="flex items-center gap-1.5 pt-1 text-xs text-text-secondary">
                         <span className="text-[#40bcf4]"><Icons.Users /></span>
-                        <span>{52 + (todayPuzzle.playerCount || 0)} games played today</span>
+                        <span>{(todayPuzzle.playerCount || 0)} {(todayPuzzle.playerCount || 0) === 1 ? 'game' : 'games'} played today</span>
                       </div>
                     )}
                   </div>
@@ -1591,7 +1606,7 @@
                         onClick={() => { setScreen('community'); }}
                         className="text-xs font-bold text-text-secondary hover:text-white uppercase tracking-wider transition-colors inline-flex items-center gap-1.5 cursor-pointer group"
                       >
-                        <span>Explore All Community Games</span>
+                        <span>View all</span>
                         <span className="group-hover:translate-x-0.5 transition-transform"><Icons.ArrowRight /></span>
                       </button>
                     </div>

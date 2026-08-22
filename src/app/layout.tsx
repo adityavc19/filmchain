@@ -6,7 +6,7 @@ import Navbar from '@/components/Navbar';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Filmtrace — Two films. How do you connect them?',
+  title: 'Filmtrace — Two films. How fast can you connect them?',
   description: 'Trace the shortest path between two films traversing through the cast & crew. Play daily cinephile challenges and climb the live leaderboard.',
   metadataBase: new URL('https://filmtrace.surge.sh'),
   icons: {
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     url: 'https://filmtrace.surge.sh',
-    title: 'Filmtrace — Two films. How do you connect them?',
+    title: 'Filmtrace — Two films. How fast can you connect them?',
     description: 'Trace the shortest path between two films traversing through the cast & crew. Play daily cinephile challenges and climb the live leaderboard.',
     siteName: 'Filmtrace',
     images: [
@@ -30,13 +30,13 @@ export const metadata: Metadata = {
         url: 'https://filmtrace.surge.sh/og-image-v2.png',
         width: 1200,
         height: 630,
-        alt: 'Filmtrace — Two films. How do you connect them?',
+        alt: 'Filmtrace — Two films. How fast can you connect them?',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Filmtrace — Two films. How do you connect them?',
+    title: 'Filmtrace — Two films. How fast can you connect them?',
     description: 'Trace the shortest path between two films traversing through the cast & crew. Play daily cinephile challenges and climb the live leaderboard.',
     images: ['https://filmtrace.surge.sh/og-image-v2.png'],
   },

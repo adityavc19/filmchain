@@ -225,7 +225,7 @@ export default function Home() {
             {/* Clean 2-Line Headline */}
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.08]">
               <span className="text-[#00e054]">Two films.</span> <br />
-              <span className="text-[#9ab0c2]">How do you connect them?</span>
+              <span className="text-[#9ab0c2]">How fast can you connect them?</span>
             </h1>
 
             {/* Clean Concise Subtitle */}
@@ -248,7 +248,7 @@ export default function Home() {
             {puzzle && (
               <div className="flex items-center gap-1.5 pt-1 text-xs text-text-secondary">
                 <Users className="w-3.5 h-3.5 text-[#40bcf4]" />
-                <span>{52 + (puzzle.playerCount || 0)} games played today</span>
+                <span>{(puzzle.playerCount || 0)} {(puzzle.playerCount || 0) === 1 ? 'game' : 'games'} played today</span>
               </div>
             )}
           </div>
@@ -380,7 +380,7 @@ export default function Home() {
               href="/community"
               className="text-xs font-bold text-text-secondary hover:text-white uppercase tracking-wider transition-colors inline-flex items-center gap-1.5 cursor-pointer group"
             >
-              <span>Explore All Community Games</span>
+              <span>View all</span>
               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
             </Link>
           </div>
