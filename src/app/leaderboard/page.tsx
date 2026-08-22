@@ -110,7 +110,7 @@ export default function LeaderboardPage() {
       {activeTab === 'daily' && (
         <div className="flex flex-col gap-3 w-full">
           <div className="flex items-center justify-between text-[11px] text-text-secondary px-1">
-            <span>Today&apos;s fastest chains</span>
+            <span>Today&apos;s quickest paths</span>
             <span className="font-mono text-[10px] text-text-muted">Resets 00:00 UTC</span>
           </div>
 

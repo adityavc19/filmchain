@@ -2615,28 +2615,18 @@
                 </div>
 
                 {/* Quicker Path Nudge Card & Play Again Primary CTA */}
-                <div className="flex flex-col gap-3 bg-gradient-to-br from-[#1c242c] to-[#141a20] border border-[#ff8000]/40 rounded-[6px] p-4 sm:p-5 w-full shadow-xl text-center relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-28 h-28 bg-[#ff8000]/5 rounded-full blur-2xl pointer-events-none"></div>
-
-                  <div className="flex items-center justify-center gap-2">
-                    <span className="text-base">⚡</span>
-                    <h3 className="text-sm sm:text-base font-extrabold text-white">
-                      Think you can find a quicker path?
-                    </h3>
-                  </div>
-
-                  <p className="text-xs text-text-secondary leading-relaxed max-w-sm mx-auto">
-                    Replay this challenge with a different route to shave seconds off your time, reduce clicks, and climb the leaderboard!
-                  </p>
+                <div className="flex flex-col items-center gap-3 bg-[#1c242c] border border-[#28323e] rounded-[6px] p-4 sm:p-5 w-full shadow-xl text-center">
+                  <h3 className="text-sm sm:text-base font-extrabold text-white">
+                    Find a quicker path
+                  </h3>
 
                   <button
                     onClick={() => {
                       startSpecificGame(startFilm, targetFilm, customPuzzleId, customCreator);
                     }}
-                    className="w-full py-3 px-5 bg-[#ff8000] hover:bg-[#ff941a] text-[#0e1114] font-black text-xs uppercase tracking-wider rounded-[4px] flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg active:scale-95 mt-1"
+                    className="w-auto px-6 py-2.5 bg-white hover:bg-[#e6e6e6] text-[#0e1114] font-black text-xs uppercase tracking-wider rounded-[4px] flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md active:scale-95"
                   >
-                    <span>⚡</span>
-                    <span>Play Again (Find Quicker Path)</span>
+                    Play Again
                   </button>
                 </div>
 
@@ -2646,9 +2636,11 @@
                     <div className="flex items-center justify-between border-b border-[#28323e] pb-2.5">
                       <div className="flex items-center gap-2">
                         <span className="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-white flex items-center gap-1.5">
-                          <span>🎬</span> Your Solved Trail
+                          <span>🎬</span> Your Path
                         </span>
-                        <span className="text-xs text-text-muted font-mono">({path.length} steps · {clickCount} clicks)</span>
+                        <span className="text-xs text-text-muted font-mono">
+                          ({Math.max(1, Math.floor(path.length / 2))} {Math.max(1, Math.floor(path.length / 2)) === 1 ? 'hop' : 'hops'})
+                        </span>
                       </div>
                       <span className="text-[10px] font-mono text-[#00e054] uppercase font-bold">Solved</span>
                     </div>
@@ -2720,7 +2712,7 @@
                 <div className="flex flex-col gap-3 bg-[#1c242c] border border-[#28323e] rounded-[6px] p-5 w-full shadow-lg">
                   <div className="flex flex-col text-left gap-0.5">
                     <span className="text-sm font-extrabold text-white">Leaderboard</span>
-                    <span className="text-[11px] text-text-muted">{customPuzzleId ? 'Fastest solvers for this puzzle' : "Today's fastest chains"}</span>
+                    <span className="text-[11px] text-text-muted">{customPuzzleId ? 'Fastest solvers for this puzzle' : "Today's quickest paths"}</span>
                   </div>
 
                   <table className="w-full border-collapse text-xs">
@@ -2775,25 +2767,17 @@
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full mt-1">
                   <button
                     onClick={copyShare}
-                    className="w-full sm:flex-1 py-2.5 px-4 bg-white text-[#0e1114] hover:bg-white/90 text-xs font-bold uppercase tracking-wider rounded-[4px] flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md active:scale-95"
+                    className="w-full sm:flex-1 py-2.5 px-5 bg-white text-[#0e1114] hover:bg-white/90 text-xs font-bold uppercase tracking-wider rounded-[4px] flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md active:scale-95"
                   >
                     <Icons.Share />
                     <span>{copied ? 'Copied to Clipboard!' : 'Share Result'}</span>
                   </button>
-                  <div className="flex items-center gap-3 w-full sm:w-auto">
-                    <button
-                      onClick={() => { setScreen('home'); }}
-                      className="flex-1 sm:flex-initial py-2.5 px-5 bg-transparent text-text-secondary text-xs font-semibold border border-[#28323e] rounded-[4px] hover:text-white hover:border-text-secondary transition-all cursor-pointer text-center"
-                    >
-                      &larr; Home
-                    </button>
-                    <button
-                      onClick={() => { setCreatedPuzzleResult(null); setScreen('create'); }}
-                      className="flex-1 sm:flex-initial py-2.5 px-5 bg-[#1c242c] text-white text-xs font-semibold border border-[#28323e] rounded-[4px] hover:border-white transition-all cursor-pointer text-center"
-                    >
-                      + Create
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => { setScreen('home'); }}
+                    className="w-full sm:w-auto py-2.5 px-6 bg-[#1c242c] text-text-secondary text-xs font-semibold border border-[#28323e] rounded-[4px] hover:text-white hover:border-text-secondary transition-all cursor-pointer text-center"
+                  >
+                    &larr; Home
+                  </button>
                 </div>
               </div>
             )}
@@ -2826,7 +2810,7 @@
                 {leaderboardTab === 'daily' && (
                   <div className="flex flex-col gap-3 w-full">
                     <div className="flex items-center justify-between text-[11px] text-text-secondary px-1">
-                      <span>Today's fastest chains</span>
+                      <span>Today's quickest paths</span>
                       <span className="font-mono text-[10px] text-text-muted">Resets 00:00 UTC</span>
                     </div>
 
