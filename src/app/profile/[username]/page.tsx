@@ -202,12 +202,10 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
               )}
             </div>
 
-            {data.profile.bio ? (
+            {data.profile.bio && (
               <p className="text-xs sm:text-sm text-text-secondary line-clamp-2 max-w-md">
                 {data.profile.bio}
               </p>
-            ) : (
-              <p className="text-xs text-text-muted italic">Cinephile solver on Filmtrace</p>
             )}
 
             <span className="text-[11px] text-text-muted mt-1">
@@ -223,14 +221,8 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
               onClick={() => setIsEditing(true)}
               className="flex-1 sm:flex-initial px-4 py-2 bg-bg-secondary hover:bg-bg-hover text-white text-xs font-bold border border-border rounded transition-colors cursor-pointer text-center"
             >
-              Edit Profile / Handle
+              Edit Username
             </button>
-            <Link
-              href="/create"
-              className="px-4 py-2 bg-accent hover:bg-accent-dim text-bg-primary text-xs font-bold uppercase tracking-wider rounded transition-colors text-center"
-            >
-              + Create Puzzle
-            </Link>
           </div>
         )}
       </div>
@@ -261,7 +253,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
         </div>
 
         <div className="bg-bg-card border border-border p-4 rounded-[4px] text-left">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary block">Created Puzzles</span>
+          <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary block">Created Games</span>
           <span className="font-mono text-2xl sm:text-3xl font-black text-[#40bcf4] mt-1 block">
             {data.stats.totalCreated}
           </span>
@@ -270,13 +262,17 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
 
       {/* Community Puzzles Created By This User */}
       <div className="flex flex-col gap-4">
-        <div className="flex items-center justify-between border-b border-border pb-2">
+        <div className="flex items-center justify-between border-b border-border pb-3">
           <h2 className="text-base font-bold uppercase tracking-wider text-white">
-            Created Puzzles ({data.createdPuzzles.length})
+            Created Games ({data.createdPuzzles.length})
           </h2>
           {isOwner && (
-            <Link href="/create" className="text-xs text-accent hover:underline font-semibold">
-              + Create New
+            <Link
+              href="/create"
+              className="flex items-center gap-1.5 px-4 py-2 bg-white hover:bg-[#e6e6e6] text-[#0e1114] font-black text-xs uppercase tracking-wider rounded-[4px] transition-all cursor-pointer shadow-md"
+            >
+              <span className="text-sm font-bold leading-none">+</span>
+              <span>Create Game</span>
             </Link>
           )}
         </div>
@@ -327,8 +323,22 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
             ))}
           </div>
         ) : (
-          <div className="bg-bg-card border border-border p-8 rounded text-center text-text-muted text-xs">
-            No custom puzzles created yet. {isOwner && <Link href="/create" className="text-accent underline font-semibold ml-1">Create the first one!</Link>}
+          <div className="bg-bg-card border border-border p-8 rounded-[4px] text-center flex flex-col items-center justify-center gap-3">
+            <span className="text-3xl">🎬</span>
+            <div className="flex flex-col gap-1">
+              <span className="text-sm font-bold text-white">No created games yet</span>
+              <p className="text-xs text-text-secondary max-w-sm">
+                Connect any two films through cast and crew to challenge other cinephiles.
+              </p>
+            </div>
+            {isOwner && (
+              <Link
+                href="/create"
+                className="mt-2 flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-[#e6e6e6] text-[#0e1114] font-black text-xs uppercase tracking-wider rounded-[4px] transition-all cursor-pointer shadow-md"
+              >
+                <span>+ Create Your First Game</span>
+              </Link>
+            )}
           </div>
         )}
       </div>
