@@ -294,7 +294,7 @@ export default function Home() {
 
                 <button
                   onClick={() => setSelectedCommunityPuzzle(cp)}
-                  className="w-full py-2 bg-[#00c030] hover:bg-[#00e054] text-white text-[11px] font-black uppercase tracking-wider rounded-[4px] text-center transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm active:scale-[0.99]"
+                  className="w-[70%] py-2 bg-[#00c030] hover:bg-[#00e054] text-white text-[11px] font-black uppercase tracking-wider rounded-[4px] text-center transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm active:scale-[0.99]"
                 >
                   <Clapperboard className="w-3.5 h-3.5" />
                   <span>Play Challenge</span>
