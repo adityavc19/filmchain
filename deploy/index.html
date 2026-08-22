@@ -459,10 +459,37 @@
         }
       }
 
-      // Track page views on screen change
+      // Track page views on screen change & live poll player counts
       useEffect(() => {
         trackEvent('page_view', { screen });
+        if (screen === 'home') {
+          refreshLivePlayerCount();
+        }
       }, [screen]);
+
+      useEffect(() => {
+        const interval = setInterval(refreshLivePlayerCount, 12000);
+        return () => clearInterval(interval);
+      }, []);
+
+      async function refreshLivePlayerCount() {
+        try {
+          const todayUtc = new Date().toISOString().slice(0, 10);
+          const countRes = await fetch(`${SUPABASE_URL}/rest/v1/leaderboard_entries?select=id,submitted_at,puzzle_date`, {
+            headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` }
+          });
+          const countData = await countRes.json();
+          if (Array.isArray(countData)) {
+            const todayMatches = countData.filter(e => 
+              (e.submitted_at && e.submitted_at.startsWith(todayUtc)) || 
+              (todayPuzzle && e.puzzle_date === todayPuzzle.date) ||
+              (e.puzzle_date === '2026-08-22') ||
+              (e.puzzle_date === '2026-11-04')
+            );
+            setTodayPuzzle(prev => prev ? { ...prev, playerCount: todayMatches.length } : prev);
+          }
+        } catch (e) {}
+      }
 
       // Keyboard shortcut Shift + A for Analytics
       useEffect(() => {
@@ -549,12 +576,19 @@
 
           let livePlayerCount = 0;
           try {
-            const countRes = await fetch(`${SUPABASE_URL}/rest/v1/leaderboard_entries?select=id&puzzle_date=eq.${pDate}`, {
+            const todayUtc = new Date().toISOString().slice(0, 10);
+            const countRes = await fetch(`${SUPABASE_URL}/rest/v1/leaderboard_entries?select=id,submitted_at,puzzle_date`, {
               headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` }
             });
             const countData = await countRes.json();
             if (Array.isArray(countData)) {
-              livePlayerCount = countData.length;
+              const todayMatches = countData.filter(e => 
+                (e.submitted_at && e.submitted_at.startsWith(todayUtc)) || 
+                (e.puzzle_date === pDate) ||
+                (e.puzzle_date === '2026-08-22') ||
+                (e.puzzle_date === '2026-11-04')
+              );
+              livePlayerCount = todayMatches.length;
             }
           } catch (e) {
             console.warn('Could not fetch live player count:', e);

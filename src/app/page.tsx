@@ -56,7 +56,7 @@ export default function Home() {
   const [showDailyBrief, setShowDailyBrief] = useState(false);
   const [selectedCommunityPuzzle, setSelectedCommunityPuzzle] = useState<CommunityPuzzle | null>(null);
 
-  useEffect(() => {
+  const fetchPuzzles = () => {
     Promise.all([
       fetch('/api/puzzle/today').then(r => r.json()).catch(() => null),
       fetch('/api/puzzle/community').then(r => r.json()).catch(() => ({ puzzles: [] })),
@@ -69,6 +69,12 @@ export default function Home() {
       }
       setLoading(false);
     });
+  };
+
+  useEffect(() => {
+    fetchPuzzles();
+    const interval = setInterval(fetchPuzzles, 12000);
+    return () => clearInterval(interval);
   }, []);
 
   function handleStartDailyGame() {

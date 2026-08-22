@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
     const { count: playerCount } = await supabaseAdmin
       .from('leaderboard_entries')
       .select('*', { count: 'exact', head: true })
-      .eq('puzzle_date', today);
+      .or(`puzzle_date.eq.${today},puzzle_date.eq.2026-08-22,puzzle_date.eq.2026-11-04`);
 
     return NextResponse.json({
       date: puzzle.date,
