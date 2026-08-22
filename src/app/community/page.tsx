@@ -131,7 +131,7 @@ export default function CommunityPage() {
             >
               {/* Two Covers */}
               <div className="flex items-center justify-center gap-3 w-full py-1">
-                <div className="w-14 h-20 sm:w-16 sm:h-24 relative rounded-[4px] overflow-hidden bg-[#222b35] border border-[#28323e] flex-shrink-0 shadow-md">
+                <div className="w-[72px] h-[108px] sm:w-[84px] sm:h-[126px] relative rounded-[4px] overflow-hidden bg-[#222b35] border border-[#28323e] flex-shrink-0 shadow-md">
                   {cp.startFilm?.poster_path ? (
                     <Image src={posterUrl(cp.startFilm.poster_path, 'w185')} alt="" fill className="object-cover" />
                   ) : (
@@ -139,7 +139,7 @@ export default function CommunityPage() {
                   )}
                 </div>
                 <span className="text-sm font-bold text-text-muted">➔</span>
-                <div className="w-14 h-20 sm:w-16 sm:h-24 relative rounded-[4px] overflow-hidden bg-[#222b35] border border-[#28323e] flex-shrink-0 shadow-md">
+                <div className="w-[72px] h-[108px] sm:w-[84px] sm:h-[126px] relative rounded-[4px] overflow-hidden bg-[#222b35] border border-[#28323e] flex-shrink-0 shadow-md">
                   {cp.endFilm?.poster_path ? (
                     <Image src={posterUrl(cp.endFilm.poster_path, 'w185')} alt="" fill className="object-cover" />
                   ) : (
