@@ -83,10 +83,10 @@ export default function Home() {
 
   return (
     <div className="flex flex-col w-full">
-      {/* DYNAMIC MOTION STRIP — AUTHENTIC 35MM FILM REEL / ROLL */}
-      <div className="w-full film-strip-wrapper py-1.5 overflow-hidden select-none -mx-4 px-4 sm:-mx-6 sm:px-6 mb-6">
+      {/* DYNAMIC MOTION STRIP — MINIMAL OFF-WHITE RIBBON */}
+      <div className="w-full bg-[#f4f4f2] text-[#0e1114] border-y border-[#dcded8] py-1.5 overflow-hidden select-none -mx-4 sm:-mx-6 mb-6 shadow-sm">
         <div className="motion-ticker flex items-center">
-          {/* Reel Loop 1 */}
+          {/* Loop 1 */}
           <div className="flex items-center">
             {[
               { icon: '🍿', text: 'May the Force be with you.' },
@@ -102,51 +102,17 @@ export default function Home() {
               { icon: '🚪', text: "Here's Johnny!" },
               { icon: '🌌', text: 'To infinity and beyond!' },
             ].map((q, idx) => (
-              <div key={`reel1-${idx}`} className="flex items-stretch">
-                {/* Film Cell Frame */}
-                <div className="flex flex-col gap-1.5 py-0.5 px-2">
-                  {/* Top Sprockets Track (9 holes) */}
-                  <div className="flex items-center justify-between gap-2.5 px-1">
-                    <div className="sprocket-hole"></div>
-                    <div className="sprocket-hole"></div>
-                    <div className="sprocket-hole"></div>
-                    <div className="sprocket-hole"></div>
-                    <div className="sprocket-hole"></div>
-                    <div className="sprocket-hole"></div>
-                    <div className="sprocket-hole"></div>
-                    <div className="sprocket-hole"></div>
-                    <div className="sprocket-hole"></div>
-                  </div>
-
-                  {/* Exposed Photographic Cell Window */}
-                  <div className="film-frame-window px-4 py-2 min-w-[260px] flex items-center justify-center gap-2.5 cursor-default">
-                    <span className="text-sm flex-shrink-0">{q.icon}</span>
-                    <span className="text-xs font-bold text-white tracking-wide whitespace-nowrap drop-shadow">
-                      &ldquo;{q.text}&rdquo;
-                    </span>
-                  </div>
-
-                  {/* Bottom Sprockets Track (9 holes) */}
-                  <div className="flex items-center justify-between gap-2.5 px-1">
-                    <div className="sprocket-hole"></div>
-                    <div className="sprocket-hole"></div>
-                    <div className="sprocket-hole"></div>
-                    <div className="sprocket-hole"></div>
-                    <div className="sprocket-hole"></div>
-                    <div className="sprocket-hole"></div>
-                    <div className="sprocket-hole"></div>
-                    <div className="sprocket-hole"></div>
-                    <div className="sprocket-hole"></div>
-                  </div>
-                </div>
-
-                {/* Inter-Frame Cut Divider */}
-                <div className="frame-divider mx-0.5"></div>
+              <div key={`reel1-${idx}`} className="flex items-center gap-2 px-5 whitespace-nowrap">
+                <span className="text-xs">{q.icon}</span>
+                <span className="text-[11px] font-semibold text-[#1a202c] tracking-tight">
+                  &ldquo;{q.text}&rdquo;
+                </span>
+                <span className="text-[#a0aec0] font-bold text-xs ml-4 select-none">•</span>
               </div>
             ))}
           </div>
 
-          {/* Reel Loop 2 (Duplicate for seamless continuous loop) */}
+          {/* Loop 2 (Duplicate for seamless continuous loop) */}
           <div className="flex items-center">
             {[
               { icon: '🍿', text: 'May the Force be with you.' },
@@ -162,46 +128,12 @@ export default function Home() {
               { icon: '🚪', text: "Here's Johnny!" },
               { icon: '🌌', text: 'To infinity and beyond!' },
             ].map((q, idx) => (
-              <div key={`reel2-${idx}`} className="flex items-stretch">
-                {/* Film Cell Frame */}
-                <div className="flex flex-col gap-1.5 py-0.5 px-2">
-                  {/* Top Sprockets Track (9 holes) */}
-                  <div className="flex items-center justify-between gap-2.5 px-1">
-                    <div className="sprocket-hole"></div>
-                    <div className="sprocket-hole"></div>
-                    <div className="sprocket-hole"></div>
-                    <div className="sprocket-hole"></div>
-                    <div className="sprocket-hole"></div>
-                    <div className="sprocket-hole"></div>
-                    <div className="sprocket-hole"></div>
-                    <div className="sprocket-hole"></div>
-                    <div className="sprocket-hole"></div>
-                  </div>
-
-                  {/* Exposed Photographic Cell Window */}
-                  <div className="film-frame-window px-4 py-2 min-w-[260px] flex items-center justify-center gap-2.5 cursor-default">
-                    <span className="text-sm flex-shrink-0">{q.icon}</span>
-                    <span className="text-xs font-bold text-white tracking-wide whitespace-nowrap drop-shadow">
-                      &ldquo;{q.text}&rdquo;
-                    </span>
-                  </div>
-
-                  {/* Bottom Sprockets Track (9 holes) */}
-                  <div className="flex items-center justify-between gap-2.5 px-1">
-                    <div className="sprocket-hole"></div>
-                    <div className="sprocket-hole"></div>
-                    <div className="sprocket-hole"></div>
-                    <div className="sprocket-hole"></div>
-                    <div className="sprocket-hole"></div>
-                    <div className="sprocket-hole"></div>
-                    <div className="sprocket-hole"></div>
-                    <div className="sprocket-hole"></div>
-                    <div className="sprocket-hole"></div>
-                  </div>
-                </div>
-
-                {/* Inter-Frame Cut Divider */}
-                <div className="frame-divider mx-0.5"></div>
+              <div key={`reel2-${idx}`} className="flex items-center gap-2 px-5 whitespace-nowrap">
+                <span className="text-xs">{q.icon}</span>
+                <span className="text-[11px] font-semibold text-[#1a202c] tracking-tight">
+                  &ldquo;{q.text}&rdquo;
+                </span>
+                <span className="text-[#a0aec0] font-bold text-xs ml-4 select-none">•</span>
               </div>
             ))}
           </div>

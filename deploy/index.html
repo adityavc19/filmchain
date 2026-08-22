@@ -96,56 +96,10 @@
     .motion-ticker {
       display: flex;
       width: max-content;
-      animation: ticker 50s linear infinite;
+      animation: ticker 40s linear infinite;
     }
     .motion-ticker:hover {
       animation-play-state: paused;
-    }
-    .film-strip-wrapper {
-      background: #050709;
-      border-top: 2.5px solid #2a3545;
-      border-bottom: 2.5px solid #2a3545;
-      box-shadow: inset 0 3px 12px rgba(0, 0, 0, 0.95), 0 6px 20px rgba(0, 0, 0, 0.5);
-    }
-    .sprocket-hole {
-      width: 13px;
-      height: 8px;
-      background: #000000;
-      border: 1px solid #334356;
-      border-radius: 2px;
-      box-shadow: inset 0 1.5px 3px rgba(0, 0, 0, 1), 0 1px 0 rgba(255, 255, 255, 0.08);
-      flex-shrink: 0;
-    }
-    .film-frame-window {
-      background: linear-gradient(180deg, #101620 0%, #0c1017 100%);
-      border: 1.5px solid #243242;
-      border-radius: 4px;
-      box-shadow: inset 0 1px 6px rgba(0, 0, 0, 0.9), 0 2px 8px rgba(0, 0, 0, 0.4);
-      transition: all 0.2s ease;
-    }
-    .film-frame-window:hover {
-      border-color: #40bcf4;
-      background: linear-gradient(180deg, #141c29 0%, #0e141e 100%);
-      box-shadow: inset 0 1px 6px rgba(0, 0, 0, 0.8), 0 0 12px rgba(64, 188, 244, 0.15);
-    }
-    .frame-divider {
-      width: 10px;
-      background: #050709;
-      border-left: 1.5px solid #161e29;
-      border-right: 1.5px solid #161e29;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-    .frame-divider::after {
-      content: "";
-      width: 2px;
-      height: 14px;
-      background: #40bcf4;
-      opacity: 0.35;
-      border-radius: 1px;
     }
     .hide-scrollbar::-webkit-scrollbar {
       display: none;
@@ -1327,101 +1281,32 @@
             </div>
           </header>
 
-          {/* DYNAMIC MOTION STRIP — AUTHENTIC 35MM FILM REEL / ROLL */}
-          {/* DYNAMIC MOTION STRIP — AUTHENTIC 35MM FILM REEL / ROLL */}
+          {/* DYNAMIC MOTION STRIP — MINIMAL OFF-WHITE RIBBON */}
           {screen === 'home' && (
-            <div className="w-full film-strip-wrapper py-2 overflow-hidden select-none">
+            <div className="w-full bg-[#f4f4f2] text-[#0e1114] border-y border-[#dcded8] py-1.5 overflow-hidden select-none shadow-sm">
               <div className="motion-ticker flex items-center">
-                {/* Reel Loop 1 */}
+                {/* Loop 1 */}
                 <div className="flex items-center">
                   {FILM_REEL_QUOTES.map((q, idx) => (
-                    <div key={`reel1-${idx}`} className="flex items-stretch">
-                      {/* Film Cell Frame */}
-                      <div className="flex flex-col gap-1.5 py-0.5 px-2">
-                        {/* Top Sprockets Track (9 holes) */}
-                        <div className="flex items-center justify-between gap-2.5 px-1">
-                          <div className="sprocket-hole"></div>
-                          <div className="sprocket-hole"></div>
-                          <div className="sprocket-hole"></div>
-                          <div className="sprocket-hole"></div>
-                          <div className="sprocket-hole"></div>
-                          <div className="sprocket-hole"></div>
-                          <div className="sprocket-hole"></div>
-                          <div className="sprocket-hole"></div>
-                          <div className="sprocket-hole"></div>
-                        </div>
-
-                        {/* Exposed Photographic Cell Window */}
-                        <div className="film-frame-window px-4 py-2 min-w-[260px] flex items-center justify-center gap-2.5 cursor-default">
-                          <span className="text-sm flex-shrink-0">{q.icon}</span>
-                          <span className="text-xs font-bold text-white tracking-wide whitespace-nowrap drop-shadow">
-                            &ldquo;{q.text}&rdquo;
-                          </span>
-                        </div>
-
-                        {/* Bottom Sprockets Track (9 holes) */}
-                        <div className="flex items-center justify-between gap-2.5 px-1">
-                          <div className="sprocket-hole"></div>
-                          <div className="sprocket-hole"></div>
-                          <div className="sprocket-hole"></div>
-                          <div className="sprocket-hole"></div>
-                          <div className="sprocket-hole"></div>
-                          <div className="sprocket-hole"></div>
-                          <div className="sprocket-hole"></div>
-                          <div className="sprocket-hole"></div>
-                          <div className="sprocket-hole"></div>
-                        </div>
-                      </div>
-
-                      {/* Inter-Frame Cut Divider */}
-                      <div className="frame-divider mx-0.5"></div>
+                    <div key={`reel1-${idx}`} className="flex items-center gap-2 px-5 whitespace-nowrap">
+                      <span className="text-xs">{q.icon}</span>
+                      <span className="text-[11px] font-semibold text-[#1a202c] tracking-tight">
+                        &ldquo;{q.text}&rdquo;
+                      </span>
+                      <span className="text-[#a0aec0] font-bold text-xs ml-4 select-none">•</span>
                     </div>
                   ))}
                 </div>
 
-                {/* Reel Loop 2 (Duplicate for seamless continuous loop) */}
+                {/* Loop 2 (Duplicate for seamless continuous loop) */}
                 <div className="flex items-center">
                   {FILM_REEL_QUOTES.map((q, idx) => (
-                    <div key={`reel2-${idx}`} className="flex items-stretch">
-                      {/* Film Cell Frame */}
-                      <div className="flex flex-col gap-1.5 py-0.5 px-2">
-                        {/* Top Sprockets Track (9 holes) */}
-                        <div className="flex items-center justify-between gap-2.5 px-1">
-                          <div className="sprocket-hole"></div>
-                          <div className="sprocket-hole"></div>
-                          <div className="sprocket-hole"></div>
-                          <div className="sprocket-hole"></div>
-                          <div className="sprocket-hole"></div>
-                          <div className="sprocket-hole"></div>
-                          <div className="sprocket-hole"></div>
-                          <div className="sprocket-hole"></div>
-                          <div className="sprocket-hole"></div>
-                        </div>
-
-                        {/* Exposed Photographic Cell Window */}
-                        <div className="film-frame-window px-4 py-2 min-w-[260px] flex items-center justify-center gap-2.5 cursor-default">
-                          <span className="text-sm flex-shrink-0">{q.icon}</span>
-                          <span className="text-xs font-bold text-white tracking-wide whitespace-nowrap drop-shadow">
-                            &ldquo;{q.text}&rdquo;
-                          </span>
-                        </div>
-
-                        {/* Bottom Sprockets Track (9 holes) */}
-                        <div className="flex items-center justify-between gap-2.5 px-1">
-                          <div className="sprocket-hole"></div>
-                          <div className="sprocket-hole"></div>
-                          <div className="sprocket-hole"></div>
-                          <div className="sprocket-hole"></div>
-                          <div className="sprocket-hole"></div>
-                          <div className="sprocket-hole"></div>
-                          <div className="sprocket-hole"></div>
-                          <div className="sprocket-hole"></div>
-                          <div className="sprocket-hole"></div>
-                        </div>
-                      </div>
-
-                      {/* Inter-Frame Cut Divider */}
-                      <div className="frame-divider mx-0.5"></div>
+                    <div key={`reel2-${idx}`} className="flex items-center gap-2 px-5 whitespace-nowrap">
+                      <span className="text-xs">{q.icon}</span>
+                      <span className="text-[11px] font-semibold text-[#1a202c] tracking-tight">
+                        &ldquo;{q.text}&rdquo;
+                      </span>
+                      <span className="text-[#a0aec0] font-bold text-xs ml-4 select-none">•</span>
                     </div>
                   ))}
                 </div>
