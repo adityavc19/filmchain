@@ -3131,19 +3131,8 @@
                 </div>
               </div>
 
-              {/* Analytics & TMDb attribution */}
-              <div className="flex items-center gap-3 text-[11px] text-text-muted">
-                <button
-                  onClick={() => {
-                    setShowAnalyticsModal(true);
-                    fetchGlobalAnalytics();
-                  }}
-                  className="hover:text-white transition-colors cursor-pointer flex items-center gap-1 text-text-secondary hover:text-[#00e054] font-medium"
-                  title="View Realtime User & Game Analytics (Shift + A)"
-                >
-                  <span>📊 Analytics</span>
-                </button>
-                <span>•</span>
+              {/* TMDb attribution */}
+              <div className="flex items-center gap-4 text-[11px] text-text-muted">
                 <span>Film data powered by TMDb</span>
               </div>
             </div>
