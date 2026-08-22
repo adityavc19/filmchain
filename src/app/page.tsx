@@ -193,7 +193,7 @@ export default function Home() {
               <div className="flex flex-col gap-1 border-b border-[#28323e] pb-3">
                 <div className="flex items-center gap-2">
                   <Compass className="w-4 h-4 text-[#40bcf4]" />
-                  <span className="text-xs font-black uppercase tracking-wider text-white">How To Connect</span>
+                  <span className="text-xs font-black uppercase tracking-wider text-white">How To Play</span>
                 </div>
                 <p className="text-xs text-text-secondary">
                   Hop from film to cast/crew and trace the connection trail.
@@ -233,12 +233,12 @@ export default function Home() {
 
                 <span className="text-text-muted text-xs sm:text-sm font-mono tracking-widest opacity-60">···</span>
 
-                {/* 4. End Film (Oppenheimer - Glowing Green Border) */}
+                {/* 4. End Film (Gangs of Wasseypur 1 - Glowing Green Border) */}
                 <div className="flex flex-col items-center gap-1.5 w-[22%] sm:w-26">
                   <div className="w-full aspect-[2/3] rounded-[6px] bg-[#222b35] border-2 border-[#00e054] overflow-hidden shadow-[0_0_18px_rgba(0,224,84,0.35)] relative">
-                    <Image src="/oppenheimer.jpg" alt="Oppenheimer" fill className="object-cover object-top" />
+                    <Image src="/gangs_of_wasseypur.jpg" alt="Gangs of Wasseypur - Part 1" fill className="object-cover object-top" />
                   </div>
-                  <span className="text-[11px] font-bold text-[#00e054] text-center truncate max-w-full leading-tight">Oppenheimer</span>
+                  <span className="text-[11px] font-bold text-[#00e054] text-center truncate max-w-full leading-tight">Wasseypur 1</span>
                 </div>
 
               </div>
