@@ -331,7 +331,7 @@ export default function Home() {
           </div>
           <Link
             href="/create"
-            className="px-5 py-2.5 bg-[#00c030] hover:bg-[#00e054] text-white text-xs font-black uppercase tracking-wider rounded transition-all whitespace-nowrap shadow-md flex items-center gap-1.5 cursor-pointer active:scale-[0.99]"
+            className="px-5 py-2.5 bg-white hover:bg-[#e6e6e6] text-[#0e1114] text-xs font-black uppercase tracking-wider rounded transition-all whitespace-nowrap shadow-md flex items-center gap-1.5 cursor-pointer active:scale-[0.99]"
           >
             <Sparkles className="w-4 h-4" />
             <span>Create a Game</span>

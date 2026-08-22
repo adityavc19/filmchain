@@ -601,10 +601,10 @@ export default function CustomGamePage({ params }: { params: Promise<{ id: strin
             <h2 className="text-base sm:text-lg font-bold text-white">{startFilm?.title} to {targetFilm?.title}</h2>
           </div>
 
-          {/* Result Stats Box */}
-          <div className="flex flex-col gap-2.5 bg-bg-card border border-border rounded-[6px] p-5 w-full shadow-2xl">
+          {/* 1. Result Stats Box with Integrated Play Again */}
+          <div className="flex flex-col gap-4 bg-bg-card border border-border rounded-[6px] p-5 w-full shadow-2xl">
             <span className="text-[11px] font-bold uppercase tracking-widest text-text-secondary text-left">Your Result</span>
-            <div className="flex items-center justify-around py-2">
+            <div className="flex items-center justify-around py-1">
               <div className="text-center">
                 <span className="text-[11px] font-bold uppercase tracking-widest text-text-secondary block mb-1">Time</span>
                 <span className="font-mono text-3xl sm:text-4xl font-extrabold text-slate-300">
@@ -618,33 +618,29 @@ export default function CustomGamePage({ params }: { params: Promise<{ id: strin
                 <span className="font-mono text-3xl sm:text-4xl font-extrabold text-[#00e054]">{clickCount}</span>
               </div>
             </div>
-          </div>
 
-          {/* Quicker Path Nudge Card & Play Again Primary CTA */}
-          <div className="flex flex-col gap-3 bg-gradient-to-br from-bg-card to-bg-secondary border border-[#ff8000]/40 rounded-[6px] p-4 sm:p-5 w-full shadow-xl text-center relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-28 h-28 bg-[#ff8000]/5 rounded-full blur-2xl pointer-events-none" />
-
-            <div className="flex items-center justify-center gap-2">
-              <span className="text-base">⚡</span>
-              <h3 className="text-sm sm:text-base font-extrabold text-white">
-                Think you can find a quicker path?
-              </h3>
+            {/* Integrated "Find a quicker path" & Play Again CTA */}
+            <div className="pt-3 border-t border-border flex flex-col items-center gap-2.5 text-center">
+              <span className="text-xs font-semibold text-white">Find a quicker path</span>
+              <button
+                onClick={restartGame}
+                className="w-auto px-6 py-2.5 bg-white hover:bg-[#e6e6e6] text-[#0e1114] font-black text-xs uppercase tracking-wider rounded-[4px] flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md active:scale-95"
+              >
+                <span>Play Again</span>
+              </button>
             </div>
-
-            <p className="text-xs text-text-secondary leading-relaxed max-w-sm mx-auto">
-              Replay this challenge with a different route to shave seconds off your time, reduce clicks, and climb the leaderboard!
-            </p>
-
-            <button
-              onClick={restartGame}
-              className="w-full py-3 px-5 bg-[#ff8000] hover:bg-[#ff941a] text-[#0e1114] font-black text-xs uppercase tracking-wider rounded-[4px] flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg active:scale-95 mt-1"
-            >
-              <span>⚡</span>
-              <span>Play Again (Find Quicker Path)</span>
-            </button>
           </div>
 
-          {/* Your Solved Path Timeline (Subway / Step Cards) */}
+          {/* 2. Share Result CTA Button */}
+          <button
+            onClick={copyShare}
+            className="w-full py-3 px-5 bg-white text-[#0e1114] hover:bg-white/90 text-xs font-black uppercase tracking-wider rounded-[4px] flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md active:scale-95"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg>
+            <span>{copied ? 'Copied to Clipboard!' : 'Share Result'}</span>
+          </button>
+
+          {/* 3. Your Solved Path Timeline (Subway / Step Cards) */}
           {path && path.length > 0 && (
             <div className="flex flex-col gap-3 bg-bg-card border border-border rounded-[6px] p-4 sm:p-5 w-full shadow-lg">
               <div className="flex items-center justify-between border-b border-border pb-2.5">
@@ -722,23 +718,14 @@ export default function CustomGamePage({ params }: { params: Promise<{ id: strin
             </div>
           )}
 
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full mt-1">
-            <button
-              onClick={copyShare}
-              className="w-full sm:flex-1 py-2.5 px-4 bg-white text-[#0e1114] hover:bg-white/90 text-xs font-bold uppercase tracking-wider rounded-[4px] flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md active:scale-95"
-            >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg>
-              <span>{copied ? 'Copied to Clipboard!' : 'Share Result'}</span>
-            </button>
-            <div className="flex items-center gap-3 w-full sm:w-auto">
-              <Link href="/" className="flex-1 sm:flex-initial py-2.5 px-5 bg-transparent text-text-secondary text-xs font-semibold border border-border rounded-[4px] hover:text-white transition-all text-center">
-                &larr; Home
-              </Link>
-              <Link href="/create" className="flex-1 sm:flex-initial py-2.5 px-5 bg-[#1c242c] text-white text-xs font-semibold border border-border rounded-[4px] hover:border-white transition-all text-center">
-                + Create
-              </Link>
-            </div>
+          {/* 4. Action Buttons */}
+          <div className="flex items-center justify-center gap-3 w-full mt-1">
+            <Link href="/" className="flex-1 sm:flex-initial py-2.5 px-6 bg-[#1c242c] text-text-secondary text-xs font-semibold border border-border rounded-[4px] hover:text-white transition-all text-center">
+              &larr; Home
+            </Link>
+            <Link href="/create" className="flex-1 sm:flex-initial py-2.5 px-6 bg-[#1c242c] text-white text-xs font-semibold border border-border rounded-[4px] hover:border-white transition-all text-center">
+              + Create
+            </Link>
           </div>
         </div>
       )}
