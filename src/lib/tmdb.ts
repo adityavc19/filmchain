@@ -103,14 +103,25 @@ function httpsGetJson<T = any>(url: string): Promise<T> {
   });
 }
 
+const serverTmdbCache = new Map<string, { data: any; timestamp: number }>();
+const CACHE_TTL_MS = 1000 * 60 * 60; // 1 hour TTL
+
 async function tmdbFetch<T = any>(path: string, retries = 3): Promise<T> {
+  const now = Date.now();
+  const cached = serverTmdbCache.get(path);
+  if (cached && now - cached.timestamp < CACHE_TTL_MS) {
+    return cached.data as T;
+  }
+
   const apiKey = process.env.TMDB_API_KEY || '81d2e74ce1c54d587d152b68d900b8c8';
   const separator = path.includes('?') ? '&' : '?';
   const url = `${TMDB_BASE}${path}${separator}api_key=${apiKey}`;
 
   for (let attempt = 0; attempt < retries; attempt++) {
     try {
-      return await httpsGetJson<T>(url);
+      const data = await httpsGetJson<T>(url);
+      serverTmdbCache.set(path, { data, timestamp: now });
+      return data;
     } catch (err: any) {
       if (err instanceof TmdbHttpError && err.status === 404) {
         throw err;

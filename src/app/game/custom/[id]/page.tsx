@@ -353,40 +353,41 @@ export default function CustomGamePage({ params }: { params: Promise<{ id: strin
   return (
     <div className="flex flex-col gap-5 max-w-5xl mx-auto w-full pb-16 relative">
       {/* Compact Sticky Game Status HUD */}
-      <div className="flex flex-col gap-2.5 bg-bg-card/95 p-3 sm:p-3.5 rounded-[4px] border border-border sticky top-14 z-30 shadow-xl backdrop-blur-md">
-        <div className="flex items-start justify-between gap-4 flex-wrap sm:flex-nowrap">
+      <div className="flex flex-col gap-2.5 bg-bg-card/95 p-2.5 sm:p-3.5 rounded-[6px] border border-border sticky top-14 z-30 shadow-xl backdrop-blur-md w-full">
+        <div className="flex items-center justify-between gap-3 w-full">
           {targetFilm && (
-            <div className="flex items-start gap-3.5">
+            <div className="flex items-center gap-2.5 min-w-0 flex-1 overflow-hidden">
               <div
-                className="w-20 h-28 sm:w-24 sm:h-34 relative rounded-[4px] overflow-hidden flex-shrink-0 bg-bg-secondary border-2 border-border shadow-lg"
+                className="w-12 h-17 sm:w-16 sm:h-24 relative rounded-[4px] overflow-hidden flex-shrink-0 bg-bg-secondary border-2 border-border shadow-lg"
               >
                 {targetFilm.poster_path ? (
                   <Image src={posterUrl(targetFilm.poster_path, 'w342')} alt={targetFilm.title} fill sizes="96px" className="object-cover" />
                 ) : <div className="w-full h-full flex items-center justify-center text-xs text-text-muted">🎬</div>}
               </div>
-              <div className="flex flex-col text-left justify-start pt-0.5">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-[#00e054]">GOAL</span>
+              <div className="flex flex-col text-left justify-center min-w-0 flex-1 overflow-hidden">
+                <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#00e054] leading-none">GOAL</span>
+                <span className="font-bold text-white text-xs sm:text-base leading-tight truncate max-w-[130px] sm:max-w-[240px] mt-1">{targetFilm.title}</span>
+                <div className="flex items-center gap-1.5 text-[10px] text-text-secondary font-mono mt-0.5 truncate max-w-[130px] sm:max-w-[240px]">
+                  <span>{targetFilm.year}</span>
                   {creatorHandle && (
-                    <span className="text-[10px] text-text-muted font-mono">by @{creatorHandle}</span>
+                    <>
+                      <span className="text-text-muted">•</span>
+                      <span className="truncate">by @{creatorHandle}</span>
+                    </>
                   )}
                 </div>
-                <span className="font-bold text-white text-sm sm:text-base leading-tight max-w-[170px] sm:max-w-[260px] truncate mt-0.5">{targetFilm.title}</span>
-                {targetFilm.year && <span className="text-text-secondary text-[11px] font-mono mt-0.5">{targetFilm.year}</span>}
-                <p className="text-[11px] text-text-secondary leading-snug mt-1 max-w-[180px] sm:max-w-[280px]">
-                  Reach this movie through connected cast &amp; crew
-                </p>
               </div>
             </div>
           )}
 
-          <div className="flex items-start gap-8 sm:gap-14 pt-0.5">
+          {/* Right Metrics: Clicks & Timer on Top Right */}
+          <div className="flex items-center gap-3.5 sm:gap-6 flex-shrink-0 text-right">
             <div className="flex flex-col text-right">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary leading-tight">CLICKS</span>
-              <span className="font-mono text-2xl sm:text-3xl font-black text-white leading-tight mt-0.5">{clickCount}</span>
+              <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-text-secondary leading-none">CLICKS</span>
+              <span className="font-mono text-base sm:text-2xl font-black text-white leading-tight mt-0.5">{clickCount}</span>
             </div>
             <div className="flex flex-col text-right">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary leading-tight">TIME</span>
+              <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-text-secondary leading-none">TIME</span>
               <div className="mt-0.5">
                 <Timer startTime={startTime} endTime={endTime} />
               </div>

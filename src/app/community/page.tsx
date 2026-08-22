@@ -127,47 +127,47 @@ export default function CommunityPage() {
           {filtered.map((cp) => (
             <div
               key={cp.id}
-              className="bg-[#1c242c] border border-[#28323e] p-4 rounded-[4px] flex flex-col justify-between gap-4 shadow hover:border-text-secondary transition-colors"
+              className="bg-[#1c242c] border border-[#28323e] p-4 rounded-[6px] flex flex-col items-center justify-between gap-3.5 shadow hover:border-text-secondary transition-colors text-center"
             >
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-18 relative rounded overflow-hidden bg-[#222b35] border border-[#28323e] flex-shrink-0">
+              {/* Two Covers */}
+              <div className="flex items-center justify-center gap-3 w-full py-1">
+                <div className="w-14 h-20 sm:w-16 sm:h-24 relative rounded-[4px] overflow-hidden bg-[#222b35] border border-[#28323e] flex-shrink-0 shadow-md">
                   {cp.startFilm?.poster_path ? (
                     <Image src={posterUrl(cp.startFilm.poster_path, 'w185')} alt="" fill className="object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-xs">🎬</div>
                   )}
                 </div>
-                <span className="text-xs font-light text-text-muted">➔</span>
-                <div className="w-12 h-18 relative rounded overflow-hidden bg-[#222b35] border border-[#28323e] flex-shrink-0">
+                <span className="text-sm font-bold text-text-muted">➔</span>
+                <div className="w-14 h-20 sm:w-16 sm:h-24 relative rounded-[4px] overflow-hidden bg-[#222b35] border border-[#28323e] flex-shrink-0 shadow-md">
                   {cp.endFilm?.poster_path ? (
                     <Image src={posterUrl(cp.endFilm.poster_path, 'w185')} alt="" fill className="object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-xs">🎬</div>
                   )}
                 </div>
-                <div className="flex flex-col min-w-0">
-                  <span className="font-bold text-xs text-white truncate">
-                    {cp.title || `${cp.startFilm?.title} → ${cp.endFilm?.title}`}
-                  </span>
-                  {cp.creator_handle && (
+              </div>
+
+              {/* Subtitle: Made by creator name */}
+              <div className="flex items-center justify-center text-xs text-text-secondary font-mono">
+                <span>
+                  made by{' '}
+                  {cp.creator_handle ? (
                     <Link
                       href={`/profile/${cp.creator_handle}`}
-                      className="text-[11px] text-text-secondary hover:text-white font-mono truncate"
+                      className="text-white hover:underline font-medium"
                     >
-                      by @{cp.creator_handle}
+                      @{cp.creator_handle}
                     </Link>
+                  ) : (
+                    <span className="text-white font-medium">@cinephile</span>
                   )}
-                  {cp.created_at && (
-                    <span className="text-[10px] text-text-muted font-mono mt-0.5">
-                      {new Date(cp.created_at).toLocaleDateString()}
-                    </span>
-                  )}
-                </div>
+                </span>
               </div>
 
               <button
                 onClick={() => setSelectedPuzzle(cp)}
-                className="w-full py-2 bg-[#222b35] hover:bg-[#2c3744] text-white text-[11px] font-bold uppercase tracking-wider rounded text-center border border-[#28323e] transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                className="w-full py-2 bg-[#222b35] hover:bg-[#2c3744] text-white text-[11px] font-bold uppercase tracking-wider rounded-[4px] text-center border border-[#28323e] transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
               >
                 <Clapperboard className="w-3.5 h-3.5 text-text-secondary" />
                 <span>Play Challenge</span>
