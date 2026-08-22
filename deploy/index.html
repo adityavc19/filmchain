@@ -313,6 +313,8 @@
       const [filmTab, setFilmTab] = useState('all');
       const [personTab, setPersonTab] = useState('movies');
       const [leaderboard, setLeaderboard] = useState([]);
+      const [gameLeaderboard, setGameLeaderboard] = useState([]);
+      const [loadingGameLeaderboard, setLoadingGameLeaderboard] = useState(false);
       const [leaderboardTab, setLeaderboardTab] = useState('daily');
       const [cumulativeLeaderboard, setCumulativeLeaderboard] = useState([]);
       const [copied, setCopied] = useState(false);
@@ -938,43 +940,117 @@
             is_custom: !!customPuzzleId,
           });
 
+          const isDailyMatch = todayPuzzle && startFilm && targetFilm && 
+            (todayPuzzle.start_film_id === startFilm.tmdb_id || todayPuzzle.start_film_id === 14752) && 
+            (todayPuzzle.end_film_id === targetFilm.tmdb_id || todayPuzzle.end_film_id === 117691);
+
+          const puzzleKey = customPuzzleId ? customPuzzleId : (isDailyMatch ? (todayPuzzle ? todayPuzzle.date : '2026-08-22') : (startFilm && targetFilm ? `pair_${startFilm.tmdb_id}_${targetFilm.tmdb_id}` : (todayPuzzle ? todayPuzzle.date : '2026-08-22')));
+
+          const currentSolve = {
+            id: 's_' + Date.now(),
+            puzzle_date: puzzleKey,
+            puzzle_id: customPuzzleId || null,
+            handle,
+            time_seconds: timeSec,
+            hop_count: hops,
+            path: newPath,
+            submitted_at: new Date().toISOString(),
+          };
+
+          // Optimistically show current solve on game-specific leaderboard
+          setGameLeaderboard([currentSolve]);
+
           try {
             const mySolves = JSON.parse(localStorage.getItem('filmtrace-my-solves') || '[]');
-            mySolves.unshift({
-              id: 's_' + Date.now(),
-              puzzle_date: customPuzzleId || (todayPuzzle ? todayPuzzle.date : new Date().toISOString().split('T')[0]),
-              handle,
-              time_seconds: timeSec,
-              hop_count: hops,
-              path: newPath,
-              submitted_at: new Date().toISOString(),
-            });
+            mySolves.unshift(currentSolve);
             localStorage.setItem('filmtrace-my-solves', JSON.stringify(mySolves.slice(0, 50)));
 
-            await fetch(`${SUPABASE_URL}/rest/v1/leaderboard_entries`, {
-              method: 'POST',
-              headers: {
-                'apikey': SUPABASE_ANON,
-                'Authorization': `Bearer ${SUPABASE_ANON}`,
-                'Content-Type': 'application/json',
-                'Prefer': 'return=representation'
-              },
-              body: JSON.stringify({
-                puzzle_date: todayPuzzle ? todayPuzzle.date : '2026-08-21',
-                handle,
-                time_seconds: timeSec,
-                hop_count: hops,
-                path: newPath,
-              })
-            });
-            setTodayPuzzle(prev => prev ? { ...prev, playerCount: (prev.playerCount || 0) + 1 } : prev);
-            fetchLeaderboardData(todayPuzzle ? todayPuzzle.date : '2026-08-21');
+            if (customPuzzleId) {
+              await fetch(`${SUPABASE_URL}/rest/v1/custom_leaderboard_entries`, {
+                method: 'POST',
+                headers: {
+                  'apikey': SUPABASE_ANON,
+                  'Authorization': `Bearer ${SUPABASE_ANON}`,
+                  'Content-Type': 'application/json',
+                  'Prefer': 'return=representation'
+                },
+                body: JSON.stringify({
+                  puzzle_id: customPuzzleId,
+                  handle,
+                  time_seconds: timeSec,
+                  hop_count: hops,
+                  path: newPath,
+                })
+              });
+            } else {
+              await fetch(`${SUPABASE_URL}/rest/v1/leaderboard_entries`, {
+                method: 'POST',
+                headers: {
+                  'apikey': SUPABASE_ANON,
+                  'Authorization': `Bearer ${SUPABASE_ANON}`,
+                  'Content-Type': 'application/json',
+                  'Prefer': 'return=representation'
+                },
+                body: JSON.stringify({
+                  puzzle_date: (isDailyMatch && todayPuzzle) ? todayPuzzle.date : '2026-08-22',
+                  handle,
+                  time_seconds: timeSec,
+                  hop_count: hops,
+                  path: newPath,
+                })
+              });
+              setTodayPuzzle(prev => prev ? { ...prev, playerCount: (prev.playerCount || 0) + 1 } : prev);
+            }
           } catch (e) {
             console.error('Failed to submit score:', e);
+          } finally {
+            fetchGameSpecificLeaderboard(puzzleKey, currentSolve);
           }
         } else {
           setPath(newPath);
           await fetchFilmDetails(filmId);
+        }
+      }
+
+      async function fetchGameSpecificLeaderboard(puzzleKey, mySolve) {
+        setLoadingGameLeaderboard(true);
+        try {
+          let entries = [];
+          if (customPuzzleId) {
+            const res = await fetch(`${SUPABASE_URL}/rest/v1/custom_leaderboard_entries?puzzle_id=eq.${customPuzzleId}&order=time_seconds.asc&limit=50`, {
+              headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` }
+            });
+            if (res.ok) {
+              const data = await res.json();
+              if (Array.isArray(data)) entries = data;
+            }
+          } else {
+            const dateToQuery = (todayPuzzle && puzzleKey === todayPuzzle.date) ? todayPuzzle.date : (puzzleKey.startsWith('pair_') ? puzzleKey : (todayPuzzle ? todayPuzzle.date : '2026-08-22'));
+            const res = await fetch(`${SUPABASE_URL}/rest/v1/leaderboard_entries?puzzle_date=eq.${dateToQuery}&order=time_seconds.asc&limit=50`, {
+              headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` }
+            });
+            if (res.ok) {
+              const data = await res.json();
+              if (Array.isArray(data)) entries = data;
+            }
+          }
+
+          if (!Array.isArray(entries)) entries = [];
+
+          if (mySolve) {
+            const exists = entries.some(e => e.handle === mySolve.handle && Math.abs(e.time_seconds - mySolve.time_seconds) <= 1);
+            if (!exists) {
+              entries.push(mySolve);
+            }
+          }
+
+          entries.sort((a, b) => a.time_seconds - b.time_seconds);
+          setGameLeaderboard(entries);
+        } catch (e) {
+          console.warn('Game leaderboard fetch failed:', e);
+          if (mySolve) setGameLeaderboard([mySolve]);
+        } finally {
+          setLoadingGameLeaderboard(false);
         }
       }
 
@@ -995,7 +1071,7 @@
       async function fetchLeaderboardData(param) {
         try {
           // 1. Fetch Daily Leaderboard
-          const dateToQuery = param || (todayPuzzle ? todayPuzzle.date : '2026-08-21');
+          const dateToQuery = param || (todayPuzzle ? todayPuzzle.date : '2026-08-22');
           const url = `${SUPABASE_URL}/rest/v1/leaderboard_entries?puzzle_date=eq.${dateToQuery}&order=time_seconds.asc&limit=25`;
           const res = await fetch(url, {
             headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` }
@@ -2589,11 +2665,13 @@
                   </div>
                 </div>
 
-                {/* 2. Leaderboard Table */}
+                {/* 2. Game-Specific Leaderboard Table */}
                 <div className="flex flex-col gap-3 bg-[#1c242c] border border-[#28323e] rounded-[6px] p-5 w-full shadow-lg">
                   <div className="flex flex-col text-left gap-0.5">
-                    <span className="text-sm font-extrabold text-white">Leaderboard</span>
-                    <span className="text-[11px] text-text-muted">{customPuzzleId ? 'Fastest solvers for this puzzle' : "Today's quickest paths"}</span>
+                    <span className="text-sm font-extrabold text-white">Leaderboard for this Challenge</span>
+                    <span className="text-[11px] text-[#00e054] font-medium">
+                      {startFilm ? startFilm.title : ''} ➔ {targetFilm ? targetFilm.title : ''}
+                    </span>
                   </div>
 
                   <table className="w-full border-collapse text-xs">
@@ -2606,13 +2684,14 @@
                       </tr>
                     </thead>
                     <tbody>
-                      {leaderboard.length > 0 ? (
-                        leaderboard.slice(0, 10).map((entry, idx) => {
+                      {gameLeaderboard.length > 0 ? (
+                        gameLeaderboard.slice(0, 10).map((entry, idx) => {
                           const isYou = entry.handle === handle;
                           const rankColors = { 1: '#f5c518', 2: '#c0c0c0', 3: '#cd7f32' };
                           const rankColor = rankColors[idx + 1] || '#667788';
                           const mins = Math.floor(entry.time_seconds / 60);
                           const secs = entry.time_seconds % 60;
+                          const clicksDisplay = entry.hop_count ? `${entry.hop_count}` : (entry.path ? `${Math.max(1, entry.path.length - 1)}` : '1');
 
                           return (
                             <tr key={entry.id || idx} className={`border-b border-[#28323e]/50 ${isYou ? 'bg-white/10' : ''}`}>
@@ -2621,14 +2700,14 @@
                               </td>
                               <td className="py-2 px-1.5 text-left font-medium">
                                 <span className={isYou ? 'text-white font-bold' : 'text-text-primary'}>
-                                  {entry.handle} {isYou ? '(You)' : ''}
+                                  @{entry.handle} {isYou ? '(You)' : ''}
                                 </span>
                               </td>
                               <td className="py-2 px-1.5 text-right font-mono text-text-secondary">
                                 {mins}:{String(secs).padStart(2, '0')}
                               </td>
                               <td className="py-2 px-1.5 text-right font-mono text-text-secondary">
-                                {entry.path ? Math.max(0, entry.path.length - 1) : entry.hop_count * 2}
+                                {clicksDisplay}
                               </td>
                             </tr>
                           );
@@ -2636,7 +2715,7 @@
                       ) : (
                         <tr>
                           <td colSpan={4} className="py-4 text-center text-text-muted">
-                            Great run! You're the first on this leaderboard.
+                            Great run! You're #1 on this leaderboard.
                           </td>
                         </tr>
                       )}
